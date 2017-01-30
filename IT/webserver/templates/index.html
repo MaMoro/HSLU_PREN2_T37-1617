@@ -1,0 +1,725 @@
+<html>
+<head>
+    <title>Autonomes Fahrzeug - PREN 2 - Team 37</title>
+    <script type=text/javascript src="{{ url_for('static', filename='jquery-3.1.1.min.js') }}"></script>
+    <script type=text/javascript src="{{ url_for('static', filename='jquery-ui-1.10.2.min.js') }}"></script>
+    <script type=text/javascript src="{{ url_for('static', filename='spectrum.js') }}"></script>
+    <script type=text/javascript src="{{ url_for('static', filename='jquery.toast.js') }}"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='spectrum.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='Aristo.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='jquery.toast.css') }}">
+</head>
+<body class="ui-form">
+<style>
+    input[type=text] {
+
+    }
+</style>
+<h1>Autonomes Fahrzeug - PREN 2 - Team 37</h1>
+<div id="tabs">
+    <ul>
+        <li><a href="#tabs-1">Images</a></li>
+        <li><a href="#tabs-2">Video</a></li>
+        <li><a href="#tabs-3">Stream</a></li>
+        <li><a href="#tabs-4">Pi</a></li>
+        <li><a href="#tabs-5">Config</a></li>
+    </ul>
+    <div id="tabs-1">
+        <img height="480" width="640" src="{{ url_for('img_feed') }}" onerror="this.style.display='none';"></br>
+        <table>
+            <tr>
+                <form id="images_start_form" action="/start_images" method="post">
+                    <td>
+                        <button type="submit" value="Start">Start</button>
+                    </td>
+                    <td><input type="checkbox" name="preview" value="img"> Show preview</td>
+                </form>
+            </tr>
+            <tr>
+                <form id="images_stop_form" action="/stop_images" method="post">
+                    <td>
+                        <button type="submit" value="Stop">Stop</button>
+                    </td>
+                </form>
+            </tr>
+        </table>
+    </div>
+    <div id="tabs-2">
+        <img height="480" width="640" src="{{ url_for('video_feed') }}" onerror="this.style.display='none';"></br>
+        <table>
+            <tr>
+                <form id="video_start_form" action="/start_video" method="post">
+                    <td>
+                        <button type="submit" value="Start">Start</button>
+                    </td>
+                    <td><input type="checkbox" name="preview" value="video"> Show preview</td>
+                </form>
+            </tr>
+            <tr>
+                <form id="video_stop_form" action="/stop_video" method="post">
+                    <td>
+                        <button type="submit" value="Stop">Stop</button>
+                    </td>
+                </form>
+            </tr>
+        </table>
+    </div>
+    <div id="tabs-3">
+        <img height="480" width="640" src="{{ url_for('stream_feed') }}" onerror="this.style.display='none';"></br>
+        <table>
+            <tr>
+                <form id="stream_start_form" action="/start_stream" method="post">
+                    <td>
+                        <button type="submit" value="Start">Start</button>
+                    </td>
+                    <td><input type="checkbox" name="preview" value="stream"> Show preview</td>
+                </form>
+            </tr>
+            <tr>
+                <form id="stream_stop_form" action="/stop_stream" method="post">
+                    <td>
+                        <button type="submit" value="Stop">Stop</button>
+                    </td>
+                </form>
+            </tr>
+        </table>
+    </div>
+    <div id="tabs-4">
+        <img height="480" width="640" src="{{ url_for('pi_feed') }}" onerror="this.style.display='none';"></br>
+        <table>
+            <tr>
+                <form id="pi_start_form" action="/start_pi" method="post">
+                    <td>
+                        <button type="submit" value="Start">Start</button>
+                    </td>
+                    <td><input type="checkbox" name="preview" value="pi"> Show preview</td>
+                </form>
+            </tr>
+            <tr>
+                <form id="pi_stop_form" action="/stop_pi" method="post">
+                    <td>
+                        <button type="submit" value="Stop">Stop</button>
+                    </td>
+                </form>
+            </tr>
+        </table>
+    </div>
+    <div id="tabs-5">
+        <form id="save_form">
+            <div id="accordion">
+                <h3>Settings</h3>
+                <div>
+                    <table>
+                        <tr>
+                            <td>Title:</td>
+                            <td><input type="text" name="settings_title" value="{{ settings_title }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Project:</td>
+                            <td><input type="text" name="settings_project" value="{{ settings_project }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Description:</td>
+                            <td><input type="text" name="settings_description" value="{{ settings_description }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Copyright:</td>
+                            <td><input type="text" name="settings_copyright" value="{{ settings_copyright }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Loglevel:</td>
+                            <td><input id="settings_loglevel" class="spinner" name="settings_loglevel"
+                                       value="{{ settings_loglevel }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Debug:</td>
+                            <td><input type="checkbox" name="settings_debug" value="settings_debug" {{ settings_debug
+                                       }}></td>
+                        </tr>
+                    </table>
+                </div>
+                <h3>Color HSV mask values for Trafficlight detection</h3>
+                <div>
+                    <table>
+                        <tr>
+                            <td>Low red mask minimal value:</td>
+                            <td><input type="text" id="mask_trafficlight_red_low_l" class="colorhsv"
+                                       name="mask_trafficlight_red_low_l" value="{{ mask_trafficlight_red_low_l }}">
+                </div>
+                </td>
+                </tr>
+                <tr>
+                    <td>Low red mask maximal value:</td>
+                    <td><input type="text" id="mask_trafficlight_red_low_h" class="colorhsv"
+                               name="mask_trafficlight_red_low_h" value="{{ mask_trafficlight_red_low_h }}"></td>
+                </tr>
+                <tr>
+                    <td>High red mask minimal value:</td>
+                    <td><input type="text" id="mask_trafficlight_red_high_l" class="colorhsv"
+                               name="mask_trafficlight_red_high_l" value="{{ mask_trafficlight_red_high_l }}"></td>
+                </tr>
+                <tr>
+                    <td>High red mask maximal value:</td>
+                    <td><input type="text" id="mask_trafficlight_red_high_h" class="colorhsv"
+                               name="mask_trafficlight_red_high_h" value="{{ mask_trafficlight_red_high_h }}"></td>
+                </tr>
+                <tr>
+                    <td>Green mask minimal value:</td>
+                    <td><input type="text" id="mask_trafficlight_green_l" class="colorhsv"
+                               name="mask_trafficlight_green_l" value="{{ mask_trafficlight_green_l }}"></td>
+                </tr>
+                <tr>
+                    <td>Green mask maximal value:</td>
+                    <td><input type="text" id="mask_trafficlight_green_h" class="colorhsv"
+                               name="mask_trafficlight_green_h" value="{{ mask_trafficlight_green_h }}"></td>
+                </tr>
+                </table>
+            </div>
+            <h3>Color HSV mask values for Letter detection</h3>
+            <div>
+                <table>
+                    <tr>
+                        <td>Low red mask minimal value:</td>
+                        <td><input type="text" id="mask_letter_red_low_l" class="colorhsv" name="mask_letter_red_low_l"
+                                   value="{{ mask_letter_red_low_l }}">
+            </div>
+            </td>
+            </tr>
+            <tr>
+                <td>Low red mask maximal value:</td>
+                <td><input type="text" id="mask_letter_red_low_h" class="colorhsv" name="mask_letter_red_low_h"
+                           value="{{ mask_letter_red_low_h }}"></td>
+            </tr>
+            <tr>
+                <td>High red mask minimal value:</td>
+                <td><input type="text" id="mask_letter_red_high_l" class="colorhsv" name="mask_letter_red_high_l"
+                           value="{{ mask_letter_red_high_l }}"></td>
+            </tr>
+            <tr>
+                <td>High red mask maximal value:</td>
+                <td><input type="text" id="mask_letter_red_high_h" class="colorhsv" name="mask_letter_red_high_h"
+                           value="{{ mask_letter_red_high_h }}"></td>
+            </tr>
+            <tr>
+                <td>Red mask shift minimal value:</td>
+                <td><input type="text" id="mask_letter_red_shift_l" class="colorhsv" name="mask_letter_red_shift_l"
+                           value="{{ mask_letter_red_shift_l }}"></td>
+            </tr>
+            <tr>
+                <td>Red mask shift maximal value:</td>
+                <td><input type="text" id="mask_letter_red_shift_h" class="colorhsv" name="mask_letter_red_shift_h"
+                           value="{{ mask_letter_red_shift_h }}"></td>
+            </tr>
+            <tr>
+                <td>Red low full value:</td>
+                <td><input type="text" id="mask_letter_red_low_full" class="colorhsv" name="mask_letter_red_low_full"
+                           value="{{ mask_letter_red_low_full }}"></td>
+            </tr>
+            <tr>
+                <td>Red high full value:</td>
+                <td><input type="text" id="mask_letter_red_high_full" class="colorhsv" name="mask_letter_red_high_full"
+                           value="{{ mask_letter_red_high_full }}"></td>
+            </tr>
+            </table>
+    </div>
+    <h3>Color BGR values</h3>
+    <div>
+        <table>
+            <tr>
+                <td>Black:</td>
+                <td><input type="text" id="color_black" class="colorbgr" name="color_black" value="{{ color_black }}">
+                </td>
+            </tr>
+            <tr>
+                <td>Black low:</td>
+                <td><input type="text" id="color_black_low" class="colorbgr" name="color_black_low"
+                           value="{{ color_black_low }}"></td>
+            </tr>
+            <tr>
+                <td>Black high:</td>
+                <td><input type="text" id="color_black_high" class="colorbgr" name="color_black_high"
+                           value="{{ color_black_high }}"></td>
+            </tr>
+            <tr>
+                <td>White:</td>
+                <td><input type="text" id="color_white" class="colorbgr" name="color_white" value="{{ color_white }}">
+                </td>
+            </tr>
+            <tr>
+                <td>Red:</td>
+                <td><input type="text" id="color_red" class="colorbgr" name="color_red" value="{{ color_red }}"></td>
+            </tr>
+            <tr>
+                <td>Green:</td>
+                <td><input type="text" id="color_green" class="colorbgr" name="color_green" value="{{ color_green }}">
+                </td>
+            </tr>
+            <tr>
+                <td>Blue:</td>
+                <td><input type="text" id="color_blue" class="colorbgr" name="color_blue" value="{{ color_blue }}"></td>
+            </tr>
+            <tr>
+                <td>Cyan:</td>
+                <td><input type="text" id="color_cyan" class="colorbgr" name="color_cyan" value="{{ color_cyan }}"></td>
+            </tr>
+            <tr>
+                <td>Magenta:</td>
+                <td><input type="text" id="color_magenta" class="colorbgr" name="color_magenta"
+                           value="{{ color_magenta }}"></td>
+            </tr>
+            <tr>
+                <td>Yellow:</td>
+                <td><input type="text" id="color_yellow" class="colorbgr" name="color_yellow"
+                           value="{{ color_yellow }}"></td>
+            </tr>
+            <tr>
+                <td>Gray:</td>
+                <td><input type="text" id="color_gray" class="colorbgr" name="color_gray" value="{{ color_gray }}"></td>
+            </tr>
+            <tr>
+                <td>Orange:</td>
+                <td><input type="text" id="color_orange" class="colorbgr" name="color_orange"
+                           value="{{ color_orange }}"></td>
+            </tr>
+        </table>
+    </div>
+    <h3>Debug</h3>
+    <div>
+        <table>
+            <tr>
+                <td>Write red filtered image when red detected:</td>
+                <td><input type="checkbox" name="debug_output_red" value="debug_output_red" {{ debug_output_red }}></td>
+            </tr>
+            <tr>
+                <td>Write green filtered image when green detected:</td>
+                <td><input type="checkbox" name="debug_output_green" value="debug_output_green" {{ debug_output_green
+                           }}></td>
+            </tr>
+            <tr>
+                <td>Set background white when writing image:</td>
+                <td><input type="checkbox" name="debug_output_bgwhite" value="debug_output_bgwhite" {{
+                           debug_output_bgwhite }}></td>
+            </tr>
+        </table>
+    </div>
+    <h3>Camera</h3>
+    <div>
+        <table>
+            <tr>
+                <td>Width:</td>
+                <td><input class="spinner" name="camera_width" value="{{ camera_width }}"></td>
+            </tr>
+            <tr>
+                <td>Height:</td>
+                <td><input class="spinner" name="camera_height" value="{{ camera_height }}"></td>
+            </tr>
+            <tr>
+                <td>Framerate:</td>
+                <td><input class="spinner" name="camera_framerate" value="{{ camera_framerate }}"></td>
+            </tr>
+            <tr>
+                <td>Iso:</td>
+                <td><input class="spinner" name="camera_iso" value="{{ camera_iso }}"></td>
+            </tr>
+            <tr>
+                <td>Awb:</td>
+                <td><input type="text" name="camera_awb" value="{{ camera_awb }}"></td>
+            </tr>
+        </table>
+    </div>
+    <h3>Files</h3>
+    <div>
+        <table>
+            <tr>
+                <td>Image filename part 1:</td>
+                <td><input type="text" name="files_multiimg1" value="{{ files_multiimg1 }}"></td>
+            </tr>
+            <tr>
+                <td>Image filename part 2:</td>
+                <td><input type="text" name="files_multiimg2" value="{{ files_multiimg2 }}"></td>
+            </tr>
+            <tr>
+                <td>Image count:</td>
+                <td><input class="spinner" name="files_multiimgcount" value="{{ files_multiimgcount }}"></td>
+            </tr>
+            <tr>
+                <td>Video filename:</td>
+                <td><input type="text" name="files_video" value="{{ files_video }}"></td>
+            </tr>
+            <tr>
+                <td>Stream number:</td>
+                <td><input class="spinner" name="files_stream" value="{{ files_stream }}"></td>
+            </tr>
+        </table>
+    </div>
+    <h3>Cropimage</h3>
+    <div>
+        <table>
+            <tr>
+                <td>Height:</td>
+                <td><input class="spinner" name="cropimage_height" value="{{ cropimage_height }}"></td>
+            </tr>
+            <tr>
+                <td>Width:</td>
+                <td><input class="spinner" name="cropimage_width" value="{{ cropimage_width }}"></td>
+            </tr>
+        </table>
+    </div>
+    <h3>Imagetext</h3>
+    <div>
+        <table>
+            <tr>
+                <td>Space left:</td>
+                <td><input class="spinner" name="imagetext_bordersize_left" value="{{ imagetext_bordersize_left }}">
+                </td>
+            </tr>
+            <tr>
+                <td>Space top:</td>
+                <td><input class="spinner" name="imagetext_bordersize_top" value="{{ imagetext_bordersize_top }}"></td>
+            </tr>
+            <tr>
+                <td>Space bottom:</td>
+                <td><input class="spinner" name="imagetext_bordersize_bottom" value="{{ imagetext_bordersize_bottom }}">
+                </td>
+            </tr>
+            <tr>
+                <td>Space right:</td>
+                <td><input class="spinner" name="imagetext_bordersize_right" value="{{ imagetext_bordersize_right }}">
+                </td>
+            </tr>
+            <tr>
+                <td>Textspace:</td>
+                <td><input class="spinner" name="imagetext_textspace" value="{{ imagetext_textspace }}"></td>
+            </tr>
+        </table>
+    </div>
+    <h3>Filter</h3>
+    <div>
+        <table>
+            <tr>
+                <td>Kernel size:</td>
+                <td><input class="spinner" name="filter_kernel_size" value="{{ filter_kernel_size }}"></td>
+            </tr>
+            <tr>
+                <td>HSV shift:</td>
+                <td><input class="spinner" name="filter_hsv_shift" value="{{ filter_hsv_shift }}"></td>
+            </tr>
+        </table>
+    </div>
+    <h3>Letter detection</h3>
+    <div>
+        <table>
+            <tr>
+                <td>Tolerance gap:</td>
+                <td><input class="spinner" id="letter_tolerance_i_gap" name="letter_tolerance_i_gap"
+                           value="{{ letter_tolerance_i_gap }}"></td>
+            </tr>
+        </table>
+    </div>
+</div>
+<br>
+<button type="submit" id="save" value="save"/>
+Save</button>
+</form>
+</div>
+</div>
+<script>
+    // Initialize jQuery UI controls
+    $(".spinner").spinner();
+    $("#letter_tolerance_i_gap").spinner('option', 'step', '0.1');
+    $("#settings_loglevel").spinner('option', 'step', '10');
+    $(".spinner").spinner('option', 'min', '0');
+    $(".spinner").spinner('option', 'max', '1000');
+    $("#settings_loglevel").spinner('option', 'min', '10');
+    $("#settings_loglevel").spinner('option', 'max', '40');
+    $(".colorhsv").spectrum({preferredFormat: "hsv", showInput: true});
+    $(".colorbgr").spectrum({preferredFormat: "rgb", showInput: true});
+    $("#mask_trafficlight_red_low_l").spectrum("set", py_hsv2js_hsv([{{mask_trafficlight_red_low_l}
+    }]))
+    ;
+    $("#mask_trafficlight_red_low_h").spectrum("set", py_hsv2js_hsv([{{mask_trafficlight_red_low_h}
+    }]))
+    ;
+    $("#mask_trafficlight_red_high_l").spectrum("set", py_hsv2js_hsv([{{mask_trafficlight_red_high_l}
+    }]))
+    ;
+    $("#mask_trafficlight_red_high_h").spectrum("set", py_hsv2js_hsv([{{mask_trafficlight_red_high_h}
+    }]))
+    ;
+    $("#mask_trafficlight_green_l").spectrum("set", py_hsv2js_hsv([{{mask_trafficlight_green_l}
+    }]))
+    ;
+    $("#mask_trafficlight_green_h").spectrum("set", py_hsv2js_hsv([{{mask_trafficlight_green_h}
+    }]))
+    ;
+    $("#mask_letter_red_low_l").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_low_l}
+    }]))
+    ;
+    $("#mask_letter_red_low_h").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_low_h}
+    }]))
+    ;
+    $("#mask_letter_red_high_l").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_high_l}
+    }]))
+    ;
+    $("#mask_letter_red_high_h").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_high_h}
+    }]))
+    ;
+    $("#mask_letter_red_shift_l").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_shift_l}
+    }]))
+    ;
+    $("#mask_letter_red_shift_h").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_shift_h}
+    }]))
+    ;
+    $("#mask_letter_red_low_full").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_low_full}
+    }]))
+    ;
+    $("#mask_letter_red_high_full").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_high_full}
+    }]))
+    ;
+    $("#color_black").spectrum("set", bgr2rgb([{{color_black}
+    }]))
+    ;
+    $("#color_black_low").spectrum("set", bgr2rgb([{{color_black_low}
+    }]))
+    ;
+    $("#color_black_high").spectrum("set", bgr2rgb([{{color_black_high}
+    }]))
+    ;
+    $("#color_white").spectrum("set", bgr2rgb([{{color_white}
+    }]))
+    ;
+    $("#color_red").spectrum("set", bgr2rgb([{{color_red}
+    }]))
+    ;
+    $("#color_green").spectrum("set", bgr2rgb([{{color_green}
+    }]))
+    ;
+    $("#color_blue").spectrum("set", bgr2rgb([{{color_blue}
+    }]))
+    ;
+    $("#color_cyan").spectrum("set", bgr2rgb([{{color_cyan}
+    }]))
+    ;
+    $("#color_magenta").spectrum("set", bgr2rgb([{{color_magenta}
+    }]))
+    ;
+    $("#color_yellow").spectrum("set", bgr2rgb([{{color_yellow}
+    }]))
+    ;
+    $("#color_gray").spectrum("set", bgr2rgb([{{color_gray}
+    }]))
+    ;
+    $("#color_orange").spectrum("set", bgr2rgb([{{color_orange}
+    }]))
+    ;
+    $("#accordion").accordion({heightStyle: "content"});
+    $(":button").button();
+    $("#tabs").tabs();
+
+    // Convert HSV color values from Config.ini to HSV color values for jQuery Spectrum control
+    // Ex.: HSV color value from Config.ini: 0, 69, 61 -> HSV color value for jQuery Spectrum control: hsv(120, 76%, 80%)
+    //                                       0-180, 0-255, 0-255 -> hsv(0-360, 0-100%, 0-100%)
+    function py_hsv2js_hsv(inputcolor) {
+        inputcolor[0] = inputcolor[0] * 2;
+        inputcolor[1] = Math.round(100 * inputcolor[1] / 255);
+        inputcolor[2] = Math.round(100 * inputcolor[2] / 255);
+        return 'hsv(' + inputcolor[0] + ', ' + inputcolor[1] + '%, ' + inputcolor[2] + '%)';
+    }
+
+    // Convert HSV color values from jQuery Spectrum control to HSV color values for Config.ini
+    // Ex.: HSV color value from jQuery Spectrum control: hsv(120, 76%, 80%) -> HSV color value for Config.ini: 0, 69, 61
+    //                                                    hsv(0-360, 0-100%, 0-100%) -> 0-180, 0-255, 0-255
+    function js_hsv2py_hsv(inputcolor) {
+        inputcolor = inputcolor.substring(4, inputcolor.length - 1);
+        inputcolor = inputcolor.split(', ');
+        inputcolor[0] = inputcolor[0] / 2;
+        inputcolor[1] = inputcolor[1].substring(0, inputcolor[1].length - 1);
+        inputcolor[1] = Math.round(255 * inputcolor[1] / 100);
+        inputcolor[2] = inputcolor[2].substring(0, inputcolor[2].length - 1);
+        inputcolor[2] = Math.round(255 * inputcolor[2] / 100);
+        return inputcolor[0] + ', ' + inputcolor[1] + ', ' + inputcolor[2];
+    }
+
+    // Convert BGR color value from Config.ini to RGB color value for jQuery Spectrum control
+    // Ex.: BGR color value from Config.ini: 255, 0, 0 -> RGB color value for jQuery Spectrum control 0, 0, 255
+    //                                       0-255, 0-255, 0-255 -> 0-255, 0-255, 0-255
+    function bgr2rgb(inputcolor) {
+        inputcolor = inputcolor.reverse();
+        return 'rgb(' + inputcolor[0] + ', ' + inputcolor[1] + ', ' + inputcolor[2] + ')';
+    }
+
+    // Convert RGB color value from jQuery Spectrum control to BGR color value for Config.ini
+    // Ex.: RGB color value from jQuery Spectrum control: 255, 0, 0 -> BGR color value for Config.ini 0, 0, 255
+    //                                                    0-255, 0-255, 0-255 -> 0-255, 0-255, 0-255
+    function rgb2bgr(inputcolor) {
+        inputcolor = inputcolor.substring(4, inputcolor.length - 1);
+        inputcolor = inputcolor.split(', ');
+        inputcolor = inputcolor.reverse();
+        return inputcolor[0] + ', ' + inputcolor[1] + ', ' + inputcolor[2];
+    }
+
+    // Function for saving and load current active tab when changing site
+    var index = 'qpsstats-active-tab';
+    //  Define friendly data store name
+    var dataStore = window.sessionStorage;
+    var oldIndex = 0;
+    //  Start magic!
+    try {
+        // getter: Fetch previous value
+        oldIndex = dataStore.getItem(index);
+    } catch (e) {
+    }
+
+    $("#tabs").tabs({
+        active: oldIndex,
+        activate: function (event, ui) {
+            //  Get future value
+            var newIndex = ui.newTab.parent().children().index(ui.newTab);
+            //  Set future value
+            try {
+                dataStore.setItem(index, newIndex);
+            } catch (e) {
+            }
+        }
+    });
+
+    // Variable to hold request
+    var request;
+
+    // Function when Save Button is clicked
+    $("#save_form").submit(function (event) {
+        // Prevent default posting of form - put here to work in case of errors
+        event.preventDefault();
+
+        // Abort any pending request
+        if (request) {
+            request.abort();
+        }
+
+        // Get all values from the html controls
+        var mask_trafficlight_red_low_l = $("#mask_trafficlight_red_low_l").val();
+        var mask_trafficlight_red_low_h = $("#mask_trafficlight_red_low_h").val();
+        var mask_trafficlight_red_high_l = $("#mask_trafficlight_red_high_l").val();
+        var mask_trafficlight_red_high_h = $("#mask_trafficlight_red_high_h").val();
+        var mask_trafficlight_green_l = $("#mask_trafficlight_green_l").val();
+        var mask_trafficlight_green_h = $("#mask_trafficlight_green_h").val();
+        var mask_letter_red_low_l = $("#mask_letter_red_low_l").val();
+        var mask_letter_red_low_h = $("#mask_letter_red_low_h").val();
+        var mask_letter_red_high_l = $("#mask_letter_red_high_l").val();
+        var mask_letter_red_high_h = $("#mask_letter_red_high_h").val();
+        var mask_letter_red_shift_l = $("#mask_letter_red_shift_l").val();
+        var mask_letter_red_shift_h = $("#mask_letter_red_shift_h").val();
+        var mask_letter_red_low_full = $("#mask_letter_red_low_full").val();
+        var mask_letter_red_high_full = $("#mask_letter_red_high_full").val();
+        var color_black = $("#color_black").val();
+        var color_black_low = $("#color_black_low").val();
+        var color_black_high = $("#color_black_high").val();
+        var color_white = $("#color_white").val();
+        var color_red = $("#color_red").val();
+        var color_green = $("#color_green").val();
+        var color_blue = $("#color_blue").val();
+        var color_cyan = $("#color_cyan").val();
+        var color_magenta = $("#color_magenta").val();
+        var color_yellow = $("#color_yellow").val();
+        var color_gray = $("#color_gray").val();
+        var color_orange = $("#color_orange").val();
+
+        // Set html control values to Config.ini format for sending them with serialize
+        $("#mask_trafficlight_red_low_l").val(js_hsv2py_hsv(mask_trafficlight_red_low_l));
+        $("#mask_trafficlight_red_low_h").val(js_hsv2py_hsv(mask_trafficlight_red_low_h));
+        $("#mask_trafficlight_red_high_l").val(js_hsv2py_hsv(mask_trafficlight_red_high_l));
+        $("#mask_trafficlight_red_high_h").val(js_hsv2py_hsv(mask_trafficlight_red_high_h));
+        $("#mask_trafficlight_green_l").val(js_hsv2py_hsv(mask_trafficlight_green_l));
+        $("#mask_trafficlight_green_h").val(js_hsv2py_hsv(mask_trafficlight_green_h));
+        $("#mask_letter_red_low_l").val(js_hsv2py_hsv(mask_letter_red_low_l));
+        $("#mask_letter_red_low_h").val(js_hsv2py_hsv(mask_letter_red_low_h));
+        $("#mask_letter_red_high_l").val(js_hsv2py_hsv(mask_letter_red_high_l));
+        $("#mask_letter_red_high_h").val(js_hsv2py_hsv(mask_letter_red_high_h));
+        $("#mask_letter_red_shift_l").val(js_hsv2py_hsv(mask_letter_red_shift_l));
+        $("#mask_letter_red_shift_h").val(js_hsv2py_hsv(mask_letter_red_shift_h));
+        $("#mask_letter_red_low_full").val(js_hsv2py_hsv(mask_letter_red_low_full));
+        $("#mask_letter_red_high_full").val(js_hsv2py_hsv(mask_letter_red_high_full));
+        $("#color_black").val(rgb2bgr(color_black));
+        $("#color_black_low").val(rgb2bgr(color_black_low));
+        $("#color_black_high").val(rgb2bgr(color_black_high));
+        $("#color_white").val(rgb2bgr(color_white));
+        $("#color_red").val(rgb2bgr(color_red));
+        $("#color_green").val(rgb2bgr(color_green));
+        $("#color_blue").val(rgb2bgr(color_blue));
+        $("#color_cyan").val(rgb2bgr(color_cyan));
+        $("#color_magenta").val(rgb2bgr(color_magenta));
+        $("#color_yellow").val(rgb2bgr(color_yellow));
+        $("#color_gray").val(rgb2bgr(color_gray));
+        $("#color_orange").val(rgb2bgr(color_orange));
+
+        // setup some local variables
+        var $form = $(this);
+
+        // Let's select and cache all the fields
+        var $inputs = $form.find("input, select, button, textarea");
+
+        // Serialize the data in the form
+        var serializedData = $form.serialize();
+
+        // Let's disable the inputs for the duration of the Ajax request.
+        // Note: we disable elements AFTER the form data has been serialized.
+        // Disabled form elements will not be serialized.
+        $inputs.prop("disabled", true);
+
+        // Fire off the request to /form.php
+        request = $.ajax({
+            url: "/save",
+            type: "post",
+            data: serializedData
+        });
+
+        // Callback handler that will be called on success
+        request.done(function (response, textStatus, jqXHR) {
+            // Log a message to the console
+            $.toast(response);
+        });
+
+        // Callback handler that will be called on failure
+        request.fail(function (jqXHR, textStatus, errorThrown) {
+            // Log the error to the console
+            $.toast("The following error occurred: " + textStatus, errorThrown);
+        });
+
+        // Callback handler that will be called regardless
+        // if the request failed or succeeded
+        request.always(function () {
+            // Reenable the inputs
+            $inputs.prop("disabled", false);
+        });
+
+        // Set html control values to jQuery Spectrum understandable format after sending them with serialize
+        $("#mask_trafficlight_red_low_l").val(mask_trafficlight_red_low_l);
+        $("#mask_trafficlight_red_low_h").val(mask_trafficlight_red_low_h);
+        $("#mask_trafficlight_red_high_l").val(mask_trafficlight_red_high_l);
+        $("#mask_trafficlight_red_high_h").val(mask_trafficlight_red_high_h);
+        $("#mask_trafficlight_green_l").val(mask_trafficlight_green_l);
+        $("#mask_trafficlight_green_h").val(mask_trafficlight_green_h);
+        $("#mask_letter_red_low_l").val(mask_letter_red_low_l);
+        $("#mask_letter_red_low_h").val(mask_letter_red_low_h);
+        $("#mask_letter_red_high_l").val(mask_letter_red_high_l);
+        $("#mask_letter_red_high_h").val(mask_letter_red_high_h);
+        $("#mask_letter_red_shift_l").val(mask_letter_red_shift_l);
+        $("#mask_letter_red_shift_h").val(mask_letter_red_shift_h);
+        $("#mask_letter_red_low_full").val(mask_letter_red_low_full);
+        $("#mask_letter_red_high_full").val(mask_letter_red_high_full);
+        $("#color_black").val(color_black);
+        $("#color_black_low").val(color_black_low);
+        $("#color_black_high").val(color_black_high);
+        $("#color_white").val(color_white);
+        $("#color_red").val(color_red);
+        $("#color_green").val(color_green);
+        $("#color_blue").val(color_blue);
+        $("#color_cyan").val(color_cyan);
+        $("#color_magenta").val(color_magenta);
+        $("#color_yellow").val(color_yellow);
+        $("#color_gray").val(color_gray);
+        $("#color_orange").val(color_orange);
+    });
+</script>
+</body>
+</html>
