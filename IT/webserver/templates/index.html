@@ -15,7 +15,7 @@
 
     }
 </style>
-<h1>Autonomes Fahrzeug - PREN 2 - Team 37</h1>
+<h1>Control-Interface : Autonomes Fahrzeug - PREN 2 - Team 37</h1>
 <div id="tabs">
     <ul>
         <li><a href="#tabs-1">Images</a></li>
@@ -300,6 +300,10 @@
                 <td><input type="checkbox" name="debug_output_bgwhite" value="debug_output_bgwhite" {{
                            debug_output_bgwhite }}></td>
             </tr>
+            <tr>
+                <td>Path to logging.ini:</td>
+                <td><input type="text" name="debug_logging_config" value="{{ debug_logging_config }}"></td>
+            </tr>
         </table>
     </div>
     <h3>Camera</h3>
@@ -434,84 +438,32 @@ Save</button>
     $("#settings_loglevel").spinner('option', 'max', '40');
     $(".colorhsv").spectrum({preferredFormat: "hsv", showInput: true});
     $(".colorbgr").spectrum({preferredFormat: "rgb", showInput: true});
-    $("#mask_trafficlight_red_low_l").spectrum("set", py_hsv2js_hsv([{{mask_trafficlight_red_low_l}
-    }]))
-    ;
-    $("#mask_trafficlight_red_low_h").spectrum("set", py_hsv2js_hsv([{{mask_trafficlight_red_low_h}
-    }]))
-    ;
-    $("#mask_trafficlight_red_high_l").spectrum("set", py_hsv2js_hsv([{{mask_trafficlight_red_high_l}
-    }]))
-    ;
-    $("#mask_trafficlight_red_high_h").spectrum("set", py_hsv2js_hsv([{{mask_trafficlight_red_high_h}
-    }]))
-    ;
-    $("#mask_trafficlight_green_l").spectrum("set", py_hsv2js_hsv([{{mask_trafficlight_green_l}
-    }]))
-    ;
-    $("#mask_trafficlight_green_h").spectrum("set", py_hsv2js_hsv([{{mask_trafficlight_green_h}
-    }]))
-    ;
-    $("#mask_letter_red_low_l").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_low_l}
-    }]))
-    ;
-    $("#mask_letter_red_low_h").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_low_h}
-    }]))
-    ;
-    $("#mask_letter_red_high_l").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_high_l}
-    }]))
-    ;
-    $("#mask_letter_red_high_h").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_high_h}
-    }]))
-    ;
-    $("#mask_letter_red_shift_l").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_shift_l}
-    }]))
-    ;
-    $("#mask_letter_red_shift_h").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_shift_h}
-    }]))
-    ;
-    $("#mask_letter_red_low_full").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_low_full}
-    }]))
-    ;
-    $("#mask_letter_red_high_full").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_high_full}
-    }]))
-    ;
-    $("#color_black").spectrum("set", bgr2rgb([{{color_black}
-    }]))
-    ;
-    $("#color_black_low").spectrum("set", bgr2rgb([{{color_black_low}
-    }]))
-    ;
-    $("#color_black_high").spectrum("set", bgr2rgb([{{color_black_high}
-    }]))
-    ;
-    $("#color_white").spectrum("set", bgr2rgb([{{color_white}
-    }]))
-    ;
-    $("#color_red").spectrum("set", bgr2rgb([{{color_red}
-    }]))
-    ;
-    $("#color_green").spectrum("set", bgr2rgb([{{color_green}
-    }]))
-    ;
-    $("#color_blue").spectrum("set", bgr2rgb([{{color_blue}
-    }]))
-    ;
-    $("#color_cyan").spectrum("set", bgr2rgb([{{color_cyan}
-    }]))
-    ;
-    $("#color_magenta").spectrum("set", bgr2rgb([{{color_magenta}
-    }]))
-    ;
-    $("#color_yellow").spectrum("set", bgr2rgb([{{color_yellow}
-    }]))
-    ;
-    $("#color_gray").spectrum("set", bgr2rgb([{{color_gray}
-    }]))
-    ;
-    $("#color_orange").spectrum("set", bgr2rgb([{{color_orange}
-    }]))
-    ;
+    $("#mask_trafficlight_red_low_l").spectrum("set", py_hsv2js_hsv([{{mask_trafficlight_red_low_l}}]));
+    $("#mask_trafficlight_red_low_h").spectrum("set", py_hsv2js_hsv([{{mask_trafficlight_red_low_h}}]));
+    $("#mask_trafficlight_red_high_l").spectrum("set", py_hsv2js_hsv([{{mask_trafficlight_red_high_l}}]));
+    $("#mask_trafficlight_red_high_h").spectrum("set", py_hsv2js_hsv([{{mask_trafficlight_red_high_h}}]));
+    $("#mask_trafficlight_green_l").spectrum("set", py_hsv2js_hsv([{{mask_trafficlight_green_l}}]));
+    $("#mask_trafficlight_green_h").spectrum("set", py_hsv2js_hsv([{{mask_trafficlight_green_h}}]));
+    $("#mask_letter_red_low_l").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_low_l}}]));
+    $("#mask_letter_red_low_h").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_low_h}}]));
+    $("#mask_letter_red_high_l").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_high_l}}]));
+    $("#mask_letter_red_high_h").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_high_h}}]));
+    $("#mask_letter_red_shift_l").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_shift_l}}]));
+    $("#mask_letter_red_shift_h").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_shift_h}}]));
+    $("#mask_letter_red_low_full").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_low_full}}]));
+    $("#mask_letter_red_high_full").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_high_full}}]));
+    $("#color_black").spectrum("set", bgr2rgb([{{color_black}}]));
+    $("#color_black_low").spectrum("set", bgr2rgb([{{color_black_low}}]));
+    $("#color_black_high").spectrum("set", bgr2rgb([{{color_black_high}}]));
+    $("#color_white").spectrum("set", bgr2rgb([{{color_white}}]));
+    $("#color_red").spectrum("set", bgr2rgb([{{color_red}}]));
+    $("#color_green").spectrum("set", bgr2rgb([{{color_green}}]));
+    $("#color_blue").spectrum("set", bgr2rgb([{{color_blue}}]));
+    $("#color_cyan").spectrum("set", bgr2rgb([{{color_cyan}}]));
+    $("#color_magenta").spectrum("set", bgr2rgb([{{color_magenta}}]));
+    $("#color_yellow").spectrum("set", bgr2rgb([{{color_yellow}}]));
+    $("#color_gray").spectrum("set", bgr2rgb([{{color_gray}}]));
+    $("#color_orange").spectrum("set", bgr2rgb([{{color_orange}}]));
     $("#accordion").accordion({heightStyle: "content"});
     $(":button").button();
     $("#tabs").tabs();
