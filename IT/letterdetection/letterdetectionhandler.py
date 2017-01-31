@@ -17,46 +17,41 @@
 import cv2
 import numpy as np
 import time
-import configparser
-import os
-import sys
+import logging
+import common.config.confighandler as cfg
 
+from logging.config import fileConfig
 from picamera.array import PiRGBArray
 from picamera import PiCamera
-from ..common.logging.fpshelper import FPSHelper
-from ..common.logging.loghelper import LogHelper
+from common.logging.fpshelper import FPSHelper
 from skimage.morphology import skeletonize
 
 
 class LetterDetectionHandler(object):
-    def str2bool(v):
-        return v.lower() in ("yes", "Yes", "YES", "true", "True", "TRUE", "1", "t")
 
-    LOG = LogHelper()
+    # Initialize Logger
+    fileConfig(cfg.get_logging_config_fullpath())
+    __log = logging.getLogger()
+
     FPS = FPSHelper()
 
-    ROOT_DIR = os.path.dirname(sys.modules['__main__'].__file__)
-
-    config = configparser.ConfigParser()
-    config.read('/home/pi/Desktop/PREN/common/config/config.ini')
-
-    red_low_full = np.array([int(c) for c in config['mask_letter']['red_low_full'].split(',')])
-    red_high_full = np.array([int(c) for c in config['mask_letter']['red_high_full'].split(',')])
-    red_shift_l = np.array([int(c) for c in config['mask_letter']['red_shift_l'].split(',')])
-    red_shift_h = np.array([int(c) for c in config['mask_letter']['red_shift_h'].split(',')])
-    black_low = np.array([int(c) for c in config['color']['black_low'].split(',')])
-    black_high = np.array([int(c) for c in config['color']['black_high'].split(',')])
-    kernel_size = int(config['filter']['kernel_size'])
-    hsv_shift = int(config['filter']['hsv_shift'])
-    color_yellow = np.array([int(c) for c in config['color']['yellow'].split(',')])
-    color_red = np.array([int(c) for c in config['color']['red'].split(',')])
-    color_green = np.array([int(c) for c in config['color']['green'].split(',')])
-    camera_width = int(config['camera']['width'])
-    camera_height = int(config['camera']['height'])
-    camera_framerate = int(config['camera']['framerate'])
-    camera_iso = int(config['camera']['iso'])
-    camera_awb = config['camera']['awb']
-    tolerance_I_gap = int(config['letter']['tolerance_I_gap'])
+    red_low_full = cfg.get_maskletter_red_low_full_splited()
+    red_high_full = cfg.get_maskletter_red_high_full_splited()
+    red_shift_l = cfg.get_maskletter_red_shift_l_splited()
+    red_shift_h = cfg.get_maskletter_red_shift_h_splited()
+    black_low = cfg.get_color_black_low_splited()
+    black_high = cfg.get_color_black_high_splited()
+    kernel_size = cfg.get_filter_kernel_size()
+    hsv_shift = cfg.get_filter_hsv_shift()
+    color_yellow = cfg.get_color_yellow_splited()
+    color_red = cfg.get_color_red_splited()
+    color_green = cfg.get_color_green_splited()
+    camera_width = cfg.get_camera_width()
+    camera_height = cfg.get_camera_height()
+    camera_framerate = cfg.get_camera_framerate()
+    camera_iso = cfg.get_camera_iso()
+    camera_awb = cfg.get_camera_awb()
+    tolerance_I_gap = cfg.get_letter_tolerance_i_gap()
 
     def imgcoloredmask_red_full(_self, img):
         """
@@ -87,14 +82,14 @@ class LetterDetectionHandler(object):
         _self.FPS.start()
         img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
         _self.FPS.stop()
-        _self.LOG.debug("processing time hsv: " + str(_self.FPS.elapsedtime_ms()) + " ms")
+        _self.__log.debug("processing time hsv: " + str(_self.FPS.elapsedtime_ms()) + " ms")
 
         # shift Hue Channel to remove issue on transition from value 180 to 0
         _self.FPS.start()
         shiftVal = _self.hsv_shift
         img_hsv[..., 0] = (img_hsv[..., 0] + shiftVal) % 180
         _self.FPS.stop()
-        _self.LOG.debug("processing time shift: " + str(_self.FPS.elapsedtime_ms()) + " ms")
+        _self.__log.debug("processing time shift: " + str(_self.FPS.elapsedtime_ms()) + " ms")
 
         lower_red = np.array(_self.red_shift_l)
         upper_red = np.array(_self.red_shift_h)
@@ -103,13 +98,13 @@ class LetterDetectionHandler(object):
         _self.FPS.start()
         mask = cv2.inRange(img_hsv, lower_red, upper_red)
         _self.FPS.stop()
-        _self.LOG.debug("processing time inRange: " + str(_self.FPS.elapsedtime_ms()) + " ms")
+        _self.__log.debug("processing time inRange: " + str(_self.FPS.elapsedtime_ms()) + " ms")
 
         # apply mask on image
         _self.FPS.start()
         output_img = cv2.bitwise_and(img, img, mask=mask)
         _self.FPS.stop()
-        _self.LOG.debug("processing time masking: " + str(_self.FPS.elapsedtime_ms()) + " ms")
+        _self.__log.debug("processing time masking: " + str(_self.FPS.elapsedtime_ms()) + " ms")
 
         return output_img
 
@@ -182,7 +177,7 @@ class LetterDetectionHandler(object):
         if len(edges) == 4:
             # reorder edges to (top left, top right, bottom right, bottom left)
             edges = [edges[i] for i in [0, 2, 3, 1]]
-            _self.LOG.debug("edges: " + str(edges))
+            _self.__log.debug("edges: " + str(edges))
             return img_org, edges
         else:
             # not 4 edges found
@@ -254,16 +249,15 @@ class LetterDetectionHandler(object):
         :return: PIRGBArray for using as source for camera capturing
         """
         global camera
-        _self.LOG.debug("Camera: Init started")
+        _self.__log.debug("Init started")
         camera = PiCamera()
-        _self.LOG.debug(
-            "Camera: Set resolution to " + str(_self.camera_width) + "x" + str(_self.camera_height))
+        _self.__log.debug("Set resolution to " + str(_self.camera_width) + "x" + str(_self.camera_height))
         camera.resolution = (_self.camera_width, _self.camera_height)
-        _self.LOG.debug("Camera: Set framerate to " + str(_self.camera_framerate))
+        _self.__log.debug("Set framerate to " + str(_self.camera_framerate))
         camera.framerate = _self.camera_framerate
-        _self.LOG.debug("Camera: Set ISO to " + str(_self.camera_iso))
+        _self.__log.debug("Set ISO to " + str(_self.camera_iso))
         camera.iso = _self.camera_iso
-        _self.LOG.debug("Camera: Initialize AWB, calculating...")
+        _self.__log.debug("Initialize AWB, calculating...")
         time.sleep(2)
         if _self.camera_awb == 'fixed':
             camera.shutter_speed = camera.exposure_speed
@@ -273,7 +267,7 @@ class LetterDetectionHandler(object):
             camera.awb_gains = gain
         rawCapture = PiRGBArray(camera, size=(_self.camera_width, _self.camera_height))
         time.sleep(0.1)
-        _self.LOG.debug("Camera: Init finished")
+        _self.__log.debug("Init finished")
         return rawCapture
 
     def analyzeRomanLetter(_self, img, roi):
@@ -312,7 +306,7 @@ class LetterDetectionHandler(object):
 
         lines = cv2.HoughLines(edges, 1, np.pi / 180, 15, np.array([]), 0, 0)
         _self.FPS.stop()
-        _self.LOG.debug("processing time HoughLines: " + str(_self.FPS.elapsedtime_ms()) + " ms")
+        _self.__log.debug("processing time HoughLines: " + str(_self.FPS.elapsedtime_ms()) + " ms")
 
         # if lines found, enumerate number based on its angle
         if lines is not None:
@@ -334,14 +328,14 @@ class LetterDetectionHandler(object):
                 line_pt1 = (int(x0 + 1000 * (-b)), int(y0 + 1000 * a))
                 line_pt2 = (int(x0 - 1000 * (-b)), int(y0 - 1000 * a))
 
-                _self.LOG.info("-----")
-                _self.LOG.info("linept1: " + str(line_pt1))
-                _self.LOG.info("linept2: " + str(line_pt2))
-                _self.LOG.info("deg:" + str(deg))
+                _self.__log.debug("-----")
+                _self.__log.debug("linept1: " + str(line_pt1))
+                _self.__log.debug("linept2: " + str(line_pt2))
+                _self.__log.debug("deg:" + str(deg))
 
                 # detect an I
                 if (0.0 < deg < 1.0) or (178.0 < deg < 180.0):
-                    _self.LOG.info("I - line found with deg: " + str(deg))
+                    _self.__log.info("I - line found with deg: " + str(deg))
 
                     # get median x-value of both points
                     x = (int(x0 + 1000 * (-b)) + int(x0 - 1000 * (-b))) / 2
@@ -354,7 +348,7 @@ class LetterDetectionHandler(object):
                     x2 = int(x0 - 1000 * (-b))
                     y2 = int(y0 - 1000 * a)
                     """
-                    _self.LOG.info(
+                    _self.__log.debug(
                         "pos line_pt1: " + str(line_pt1) + " vertical line found with deg: " + str(
                             deg) + ", theta: " + str(
                             theta))
@@ -362,19 +356,19 @@ class LetterDetectionHandler(object):
 
                 # right hand side of V
                 elif 10.0 < deg < 20.0:
-                    _self.LOG.info("V / - line found with deg: " + str(deg))
+                    _self.__log.info("V / - line found with deg: " + str(deg))
                     cv2.line(img_gray_mark, line_pt1, line_pt2, (0, 0, 255), 1, cv2.LINE_AA)
                     v_right_found = True
                     continue
 
                 # left hand side of V
                 elif 150.0 < deg < 170.0:
-                    _self.LOG.info("V \ - line found with deg: " + str(deg))
+                    _self.__log.info("V \ - line found with deg: " + str(deg))
                     cv2.line(img_gray_mark, line_pt1, line_pt2, (0, 255, 0), 1, cv2.LINE_AA)
                     v_left_found = True
                     continue
                 else:
-                    _self.LOG.debug("line with deg: " + str(deg) + "out of allowed range")
+                    _self.__log.debug("line with deg: " + str(deg) + "out of allowed range")
 
             # eliminate redundant detected I
             if len(all_i) != 0:
@@ -395,25 +389,25 @@ class LetterDetectionHandler(object):
                     all_i_count += 1
                     # i_count += 1
                 i_count = len(nondup_i)
-                _self.LOG.info("all I: " + str(all_i))
-                _self.LOG.info("all nondup I: " + str(nondup_i) + "icount: " + str(i_count))
+                _self.__log.debug("all I: " + str(all_i))
+                _self.__log.debug("all nondup I: " + str(nondup_i) + "icount: " + str(i_count))
 
             # enumerate the number based on detected lines
             if v_left_found and v_right_found:
                 number = 5
                 if i_count == 1:
                     number = 4
-                    _self.LOG.info("detected number: " + str(number))
+                    _self.__log.info("detected number: " + str(number))
             elif 0 < i_count < 4:
                 number = i_count
-                _self.LOG.info("detected number: " + str(number))
+                _self.__log.info("detected number: " + str(number))
             else:
-                _self.LOG.error("not able to enumerate number!!")
+                _self.__log.error("not able to enumerate number!!")
                 # TODO: Error handling if number not detected e.g. other algorithm to detect number
 
         else:
-            _self.LOG.warn("no lines detected on image")
-            _self.LOG.info("--")
+            _self.__log.warning("no lines detected on image")
+        _self.__log.info("--")
 
         return img_gray_mark
         # return number
@@ -421,25 +415,25 @@ class LetterDetectionHandler(object):
     def __init__(_self):
         font = cv2.FONT_HERSHEY_COMPLEX_SMALL
 
-        _self.LOG.info("Main: Program started")
-        _self.LOG.info("Main: Starting camera init")
+        _self.__log.info("Program started")
+        _self.__log.info("Starting camera init")
         rawCapture = _self.initCamera()
-        _self.LOG.info("Main: Start capturing")
+        _self.__log.info("Start capturing")
         for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
             img = frame.array
             _self.FPS.start()
 
             redmask = _self.imgcoloredmask_red_shifted(img)
             cv2.imshow("redmask", redmask)
-            _self.LOG.debug("Frame: red mask done")
+            _self.__log.debug("Frame: red mask done")
             imgmarked, edges = _self.detectEdges(redmask, img)
-            _self.LOG.debug("Frame: edges for letter range detection done")
+            _self.__log.debug("Frame: edges for letter range detection done")
             if edges != 0:
-                _self.LOG.debug("Frame: correct perspective of letter range")
+                _self.__log.debug("Frame: correct perspective of letter range")
                 correctedimg = _self.correctPerspectiveView(img, edges)
                 numberimg = _self.analyzeRomanLetter(img, correctedimg)
                 _self.FPS.stop()
-                _self.LOG.debug("FPS: {0:.2f}".format(_self.FPS.fps()) + " ms: {0:.2f}\n".format(
+                _self.__log.debug("FPS: {0:.2f}".format(_self.FPS.fps()) + " ms: {0:.2f}\n".format(
                     _self.FPS.elapsedtime_ms()))
                 cv2.putText(correctedimg, "FPS: {0:.2f}".format(_self.FPS.fps()), (5, 10), font, 0.5,
                             (0, 255, 0),
@@ -453,9 +447,9 @@ class LetterDetectionHandler(object):
                 cv2.imshow("Letter", numberimg)
                 cv2.imshow("Video", imgmarked)
             else:
-                _self.LOG.debug("Frame: no letter range detected")
+                _self.__log.debug("Frame: no letter range detected")
                 _self.FPS.stop()
-                _self.LOG.debug("FPS: {0:.2f}".format(_self.FPS.fps()) + " ms: {0:.2f}\n".format(
+                _self.__log.debug("FPS: {0:.2f}".format(_self.FPS.fps()) + " ms: {0:.2f}\n".format(
                     _self.FPS.elapsedtime_ms()))
                 cv2.putText(img, "FPS: {0:.2f}".format(_self.FPS.fps()), (550, 460), font, 0.7, (0, 255, 0),
                             1,
@@ -464,7 +458,7 @@ class LetterDetectionHandler(object):
             key = cv2.waitKey(1) & 0xFF
             rawCapture.truncate(0)
             if key == ord("q"):
-                _self.LOG.info("Main: Finished capturing")
+                _self.__log.info("Finished capturing")
                 break
         cv2.destroyAllWindows()
 
