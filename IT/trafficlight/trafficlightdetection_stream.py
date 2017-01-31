@@ -16,9 +16,9 @@ import configparser
 import os
 import sys
 
-from ..trafficlight.trafficlightdetectionhandler import TrafficLightDetection
-from ..common.logging.fpshelper import FPSHelper
-from ..common.logging.loghelper import LogHelper
+from .trafficlightdetectionhandler import TrafficLightDetection
+from common.logging.loghelper import LogHelper
+from common.logging.fpshelper import FPSHelper
 
 
 class TrafficLightDetectionStream(object):
@@ -31,7 +31,7 @@ class TrafficLightDetectionStream(object):
     FPS = FPSHelper()
 
     # Set root dir for project (needed for example the Config.ini)
-    ROOT_DIR = os.path.dirname(sys.modules['__main__'].__file__)
+    ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
     # Initialize ConfigParser and read Settings
     config = configparser.ConfigParser()

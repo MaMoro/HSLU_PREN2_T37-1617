@@ -16,13 +16,14 @@ import threading
 import configparser
 import time
 import os
-import sys
 import picamera
+import logging
 
-from ..trafficlight.trafficlightdetectionhandler import TrafficLightDetection
-from ..common.logging.fpshelper import FPSHelper
-from ..common.logging.loghelper import LogHelper
 from picamera.array import PiRGBArray
+from .trafficlightdetectionhandler import TrafficLightDetection
+from common.logging.loghelper import LogHelper
+from common.logging.fpshelper import FPSHelper
+
 
 
 class TrafficLightDetectionPi(object):
@@ -31,11 +32,12 @@ class TrafficLightDetectionPi(object):
         return v.lower() in ("yes", "Yes", "YES", "true", "True", "TRUE", "1", "t")
 
     # Initialize Logger and FPS Helpers
+    __log = logging.getLogger(__name__).basicConfig(format='%(asctime)s: %(levelname)s: %(message)s', level=logging.DEBUG)
     LOG = LogHelper()
     FPS = FPSHelper()
 
     # Set root dir for project (needed for example the Config.ini)
-    ROOT_DIR = os.path.dirname(sys.modules['__main__'].__file__)
+    ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
     # Initialize ConfigParser and read Settings
     config = configparser.ConfigParser()
@@ -98,7 +100,7 @@ class TrafficLightDetectionPi(object):
                 image = frame.array
                 image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
                 tld = TrafficLightDetection()
-                data = tld.detect_trafficlight(image_rgb)
+                data = tld.detect_trafficlight(image)
                 _, jpeg = cv2.imencode('.jpg', data)
                 cls.frame = jpeg.tobytes()
                 rawCapture.truncate(0)

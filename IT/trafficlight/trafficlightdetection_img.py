@@ -15,13 +15,12 @@ import cv2
 import io
 import configparser
 import os
-import sys
 
 from time import time
-from ..trafficlight.trafficlightdetectionhandler import TrafficLightDetection
-from ..common.logging.fpshelper import FPSHelper
-from ..common.logging.loghelper import LogHelper
 from PIL import Image
+from .trafficlightdetectionhandler import TrafficLightDetection
+from common.logging.loghelper import LogHelper
+from common.logging.fpshelper import FPSHelper
 
 
 class TrafficLightDetectionImg(object):
@@ -34,7 +33,7 @@ class TrafficLightDetectionImg(object):
     FPS = FPSHelper()
 
     # Set root dir for project (needed for example the Config.ini)
-    ROOT_DIR = os.path.dirname(sys.modules['__main__'].__file__)
+    ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
     # Initialize ConfigParser and read Settings
     config = configparser.ConfigParser()

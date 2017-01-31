@@ -3,7 +3,7 @@
 # description     :This program holds the main logic for the TrafficLightDetection
 # author          :Fabrizio Rohrbach
 # date            :10.11.2016
-# version         :0.1
+# version         :0.2
 # usage           :python trafficlightdetectionhandler.py
 # notes           :
 # python_version  :3.5.2
@@ -16,28 +16,27 @@ import cv2
 import datetime
 import configparser
 import os
-import sys
 
-from ..common.logging.fpshelper import FPSHelper
-from ..common.logging.loghelper import LogHelper
 from timeit import default_timer as timer
+from common.logging.fpshelper import FPSHelper
+from common.logging.loghelper import LogHelper
 
 
 class TrafficLightDetection(object):
     # Function for converting string to boolean (for example if in Config.ini)
     def str2bool(v):
-        return v.lower() in ("yes", "Yes", "YES", "true", "True", "TRUE", "1", "t")
+        return v.lower() in ("True", "TRUE", "False", "FALSE")
 
     # Initialize Logger and FPS Helpers
     LOG = LogHelper()
     FPS = FPSHelper()
 
     # Set root dir for project (needed for example the Config.ini)
-    ROOT_DIR = os.path.dirname(sys.modules['__main__'].__file__)
+    ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
     # Initialize ConfigParser and read Settings
     config = configparser.ConfigParser()
-    config.read(ROOT_DIR + '/Core/Config.ini')
+    config.read(ROOT_DIR + '/common/config/config.ini')
 
     # Load needed settings from Config.ini into variables (so you dont have to access the ini file each time)
     output_red = str2bool(
