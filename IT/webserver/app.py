@@ -38,6 +38,7 @@ images_preview_running = False
 video_preview_running = False
 stream_preview_running = False
 pi_preview_running = False
+pi_thread = None
 
 
 # http://localhost:5000/
@@ -52,6 +53,7 @@ def index():
     global video_preview_running
     global stream_preview_running
     global pi_preview_running
+    global pi_thread
     images_running = False
     video_running = False
     stream_running = False
@@ -60,6 +62,7 @@ def index():
     video_preview_running = False
     stream_preview_running = False
     pi_preview_running = False
+    pi_thread = None
 
     return __call_render_template()
 
@@ -162,8 +165,11 @@ def start_pi():
 def stop_pi():
     global pi_running
     global pi_preview_running
+    global pi_thread
     pi_running = False
     pi_preview_running = False
+    if pi_thread is not None:
+        pi_thread.stop()
 
     return __call_render_template()
 
@@ -206,8 +212,10 @@ def stream_feed():
 def pi_feed():
     """Webcam streaming route. Put this in the src attribute of an img tag."""
     global pi_preview_running
+    global pi_thread
     if pi_running:
-        return Response(gen_pi(TrafficLightDetectionPi()), mimetype='multipart/x-mixed-replace; boundary=frame')
+        pi_thread = TrafficLightDetectionPi()
+        return Response(gen_pi(pi_thread), mimetype='multipart/x-mixed-replace; boundary=frame')
     else:
         return Response()
 
@@ -384,4 +392,4 @@ def __call_render_template():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True, threaded=True)
+    app.run(host='0.0.0.0', port=8080, debug=False, threaded=True)
