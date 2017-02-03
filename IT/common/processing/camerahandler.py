@@ -24,43 +24,54 @@ from picamera import PiCamera
 
 class CameraHandler(object):
     class __CameraHandler:
-        def __init__(_self):
+        def __init__(self):
             fileConfig(cfg.get_logging_config_fullpath())
-            _self.__log = logging.getLogger()
-            _self.camera = PiCamera()
-            _self.rawcapture = _self.__initpicamera()
+            self.__log = logging.getLogger()
+            self.camera = PiCamera()
+            self.rawcapture = self.__initpicamera()
+            self.instanceclosed = False
 
-        def __initpicamera(_self):
+        def __initpicamera(self):
             """
             This function will initialize the Raspbian Cam with the predefined settings in the configuration file
             :return: PIRGBArray for using as source for camera capturing
             """
-            _self.__log.info("camera init started")
-            _self.camera.resolution = (cfg.get_camera_width(), cfg.get_camera_height())
-            _self.camera.framerate = cfg.get_camera_framerate()
-            _self.camera.iso = cfg.get_camera_iso()
-            _self.__log.debug("Initialize AWB, calculating...")
+            self.__log.info("camera init started")
+            self.camera.resolution = (cfg.get_camera_width(), cfg.get_camera_height())
+            self.camera.framerate = cfg.get_camera_framerate()
+            self.camera.iso = cfg.get_camera_iso()
+            self.__log.debug("Initialize AWB, calculating...")
             time.sleep(2)
             if cfg.get_camera_awb() == 'fixed':
-                _self.camera.shutter_speed = _self.camera.exposure_speed
-                _self.camera.exposure_mode = 'off'
-                gain = _self.camera.awb_gains
-                _self.camera.awb_mode = 'off'
-                _self.camera.awb_gains = gain
-            rawcapture = PiRGBArray(_self.camera, size=_self.camera.resolution)
+                self.camera.shutter_speed = self.camera.exposure_speed
+                self.camera.exposure_mode = 'off'
+                gain = self.camera.awb_gains
+                self.camera.awb_mode = 'off'
+                self.camera.awb_gains = gain
+            rawcapture = PiRGBArray(self.camera, size=self.camera.resolution)
             time.sleep(0.1)
-            _self.__log.debug("camera init finished")
+            self.__log.debug("camera init finished")
+            self.instanceclosed = False
             return rawcapture
 
-        def updatePiCamera(_self):
-            _self.__log.debug("Reconfigure PiCamera setting")
-            _self.__initpicamera()
+        def reopenPiCamera(self):
+            self.__log.info("Reconfigure PiCamera setting")
+            self.camera = PiCamera()
+            self.rawcapture = self.__initpicamera()
 
-        def get_pi_camerainstance(_self):
-            return _self.camera
+        def get_pi_camerainstance(self):
+            if self.instanceclosed:
+                self.reopenPiCamera()
+            return self.camera
 
-        def get_pi_rgbarray(_self):
-            return _self.rawcapture
+        def get_pi_rgbarray(self):
+            if self.instanceclosed:
+                self.reopenPiCamera()
+            return self.rawcapture
+
+        def close_pi_camerainstance(self):
+            self.instanceclosed = True
+            self.camera.close()
 
     instance = None
 
@@ -69,10 +80,10 @@ class CameraHandler(object):
             CameraHandler.instance = CameraHandler.__CameraHandler()
         return CameraHandler.instance
 
-    def __getattr__(_self, name):
-        return getattr(_self.instance, name)
+    def __getattr__(self, name):
+        return getattr(self.instance, name)
 
-    def __setattr__(_self, name):
-        return setattr(_self.instance, name)
+    def __setattr__(self, name):
+        return setattr(self.instance, name)
 
 
