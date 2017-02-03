@@ -12,59 +12,42 @@
 
 # Import the modules needed to run the script.
 import cv2
-import io
-import configparser
-import os
+import time
+import logging
+import common.config.confighandler as cfg
 
-from time import time
-from PIL import Image
 from .trafficlightdetectionhandler import TrafficLightDetection
-from common.logging.loghelper import LogHelper
-from common.logging.fpshelper import FPSHelper
+from logging.config import fileConfig
 
 
 class TrafficLightDetectionImg(object):
-    # Function for converting string to boolean (for example if in Config.ini)
-    def str2bool(v):
-        return v.lower() in ("yes", "Yes", "YES", "true", "True", "TRUE", "1", "t")
 
-    # Initialize Logger and FPS Helpers
-    LOG = LogHelper()
-    FPS = FPSHelper()
-
-    # Set root dir for project (needed for example the Config.ini)
-    ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-    # Initialize ConfigParser and read Settings
-    config = configparser.ConfigParser()
-    config.read(ROOT_DIR + '/common/config/config.ini')
-
-    # Load needed settings from Config.ini into variables (so you dont have to access the ini file each time)
-    multiimg1 = ROOT_DIR + '/medias/images/' + config['files']['multiimg1']
-    multiimg2 = config['files']['multiimg2']
-    multiimgcount = int(config['files']['multiimgcount'])
+    multiimg1 = cfg.get_proj_rootdir() + '/medias/images/' + cfg.get_files_multiimg1()
+    multiimg2 = cfg.get_files_multiimg2()
+    multiimgcount = cfg.get_files_multiimgcount()
 
     # Initialize the class
-    def __init__(_self):
-        _self.frames = []
-        for x in range(1, _self.multiimgcount):
-            _self.frames.append(cv2.imread(_self.multiimg1 + str(x) + _self.multiimg2))
+    def __init__(self):
+        fileConfig(cfg.get_logging_config_fullpath())
+        self.__log = logging.getLogger()
+        self.frames = []
+        for x in range(1, self.multiimgcount):
+            self.frames.append(cv2.imread(self.multiimg1 + str(x) + self.multiimg2))
 
     # Get a frame
-    def get_frame(_self):
-        image = _self.frames[int(time()) % (_self.multiimgcount - 1)]
+    def get_frame(self):
+        image = self.frames[int(time.time()) % (self.multiimgcount - 1)]
         if image is None:
             return
         tld = TrafficLightDetection()
         image = tld.detect_trafficlight(image)
-        # Numpy array to image
-        image = Image.fromarray(image, 'RGB')
-        # RGB to BGR
-        b, g, r = image.split()
-        image = Image.merge("RGB", (r, g, b))
-        # Image to jpeg bytes
+        _, jpeg = cv2.imencode('.jpg', image)
+        return jpeg.tobytes()
+
+        """image = Image.fromarray(image, 'RGB')   # Numpy array to image
+        b, g, r = image.split() # RGB to BGR
+        image = Image.merge("RGB", (r, g, b))   # Image to jpeg bytes
         output = io.BytesIO()
         image.save(output, format='JPEG')
         hex_data = output.getvalue()
-
-        return hex_data
+        return hex_data """
