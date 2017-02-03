@@ -19,14 +19,13 @@ import numpy as np
 import logging
 import common.config.confighandler as cfg
 import math
-
-from logging.config import fileConfig
+import logging.config
 from common.logging.fpshelper import FPSHelper
 from skimage.morphology import skeletonize
 
 
 class ImageConverter(object):
-    fileConfig(cfg.get_logging_config_fullpath())
+    logging.config.fileConfig(cfg.get_logging_config_fullpath())
     __log = logging.getLogger()
 
     @staticmethod
@@ -44,6 +43,22 @@ class ImageConverter(object):
     @staticmethod
     def convertgray2bgr(image):
         return cv2.cvtColor(image,cv2.COLOR_GRAY2BGR)
+
+    @staticmethod
+    def converthsv2bgr(image):
+        return cv2.cvtColor(image,cv2.COLOR_HSV2BGR)
+
+    @staticmethod
+    def convert2blackwhite(image):
+        lower_black = np.array(cfg.get_color_black_low_splited())
+        upper_black = np.array(cfg.get_color_black_high_splited())
+
+        mask = cv2.inRange(image, lower_black, upper_black)     # create overlay mask for all none matching bits to zero
+        output_img = cv2.bitwise_and(image, image, mask=mask)    # apply mask on image
+        img_gray = ImageConverter.convertbgr2gray(output_img)   # convert image to grayscale
+        img_gray[img_gray > 0] = 1                              # set all non black pixels to white for BW-image
+
+        return img_gray
 
     @staticmethod
     def transform_perspectiveview2topdownview(img, edges):
@@ -82,16 +97,12 @@ class ImageConverter(object):
         return img2
 
     @staticmethod
-    def convert2blackwhite(image):
-        lower_black = np.array(cfg.get_color_black_low_splited())
-        upper_black = np.array(cfg.get_color_black_high_splited())
-
-        mask = cv2.inRange(image, lower_black, upper_black)     # create overlay mask for all none matching bits to zero
-        output_img = cv2.bitwise_and(image, image, mask=mask)    # apply mask on image
-        img_gray = ImageConverter.convertbgr2gray(output_img)   # convert image to grayscale
-        img_gray[img_gray > 0] = 1                              # set all non black pixels to white for BW-image
-
-        return img_gray
+    def thinningblackwhiteimage(image):
+        edges = skeletonize(image)
+        edges = edges * 1
+        edges[edges == 1] = 255
+        edges = np.uint8(edges)
+        return edges
 
     @staticmethod
     def mask_color_red(img):
@@ -169,7 +180,7 @@ class ImageConverter(object):
 
 
 class ImageAnalysis(object):
-    fileConfig(cfg.get_logging_config_fullpath())
+    logging.config.fileConfig(cfg.get_logging_config_fullpath())
     __log = logging.getLogger()
 
     @staticmethod
@@ -233,7 +244,6 @@ class ImageAnalysis(object):
             box = np.int0(box)              # normalize array
 
             box = ImageAnalysis.reorder_edgepoints_clockwise(box)
-            # cv2.drawContours(img_org, [box], 0, (0, 255, 255), 1)
             if not i:
                 pt_top = tuple(np.int0(box[1]))         # top right position
                 pt_bottom = tuple(np.int0(box[2]))      # bottom right position
@@ -243,11 +253,6 @@ class ImageAnalysis(object):
 
             edges.append(pt_top)
             edges.append(pt_bottom)
-
-            #cv2.line(img_org, pt_top, pt_bottom, (0, 0, 255), 1)
-            #cv2.circle(img_org, pt_top, 2, (0, 255, 0), -1)
-            #cv2.circle(img_org, pt_bottom, 2, (0, 255, 0), -1)
-
             i = True
 
         if len(edges) == 4:
@@ -325,23 +330,19 @@ class ImageAnalysis(object):
             return img, 0
 
     @staticmethod
-    def get_roman_letter(roi):
+    def get_roman_letter_drawed(roi):
         """
         This function determines the number of a roman letter (only I, II, III, IV, V)
-        :param img: original image which will be used for drawing lines on it
         :param roi: cropped image with only the letters on it
-        :return: detect number as integer
+        :return: image with all detected lines for the number
         """
         FPS = FPSHelper()
         number = 0
-        img_gray = ImageConverter.convert2blackwhite(roi)
+        img_bw = ImageConverter.convert2blackwhite(roi)
 
         # edge detection
         FPS.start()
-        edges = skeletonize(img_gray)
-        edges = edges * 1
-        edges[edges == 1] = 255
-        edges = np.uint8(edges)
+        edges = ImageConverter.thinningblackwhiteimage(img_bw)
         img_gray_mark = ImageConverter.convertgray2bgr(edges)
 
         lines = cv2.HoughLines(edges, 1, np.pi / 180, 15, np.array([]), 0, 0)
@@ -353,7 +354,6 @@ class ImageAnalysis(object):
             line, _, _ = lines.shape
             v_left_found = False
             v_right_found = False
-            i_count = 0
             all_i = []  # = [[] for i in range(3)]
 
             for i in range(line):
@@ -408,7 +408,85 @@ class ImageAnalysis(object):
             ImageAnalysis.__log.warning("no lines detected on image")
         ImageAnalysis.__log.debug("--")
 
-        #return img_gray_mark
+        return img_gray_mark
+
+    @staticmethod
+    def get_roman_letter(roi):
+        """
+        This function determines the number of a roman letter (only I, II, III, IV, V)
+        :param roi: cropped image with only the letters on it
+        :return: detect number as integer
+        """
+        FPS = FPSHelper()
+        number = 0
+        img_bw = ImageConverter.convert2blackwhite(roi)
+
+        # edge detection
+        FPS.start()
+        edges = ImageConverter.thinningblackwhiteimage(img_bw)
+        lines = cv2.HoughLines(edges, 1, np.pi / 180, 15, np.array([]), 0, 0)
+        FPS.stop()
+        ImageAnalysis.__log.debug("processing time HoughLines: " + str(FPS.elapsedtime_ms()) + " ms")
+
+        # if lines found, enumerate number based on its angle
+        if lines is not None:
+            line, _, _ = lines.shape
+            v_left_found = False
+            v_right_found = False
+            all_i = []  # = [[] for i in range(3)]
+
+            for i in range(line):
+
+                rho = lines[i][0][0]  # vector distance to line
+                theta = lines[i][0][1]  # angle of line in radian
+
+                a, b = np.cos(theta), np.sin(theta)
+                x0, y0 = a * rho, b * rho
+                deg = theta * 180 / np.pi  # radian to degree
+
+                line_pt1 = (int(x0 + 1000 * (-b)), int(y0 + 1000 * a))
+                line_pt2 = (int(x0 - 1000 * (-b)), int(y0 - 1000 * a))
+
+                ImageAnalysis.__log.debug(
+                    "-----\nlinept1: " + str(line_pt1) + "\nlinept2: " + str(line_pt2) + "\ndeg:" + str(deg))
+
+                # detect an I
+                if (0.0 < deg < 1.0) or (178.0 < deg < 180.0):
+                    ImageAnalysis.__log.debug("I - line found with deg: " + str(deg))
+
+                    # get median x-value of both points
+                    x = (int(x0 + 1000 * (-b)) + int(x0 - 1000 * (-b))) / 2
+                    all_i.append([x, line_pt1, line_pt2])
+
+                    ImageAnalysis.__log.debug(
+                        "pos line_pt1: " + str(line_pt1) + " vertical line found with deg: " + str(
+                            deg) + ", theta: " + str(theta))
+                    continue
+
+                # right hand side of V
+                elif 10.0 < deg < 20.0:
+                    ImageAnalysis.__log.debug("V / - line found with deg: " + str(deg))
+                    v_right_found = True
+                    continue
+
+                # left hand side of V
+                elif 150.0 < deg < 170.0:
+                    ImageAnalysis.__log.debug("V \ - line found with deg: " + str(deg))
+                    v_left_found = True
+                    continue
+                else:
+                    ImageAnalysis.__log.debug("line with deg: " + str(deg) + "out of allowed range")
+
+            # eliminate redundant detected I
+            i_count = ImageAnalysis.__eliminate_redundant_I(all_i)
+
+            # enumerate the number based on detected lines
+            number = ImageAnalysis.__enumerate_number_withlines(v_left_found, v_right_found, i_count)
+
+        else:
+            ImageAnalysis.__log.warning("no lines detected on image")
+        ImageAnalysis.__log.debug("--")
+
         return number
 
     @staticmethod
@@ -445,9 +523,7 @@ class ImageAnalysis(object):
                 if abs(nondup_i[all_i_count][0] - xcor) <= tolerance:
                     continue
                 nondup_i.append([xcor, pt1, pt2])
-                #cv2.line(img_gray_mark, pt1, pt2, (255, 255, 0), 1, cv2.LINE_AA)
                 all_i_count += 1
-                # i_count += 1
             i_count = len(nondup_i)
             ImageAnalysis.__log.debug("all I: " + str(all_detected_I))
             ImageAnalysis.__log.debug("all nondup I: " + str(nondup_i) + "icount: " + str(i_count))
