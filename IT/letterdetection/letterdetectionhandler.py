@@ -27,54 +27,54 @@ from common.processing.camerahandler import CameraHandler
 
 class LetterDetectionHandler(object):
 
-    def __init__(_self):
+    def __init__(self):
         fileConfig(cfg.get_logging_config_fullpath())
-        _self.__log = logging.getLogger()
+        self.__log = logging.getLogger()
 
-        _self.FPS = FPSHelper()
+        self.FPS = FPSHelper()
 
-        _self.__log.info("Letterdetection started")
-        _self.font = cv2.FONT_HERSHEY_COMPLEX_SMALL
-        _self.camera = CameraHandler().get_pi_camerainstance()
-        _self.rawCapture = CameraHandler().get_pi_rgbarray()
+        self.__log.info("Letterdetection started")
+        self.font = cfg.get_opencv_font()
+        self.camera = CameraHandler().get_pi_camerainstance()
+        self.rawCapture = CameraHandler().get_pi_rgbarray()
 
-        _self.rundetection()
+        self.rundetection()
 
-    def rundetection(_self):
-        _self.__log.info("Start capturing")
-        for frame in _self.camera.capture_continuous(_self.rawCapture, format="bgr", use_video_port=True):
+    def rundetection(self):
+        self.__log.info("Start capturing")
+        for frame in self.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=True):
             img = frame.array
             numberplate = np.zeros((100, 100), np.uint8)
-            _self.FPS.start()
+            self.FPS.start()
 
             redmask = ImageConverter.mask_color_red(img)
             #cv2.imshow("redmask", redmask)
-            _self.__log.debug("Frame: red mask done")
+            self.__log.debug("Frame: red mask done")
             imgmarked, edges = ImageAnalysis.get_ordered_corners_drawed(redmask, img)
-            _self.__log.debug("Frame: edges for letter range detection done")
+            self.__log.debug("Frame: edges for letter range detection done")
             if edges != 0:
-                _self.__log.debug("Frame: correct perspective of letter range")
+                self.__log.debug("Frame: correct perspective of letter range")
                 correctedimg = ImageConverter.transform_perspectiveview2topdownview(img, edges)
                 number = ImageAnalysis.get_roman_letter(correctedimg)
-                _self.FPS.stop()
-                _self.__log.debug("FPS: {0:.2f}".format(_self.FPS.fps()) + " ms: {0:.2f}\n".format(_self.FPS.elapsedtime_ms()))
-                cv2.putText(img, "FPS: {0:.2f}".format(_self.FPS.fps()), (cfg.get_camera_width() - 90, cfg.get_camera_height() - 10), _self.font, 0.7, (0, 255, 0), 1, cv2.LINE_AA)
+                self.FPS.stop()
+                self.__log.debug("FPS: {0:.2f}".format(self.FPS.fps()) + " ms: {0:.2f}\n".format(self.FPS.elapsedtime_ms()))
+                cv2.putText(img, "FPS: {0:.2f}".format(self.FPS.fps()), (cfg.get_camera_width() - 90, cfg.get_camera_height() - 10), self.font, 0.7, (0, 255, 0), 1, cv2.LINE_AA)
                 cv2.imshow("Perspective", correctedimg)
                 number = str(number)
                 cv2.putText(numberplate, number, (25, 80), 0, 1, (255, 255, 255))
                 cv2.imshow("Letter", numberplate)
                 cv2.imshow("Video", imgmarked)
             else:
-                _self.__log.debug("Frame: no letter range detected")
-                _self.FPS.stop()
-                _self.__log.debug("FPS: {0:.2f}".format(_self.FPS.fps()) + " ms: {0:.2f}\n".format(_self.FPS.elapsedtime_ms()))
-                cv2.putText(img, "FPS: {0:.2f}".format(_self.FPS.fps()), (550, 460), _self.font, 0.7, (255, 255, 255), 1, cv2.LINE_AA)
+                self.__log.debug("Frame: no letter range detected")
+                self.FPS.stop()
+                self.__log.debug("FPS: {0:.2f}".format(self.FPS.fps()) + " ms: {0:.2f}\n".format(self.FPS.elapsedtime_ms()))
+                cv2.putText(img, "FPS: {0:.2f}".format(self.FPS.fps()), (550, 460), self.font, 0.7, (255, 255, 255), 1, cv2.LINE_AA)
                 cv2.imshow("Video", img)
-            _self.rawCapture.truncate(0)
+            self.rawCapture.truncate(0)
 
             key = cv2.waitKey(1) & 0xFF
             if key == ord("q"):
-                _self.__log.info("Finished capturing")
+                self.__log.info("Finished capturing")
                 break
         cv2.destroyAllWindows()
 
