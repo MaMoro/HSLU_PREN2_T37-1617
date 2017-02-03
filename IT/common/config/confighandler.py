@@ -17,8 +17,9 @@ import configparser
 import os
 import numpy as np
 
-ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-__inipath = ROOT_DIR + '/common/config/config.ini'
+__project_root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+__inipath = __project_root_dir + '/common/config/config.ini'
+
 
 # load ini file
 def __loadconfig():
@@ -32,6 +33,11 @@ def __str2bool(val):
     return val.lower() in ("True", "TRUE", "False", "FALSE")
 
 
+# get Projectrootdir
+def get_proj_rootdir():
+    return __project_root_dir
+
+# save changes to configfile
 def __persistchanges(section, item, val):
     config = __loadconfig()
     config.set(section, item, val)
@@ -39,6 +45,13 @@ def __persistchanges(section, item, val):
         config.write(configfile)
 
 
+# fixed values
+def get_opencv_font():
+    import cv2
+    return cv2.FONT_HERSHEY_COMPLEX_SMALL
+
+
+# getter / setter for configfile values
 def get_settings_title():
     return __loadconfig().get('settings', 'title')
 
@@ -244,6 +257,8 @@ def set_color_orange(val):
 def get_masktrafficlight_red_low_l():
     return __loadconfig().get('mask_trafficlight', 'red_low_l')
 
+def get_masktrafficlight_red_low_l_splited():
+    return np.array([int(c) for c in get_masktrafficlight_red_low_l().split(',')])
 
 def set_masktrafficlight_red_low_l(val):
     __persistchanges('mask_trafficlight', 'red_low_l', val)
@@ -251,6 +266,10 @@ def set_masktrafficlight_red_low_l(val):
 
 def get_masktrafficlight_red_low_h():
     return __loadconfig().get('mask_trafficlight', 'red_low_h')
+
+
+def get_masktrafficlight_red_low_h_splited():
+    return np.array([int(c) for c in get_masktrafficlight_red_low_h().split(',')])
 
 
 def set_masktrafficlight_red_low_h(val):
@@ -261,12 +280,20 @@ def get_masktrafficlight_red_high_l():
     return __loadconfig().get('mask_trafficlight', 'red_high_l')
 
 
+def get_masktrafficlight_red_high_l_splited():
+    return np.array([int(c) for c in get_masktrafficlight_red_high_l().split(',')])
+
+
 def set_masktrafficlight_red_high_l(val):
     __persistchanges('mask_trafficlight', 'red_high_l', val)
 
 
 def get_masktrafficlight_red_high_h():
     return __loadconfig().get('mask_trafficlight', 'red_high_h')
+
+
+def get_masktrafficlight_red_high_h_splited():
+    return np.array([int(c) for c in get_masktrafficlight_red_high_h().split(',')])
 
 
 def set_masktrafficlight_red_high_h(val):
@@ -277,12 +304,20 @@ def get_masktrafficlight_green_l():
     return __loadconfig().get('mask_trafficlight', 'green_l')
 
 
+def get_masktrafficlight_green_l_splited():
+    return np.array([int(c) for c in get_masktrafficlight_green_l().split(',')])
+
+
 def set_masktrafficlight_green_l(val):
     __persistchanges('mask_trafficlight', 'green_l', val)
 
 
 def get_masktrafficlight_green_h():
     return __loadconfig().get('mask_trafficlight', 'green_h')
+
+
+def get_masktrafficlight_green_h_splited():
+    return np.array([int(c) for c in get_masktrafficlight_green_h().split(',')])
 
 
 def set_masktrafficlight_green_h(val):
@@ -428,7 +463,7 @@ def get_debug_logging_config():
 
 
 def get_logging_config_fullpath():
-    return ROOT_DIR + __loadconfig().get('debug', 'logging_config')
+    return __project_root_dir + __loadconfig().get('debug', 'logging_config')
 
 
 def set_debug_logging_config(val):
