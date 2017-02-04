@@ -17,28 +17,28 @@ class FPSHelper(object):
     Simple Logging Helper. Returns logger reference.
     """
 
-    def __init__(_self):
+    def __init__(self):
         # store the start time, end time that were examined between the start and end intervals
-        _self._start = None
-        _self._end = None
+        self._start = None
+        self._end = None
 
-    def start(_self):
+    def start(self):
         # start the timer
-        _self._start = timer()
-        return _self
+        self._start = timer()
+        return self
 
-    def stop(_self):
+    def stop(self):
         # stop the timer
-        _self._end = timer()
+        self._end = timer()
 
-    def elapsedtime_ms(_self):
+    def elapsedtime_ms(self):
         # return the total number of milliseconds between the start and end interval
-        return (_self._end - _self._start) * 1000.0
+        return (self._end - self._start) * 1000.0
 
-    def elapsedtime_sec(_self):
+    def elapsedtime_sec(self):
         # return the total number of seconds between the start and end interval
-        return (_self._end - _self._start)
+        return (self._end - self._start)
 
-    def fps(_self):
+    def fps(self):
         # compute the (approximate) frames per second
-        return 1 / _self.elapsedtime_sec()
+        return int(1 / self.elapsedtime_sec())
