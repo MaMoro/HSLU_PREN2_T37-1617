@@ -29,32 +29,38 @@ class ImageConverter(object):
     __log = logging.getLogger()
     __log.setLevel(cfg.get_settings_loglevel())
 
+    lower_red = np.array(cfg.get_maskletter_red_shift_l_splited())
+    upper_red = np.array(cfg.get_maskletter_red_shift_h_splited())
+    lower_red_full = np.array(cfg.get_maskletter_red_low_full_splited())
+    upper_red_full = np.array(cfg.get_maskletter_red_high_full_splited())
+    color_black_low = np.array(cfg.get_color_black_low_splited())
+    color_black_high = np.array(cfg.get_color_black_high_splited())
+
+    kernel_size = cfg.get_filter_kernel_size()
+
     @staticmethod
     def convertbgr2gray(image):
-        return cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+        return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     @staticmethod
     def convertbgr2hsv(image):
-        return cv2.cvtColor(image,cv2.COLOR_BGR2HSV)
+        return cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
     @staticmethod
     def convertbgr2hsvfull(image):
-        return cv2.cvtColor(image,cv2.COLOR_BGR2HSV_FULL)
+        return cv2.cvtColor(image, cv2.COLOR_BGR2HSV_FULL)
 
     @staticmethod
     def convertgray2bgr(image):
-        return cv2.cvtColor(image,cv2.COLOR_GRAY2BGR)
+        return cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
 
     @staticmethod
     def converthsv2bgr(image):
-        return cv2.cvtColor(image,cv2.COLOR_HSV2BGR)
+        return cv2.cvtColor(image, cv2.COLOR_HSV2BGR)
 
     @staticmethod
     def convert2blackwhite(image):
-        lower_black = np.array(cfg.get_color_black_low_splited())
-        upper_black = np.array(cfg.get_color_black_high_splited())
-
-        mask = cv2.inRange(image, lower_black, upper_black)     # create overlay mask for all none matching bits to zero
+        mask = cv2.inRange(image, ImageConverter.color_black_low, ImageConverter.color_black_high)     # create overlay mask for all none matching bits to zero
         output_img = cv2.bitwise_and(image, image, mask=mask)    # apply mask on image
         img_gray = ImageConverter.convertbgr2gray(output_img)   # convert image to grayscale
         img_gray[img_gray > 0] = 1                              # set all non black pixels to white for BW-image
@@ -125,12 +131,9 @@ class ImageConverter(object):
         fps.stop()
         ImageConverter.__log.debug("processing time shift: " + str(fps.elapsedtime_ms()) + " ms")
 
-        lower_red = np.array(cfg.get_maskletter_red_shift_l_splited())
-        upper_red = np.array(cfg.get_maskletter_red_shift_h_splited())
-
         # create overlay mask for all none matching bits to zero (black)
         fps.start()
-        mask = cv2.inRange(img_hsv, lower_red, upper_red)
+        mask = cv2.inRange(img_hsv, ImageConverter.lower_red, ImageConverter.upper_red)
         fps.stop()
         ImageConverter.__log.debug("processing time inRange: " + str(fps.elapsedtime_ms()) + " ms")
 
@@ -154,29 +157,25 @@ class ImageConverter(object):
         fps.start()
         img_hsv = ImageConverter.convertbgr2hsvfull(img)
         fps.stop()
-        ImageConverter.__log.info("processing time hsv: " + str(fps.elapsedtime_ms()) + " ms")
-
-        lower_red = np.array(cfg.get_maskletter_red_low_full_splited())
-        upper_red = np.array(cfg.get_maskletter_red_high_full_splited())
+        ImageConverter.__log.debug("processing time hsv: " + str(fps.elapsedtime_ms()) + " ms")
 
         # create overlay mask for all none matching bits to zero (black)
         fps.start()
-        mask = cv2.inRange(img_hsv, lower_red, upper_red)
+        mask = cv2.inRange(img_hsv, ImageConverter.lower_red_full, ImageConverter.upper_red_full)
         fps.stop()
-        ImageConverter.__log.info("processing time inRange: " + str(fps.elapsedtime_ms()) + " ms")
+        ImageConverter.__log.debug("processing time inRange: " + str(fps.elapsedtime_ms()) + " ms")
 
         # apply mask on image
         fps.start()
         output_img = cv2.bitwise_and(img, img, mask=mask)
         fps.stop()
-        ImageConverter.__log.info("processing time masking: " + str(fps.elapsedtime_ms()) + " ms")
+        ImageConverter.__log.debug("processing time masking: " + str(fps.elapsedtime_ms()) + " ms")
 
         return output_img
 
     @staticmethod
     def remove_erosions(img):
-        kernel_size = cfg.get_filter_kernel_size()
-        kernel = np.ones((kernel_size, kernel_size), np.uint8)
+        kernel = np.ones((ImageConverter.kernel_size, ImageConverter.kernel_size), np.uint8)
         return cv2.dilate(img, kernel, iterations=1)
 
 
@@ -184,6 +183,8 @@ class ImageAnalysis(object):
     logging.config.fileConfig(cfg.get_logging_config_fullpath())
     __log = logging.getLogger()
     __log.setLevel(cfg.get_settings_loglevel())
+
+    letter_tolerance_i_gap = cfg.get_letter_tolerance_i_gap()
 
     @staticmethod
     def reorder_edgepoints_clockwise(pts):
@@ -511,7 +512,6 @@ class ImageAnalysis(object):
         # eliminate redundant detected I
         if len(all_detected_I) != 0:
             all_detected_I.sort()
-            tolerance = cfg.get_letter_tolerance_i_gap()
             nondup_i = [all_detected_I.pop(0), ]
             all_i_count = 0
 
@@ -520,7 +520,7 @@ class ImageAnalysis(object):
                 pt1 = x[1]
                 pt2 = x[2]
                 # Skip items within tolerance.
-                if abs(nondup_i[all_i_count][0] - xcor) <= tolerance:
+                if abs(nondup_i[all_i_count][0] - xcor) <= ImageAnalysis.letter_tolerance_i_gap:
                     continue
                 nondup_i.append([xcor, pt1, pt2])
                 all_i_count += 1
