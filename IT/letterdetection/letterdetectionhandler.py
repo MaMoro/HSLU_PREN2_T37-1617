@@ -90,9 +90,9 @@ class LetterDetectionHandler(object):
         pistream = CameraHandler().start()
         while True:
             img = pistream.read()
-            self.FPS.start()
-            redmask = ImageConverter.mask_color_red(img)
-            #redmask = ImageConverter.mask_color_red_fullhsv(img)
+            #self.FPS.start()
+            #redmask = ImageConverter.mask_color_red(img)
+            redmask = ImageConverter.mask_color_red_fullhsv(img)
             #self.FPS.stop()
             #self.FPS.start()
             #imgmarked, edges = ImageAnalysis.get_ordered_corners_drawed(redmask, img)
@@ -107,11 +107,11 @@ class LetterDetectionHandler(object):
                     processingqueue.put(None)   # enforce ImageProcessing instances to terminate
                 processingqueue.join()          # waiting for alle processes to be terminated
                 break
-            self.FPS.stop()
+            #self.FPS.stop()
             #cv2.imshow("redmask", redmask)
             #cv2.imshow("imagemarked", imgmarked)
             #self.__log.info("ms: " + str(self.FPS.elapsedtime_ms()))
-            self.__log.info("FPS: " + str(self.FPS.fps()))
+            #self.__log.info("FPS: " + str(self.FPS.fps()))
 
             key = cv2.waitKey(1) & 0xFF
             if key == ord("q"):
