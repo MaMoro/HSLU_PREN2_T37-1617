@@ -24,7 +24,7 @@ from logging.config import fileConfig
 from common.logging.fpshelper import FPSHelper
 from common.processing.imageprocessor import ImageConverter, ImageAnalysis
 from common.processing.camerahandler import CameraHandler
-from letterdetection.imagequeue.images2analyze import ImageProcessing, ImageNumber
+from common.processing.imagequeueing import ImageProcessing, ImageNumber
 from letterdisplay.ledstriphandler import LEDStripHandler
 
 
@@ -32,17 +32,11 @@ class LetterDetectionHandler(object):
     fileConfig(cfg.get_logging_config_fullpath())
 
     def __init__(self):
-
         self.__log = logging.getLogger()
         self.__log.setLevel(cfg.get_settings_loglevel())
-
         self.FPS = FPSHelper()
-
         self.__log.info("Letterdetection started")
         self.font = cfg.get_opencv_font()
-        self.camera = CameraHandler().get_pi_camerainstance()
-        self.rawCapture = CameraHandler().get_pi_rgbarray()
-
         self.processing()
 
     def rundetection(self):
@@ -83,12 +77,6 @@ class LetterDetectionHandler(object):
                 break
         cv2.destroyAllWindows()
 
-
-    def analyzeimagewithmask(self, image, edges):
-        correctedimg = ImageConverter.transform_perspectiveview2topdownview(image, edges)
-        number = ImageAnalysis.get_roman_letter(correctedimg)
-        return number
-
     def processing(self):
         self.__log.info("Start processing, create ")
         num_units = 4
@@ -99,33 +87,38 @@ class LetterDetectionHandler(object):
             w.start()
         self.__log.info("Start capturing")
         imgcount = 0
-        for frame in self.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=True):
-            img = frame.array
+        pistream = CameraHandler().start()
+        while True:
+            img = pistream.read()
             self.FPS.start()
             redmask = ImageConverter.mask_color_red(img)
-            imgmarked, edges = ImageAnalysis.get_ordered_corners_drawed(redmask, img)
-            #cv2.imshow("imagemarked", imgmarked)
+            #redmask = ImageConverter.mask_color_red_fullhsv(img)
+            #self.FPS.stop()
+            #self.FPS.start()
+            #imgmarked, edges = ImageAnalysis.get_ordered_corners_drawed(redmask, img)
+            edges = ImageAnalysis.get_ordered_corners(redmask)
+            #self.FPS.stop()
             if edges != 0:
-                self.__log.info("got edgedimage")
                 processingqueue.put(ImageNumber(img, edges))
                 imgcount += 1
-            elif imgcount > 50:
-                # TODO: stop capturing
+            elif imgcount > 40:
+                # if more than 40 images processed and no more edges found it's assumed that the number on the wall has passed
                 for i in range(num_units):
-                    processingqueue.put(None)
-                processingqueue.join()
-                self.camera.close()
-                self.rawCapture.close()
-                CameraHandler().close_pi_camerainstance()
+                    processingqueue.put(None)   # enforce ImageProcessing instances to terminate
+                processingqueue.join()          # waiting for alle processes to be terminated
                 break
-            self.rawCapture.truncate(0)
             self.FPS.stop()
-            self.__log.warning("fps: " + str(self.FPS.fps()))
+            #cv2.imshow("redmask", redmask)
+            #cv2.imshow("imagemarked", imgmarked)
+            #self.__log.info("ms: " + str(self.FPS.elapsedtime_ms()))
+            self.__log.info("FPS: " + str(self.FPS.fps()))
+
             key = cv2.waitKey(1) & 0xFF
             if key == ord("q"):
                 self.__log.info("Finished capturing")
                 break
 
+        CameraHandler().stop()
         cv2.destroyAllWindows()
 
         allnumbers = []
@@ -134,10 +127,5 @@ class LetterDetectionHandler(object):
         numbertodisplay = ImageAnalysis.most_voted_number(allnumbers)
         LEDStripHandler.display_letter_on_LEDs(numbertodisplay)
 
-    def processing2(self):
-        for frame in self.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=True):
-            img = frame.array
-            cv2.imshow("video", img)
-            self.rawCapture.truncate(0)
 if __name__ == '__main__':
     LetterDetectionHandler()
