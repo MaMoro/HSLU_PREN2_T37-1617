@@ -13,7 +13,6 @@
 # ================================================================================
 
 # import the necessary packages
-
 import cv2
 import numpy as np
 import logging
@@ -22,6 +21,7 @@ import math
 import logging.config
 from common.logging.fpshelper import FPSHelper
 from skimage.morphology import skeletonize
+from collections import Counter
 
 
 class ImageConverter(object):
@@ -182,6 +182,7 @@ class ImageConverter(object):
 class ImageAnalysis(object):
     logging.config.fileConfig(cfg.get_logging_config_fullpath())
     __log = logging.getLogger()
+    __log.setLevel(cfg.get_settings_loglevel())
 
     @staticmethod
     def reorder_edgepoints_clockwise(pts):
@@ -447,8 +448,7 @@ class ImageAnalysis(object):
                 line_pt1 = (int(x0 + 1000 * (-b)), int(y0 + 1000 * a))
                 line_pt2 = (int(x0 - 1000 * (-b)), int(y0 - 1000 * a))
 
-                ImageAnalysis.__log.debug(
-                    "-----\nlinept1: " + str(line_pt1) + "\nlinept2: " + str(line_pt2) + "\ndeg:" + str(deg))
+                #ImageAnalysis.__log.debug("-----\tlinept1: " + str(line_pt1) + "\tlinept2: " + str(line_pt2) + "\tdeg:" + str(deg))
 
                 # detect an I
                 if (0.0 < deg < 1.0) or (178.0 < deg < 180.0):
@@ -458,9 +458,7 @@ class ImageAnalysis(object):
                     x = (int(x0 + 1000 * (-b)) + int(x0 - 1000 * (-b))) / 2
                     all_i.append([x, line_pt1, line_pt2])
 
-                    ImageAnalysis.__log.debug(
-                        "pos line_pt1: " + str(line_pt1) + " vertical line found with deg: " + str(
-                            deg) + ", theta: " + str(theta))
+                    #ImageAnalysis.__log.debug("pos line_pt1: " + str(line_pt1) + " vertical line found with deg: " + str(deg) + ", theta: " + str(theta))
                     continue
 
                 # right hand side of V
@@ -474,8 +472,8 @@ class ImageAnalysis(object):
                     ImageAnalysis.__log.debug("V \ - line found with deg: " + str(deg))
                     v_left_found = True
                     continue
-                else:
-                    ImageAnalysis.__log.debug("line with deg: " + str(deg) + "out of allowed range")
+                #else:
+                    #ImageAnalysis.__log.debug("line with deg: " + str(deg) + "out of allowed range")
 
             # eliminate redundant detected I
             i_count = ImageAnalysis.__eliminate_redundant_I(all_i)
@@ -528,3 +526,11 @@ class ImageAnalysis(object):
             ImageAnalysis.__log.debug("all I: " + str(all_detected_I))
             ImageAnalysis.__log.debug("all nondup I: " + str(nondup_i) + "icount: " + str(i_count))
             return i_count
+
+    @staticmethod
+    def most_voted_number(allnumbers):
+        count = Counter(allnumbers)
+        mostvotednumber = count.most_common(1)[0][0]
+        ImageAnalysis.__log.info("Most voted number is: " + str(mostvotednumber))
+        return mostvotednumber
+
