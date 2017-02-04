@@ -27,6 +27,7 @@ from collections import Counter
 class ImageConverter(object):
     logging.config.fileConfig(cfg.get_logging_config_fullpath())
     __log = logging.getLogger()
+    __log.setLevel(cfg.get_settings_loglevel())
 
     @staticmethod
     def convertbgr2gray(image):
@@ -153,7 +154,7 @@ class ImageConverter(object):
         fps.start()
         img_hsv = ImageConverter.convertbgr2hsvfull(img)
         fps.stop()
-        ImageConverter.__log.debug("processing time hsv: " + str(fps.elapsedtime_ms()) + " ms")
+        ImageConverter.__log.info("processing time hsv: " + str(fps.elapsedtime_ms()) + " ms")
 
         lower_red = np.array(cfg.get_maskletter_red_low_full_splited())
         upper_red = np.array(cfg.get_maskletter_red_high_full_splited())
@@ -162,13 +163,13 @@ class ImageConverter(object):
         fps.start()
         mask = cv2.inRange(img_hsv, lower_red, upper_red)
         fps.stop()
-        ImageConverter.__log.debug("processing time inRange: " + str(fps.elapsedtime_ms()) + " ms")
+        ImageConverter.__log.info("processing time inRange: " + str(fps.elapsedtime_ms()) + " ms")
 
         # apply mask on image
         fps.start()
         output_img = cv2.bitwise_and(img, img, mask=mask)
         fps.stop()
-        ImageConverter.__log.debug("processing time masking: " + str(fps.elapsedtime_ms()) + " ms")
+        ImageConverter.__log.info("processing time masking: " + str(fps.elapsedtime_ms()) + " ms")
 
         return output_img
 
@@ -242,7 +243,7 @@ class ImageAnalysis(object):
 
             rect = cv2.minAreaRect(c)       # get minimal area rectangle
             box = cv2.boxPoints(rect)       # represent area as points
-            box = np.int0(box)              # normalize array
+            box = np.int0(np.around(box))   # round values and normalize array
 
             box = ImageAnalysis.reorder_edgepoints_clockwise(box)
             if not i:
@@ -251,9 +252,10 @@ class ImageAnalysis(object):
             else:
                 pt_top = tuple(np.int0(box[0]))         # top left position
                 pt_bottom = tuple(np.int0(box[3]))      # bottom right position
-
-            edges.append(pt_top)
-            edges.append(pt_bottom)
+            dist = math.sqrt((abs(pt_top[0] - pt_bottom[0])) ** 2 + (abs(pt_top[1] - pt_bottom[1])) ** 2)
+            if(dist > 80):
+                edges.append(pt_top)
+                edges.append(pt_bottom)
             i = True
 
         if len(edges) == 4:
@@ -300,7 +302,7 @@ class ImageAnalysis(object):
 
             rect = cv2.minAreaRect(c)       # get minimal area rectangle
             box = cv2.boxPoints(rect)       # represent area as points
-            box = np.int0(box)              # normalize array
+            box = np.int0(np.around(box))  # round values and normalize array
 
             cv2.drawContours(img, [box], 0, (0, 255, 255), 1)
             box = ImageAnalysis.reorder_edgepoints_clockwise(box)
@@ -472,8 +474,8 @@ class ImageAnalysis(object):
                     ImageAnalysis.__log.debug("V \ - line found with deg: " + str(deg))
                     v_left_found = True
                     continue
-                #else:
-                    #ImageAnalysis.__log.debug("line with deg: " + str(deg) + "out of allowed range")
+                else:
+                    ImageAnalysis.__log.debug("line with deg: " + str(deg) + "out of allowed range")
 
             # eliminate redundant detected I
             i_count = ImageAnalysis.__eliminate_redundant_I(all_i)
