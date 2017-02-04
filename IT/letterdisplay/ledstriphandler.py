@@ -24,18 +24,22 @@ class LEDStripHandler:
     __ledpins = [11, 12, 13, 15, 16]
     fileConfig(cfg.get_logging_config_fullpath())
     __log = logging.getLogger()
+    __log.setLevel(cfg.get_settings_loglevel())
 
     @staticmethod
     def display_letter_on_LEDs(number):
         if not LEDStripHandler.__gpio_init:
-            LEDStripHandler.setupGPIOPins()
+            LEDStripHandler.__setupGPIOPins()
         GPIO.output(LEDStripHandler.__ledpins[:number], GPIO.HIGH)  # LEDs einschalten
         time.sleep(0.1)  # Pin "setzen lassen"
-        LEDStripHandler.__log.info("LEDs for number " + str(number) + "turned on!")
+        LEDStripHandler.__log.info("LEDs for number " + str(number) + " turned on!")
 
     @staticmethod
-    def setupGPIOPins():
+    def __setupGPIOPins():
+        LEDStripHandler.__log.info("Initialize GPIO Pins...")
+        GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BOARD)    #GPIO Layout (Pin-Nummer verwenden)
         GPIO.setup(LEDStripHandler.__ledpins, GPIO.OUT, initial=GPIO.LOW) #declare all Pins as output and turn LEDs off
         time.sleep(0.1)             #Pin "setzen lassen"
         LEDStripHandler.__gpio_init = True
+        LEDStripHandler.__log.info("Initialize GPIO Pins done!")
