@@ -59,7 +59,8 @@ class ImageNumber(object):
 
     def __call__(self):
         correctedimg = ImageConverter.transform_perspectiveview2topdownview(self.image, self.edges)
-        self.number = ImageAnalysis.get_roman_letter(correctedimg)
+        roi = ImageConverter.minimize_roi_lettercontour(correctedimg)
+        self.number = ImageAnalysis.get_roman_letter(roi)
         return self.number
 
     def __str__(self):

@@ -74,7 +74,6 @@ class ImageConverter(object):
         output_img = cv2.bitwise_and(image, image, mask=mask)    # apply mask on image
         img_gray = ImageConverter.convertbgr2gray(output_img)   # convert image to grayscale
         img_gray[img_gray > 0] = 1                              # set all non black pixels to white for BW-image
-
         return img_gray
 
     @staticmethod
@@ -112,6 +111,19 @@ class ImageConverter(object):
         M = cv2.getPerspectiveTransform(pts, dst)
         img2 = cv2.warpPerspective(img, M, (maxWidth, maxHeight))
         return img2
+
+    @staticmethod
+    def minimize_roi_lettercontour(roi):
+        img_gray = ImageConverter.convert2blackwhite(roi)
+        img_gray[img_gray > 0] = 255
+        # remove border erosion
+        i_h, i_w = img_gray.shape
+        img_gray_s = img_gray[1:i_h-1, 1:i_w-1]
+
+        #get rectangle around letter and crop original image
+        x, y, w, h = cv2.boundingRect(img_gray_s)
+        cropped = roi[y:y+h, x:x+w]
+        return cropped
 
     @staticmethod
     def thinningblackwhiteimage(image):
@@ -312,7 +324,7 @@ class ImageAnalysis(object):
                 pt_top = tuple(np.int0(box[0]))         # top left position
                 pt_bottom = tuple(np.int0(box[3]))      # bottom right position
             dist = math.sqrt((abs(pt_top[0] - pt_bottom[0])) ** 2 + (abs(pt_top[1] - pt_bottom[1])) ** 2)
-            if(dist > 80):
+            if dist > 80:
                 edges.append(pt_top)
                 edges.append(pt_bottom)
             i = True
@@ -373,7 +385,7 @@ class ImageAnalysis(object):
                 pt_bottom = tuple(np.int0(box[3]))  # bottom right position
 
             dist = math.sqrt((abs(pt_top[0] - pt_bottom[0])) ** 2 + (abs(pt_top[1] - pt_bottom[1])) ** 2)
-            if(dist > 80):
+            if dist > 80:
                 edges.append(pt_top)
                 edges.append(pt_bottom)
                 cv2.line(img, pt_top, pt_bottom, (0, 0, 255), 1)
@@ -406,17 +418,19 @@ class ImageAnalysis(object):
         FPS.start()
         edges = ImageConverter.thinningblackwhiteimage(img_bw)
         img_gray_mark = ImageConverter.convertgray2bgr(edges)
-
         lines = cv2.HoughLines(edges, 1, np.pi / 180, 15, np.array([]), 0, 0)
         FPS.stop()
-        ImageAnalysis.__log.debug("processing time HoughLines: " + str(FPS.elapsedtime_ms()) + " ms")
+        ImageAnalysis.__log.info("processing time HoughLines & thinning: " + str(FPS.elapsedtime_ms()) + " ms")
 
+        FPS.start()
         # if lines found, enumerate number based on its angle
         if lines is not None:
             line, _, _ = lines.shape
             v_left_found = False
             v_right_found = False
-            all_i = []  # = [[] for i in range(3)]
+            all_i = []
+            all_v_left = []
+            all_v_right = []
 
             for i in range(line):
 
@@ -439,7 +453,6 @@ class ImageAnalysis(object):
                     # get median x-value of both points
                     x = (int(x0 + 1000 * (-b)) + int(x0 - 1000 * (-b))) / 2
                     all_i.append([x, line_pt1, line_pt2])
-                    cv2.line(img_gray_mark, line_pt1, line_pt2, (255, 255, 0), 1, cv2.LINE_AA)
 
                     ImageAnalysis.__log.debug("pos line_pt1: " + str(line_pt1) + " vertical line found with deg: " + str(deg) + ", theta: " + str(theta))
                     continue
@@ -447,23 +460,50 @@ class ImageAnalysis(object):
                 # right hand side of V
                 elif 10.0 < deg < 20.0:
                     ImageAnalysis.__log.debug("V / - line found with deg: " + str(deg))
-                    cv2.line(img_gray_mark, line_pt1, line_pt2, (0, 0, 255), 1, cv2.LINE_AA)
-                    v_right_found = True
+                    x = (int(x0 + 1000 * (-b)) + int(x0 - 1000 * (-b))) / 2
+                    all_v_right.append([x, line_pt1, line_pt2])
                     continue
 
                 # left hand side of V
                 elif 150.0 < deg < 170.0:
                     ImageAnalysis.__log.debug("V \ - line found with deg: " + str(deg))
-                    cv2.line(img_gray_mark, line_pt1, line_pt2, (0, 255, 0), 1, cv2.LINE_AA)
-                    v_left_found = True
+                    x = (int(x0 + 1000 * (-b)) + int(x0 - 1000 * (-b))) / 2
+                    all_v_left.append([x, line_pt1, line_pt2])
                     continue
                 else:
                     ImageAnalysis.__log.debug("line with deg: " + str(deg) + "out of allowed range")
-
+            FPS.stop()
+            ImageAnalysis.__log.info("processing time evaluate all lines: " + str(FPS.elapsedtime_ms()) + " ms")
             # eliminate redundant detected I
-            i_count = ImageAnalysis.__eliminate_redundant_I(all_i)
+            FPS.start()
+            nonredundant_i = ImageAnalysis.__eliminate_redundant_I(all_i)
+            nonredundant_v_left = ImageAnalysis.__eliminate_redundant_V(all_v_left)
+            nonredundant_v_right = ImageAnalysis.__eliminate_redundant_V(all_v_right)
+            FPS.stop()
+            ImageAnalysis.__log.info("processing time remove redundances: " + str(FPS.elapsedtime_ms()) + " ms")
+            FPS.start()
+            roi_height = roi.shape[0]
+            nonintersected_i = ImageAnalysis.__eliminate_intersectioned_I(nonredundant_v_left, nonredundant_v_right, nonredundant_i.copy(), roi_height)
+            FPS.stop()
+            ImageAnalysis.__log.info("processing time intersection: " + str(FPS.elapsedtime_ms()) + " ms")
 
             # enumerate the number based on detected lines
+            ImageAnalysis.__log.debug("v_left: " + str(len(nonredundant_v_left)) + " | v_right: " + str(len(nonredundant_v_right)) + " | i: " + str(len(nonintersected_i)))
+
+            FPS.start()
+            if len(nonredundant_v_left) > 0:
+                img_gray_mark = ImageAnalysis.__printlines(img_gray_mark, nonredundant_v_left, "V-LEFT")
+                v_left_found = True
+            if len(nonredundant_v_right) > 0:
+                img_gray_mark = ImageAnalysis.__printlines(img_gray_mark, nonredundant_v_right, "V-RIGHT")
+                v_right_found = True
+            i_count = len(nonintersected_i)
+            if i_count > 0:
+                img_gray_mark = ImageAnalysis.__printlines(img_gray_mark, nonintersected_i, "I")
+
+            FPS.stop()
+            ImageAnalysis.__log.info("processing time printlines: " + str(FPS.elapsedtime_ms()) + " ms")
+
             number = ImageAnalysis.__enumerate_number_withlines(v_left_found, v_right_found, i_count)
 
         else:
@@ -477,25 +517,23 @@ class ImageAnalysis(object):
         """
         This function determines the number of a roman letter (only I, II, III, IV, V)
         :param roi: cropped image with only the letters on it
-        :return: detect number as integer
+        :return: image with all detected lines for the number
         """
         FPS = FPSHelper()
         number = 0
         img_bw = ImageConverter.convert2blackwhite(roi)
 
         # edge detection
-        FPS.start()
         edges = ImageConverter.thinningblackwhiteimage(img_bw)
         lines = cv2.HoughLines(edges, 1, np.pi / 180, 15, np.array([]), 0, 0)
-        FPS.stop()
-        ImageAnalysis.__log.debug("processing time HoughLines: " + str(FPS.elapsedtime_ms()) + " ms")
-
         # if lines found, enumerate number based on its angle
         if lines is not None:
             line, _, _ = lines.shape
             v_left_found = False
             v_right_found = False
-            all_i = []  # = [[] for i in range(3)]
+            all_i = []
+            all_v_left = []
+            all_v_right = []
 
             for i in range(line):
 
@@ -509,37 +547,40 @@ class ImageAnalysis(object):
                 line_pt1 = (int(x0 + 1000 * (-b)), int(y0 + 1000 * a))
                 line_pt2 = (int(x0 - 1000 * (-b)), int(y0 - 1000 * a))
 
-                #ImageAnalysis.__log.debug("-----\tlinept1: " + str(line_pt1) + "\tlinept2: " + str(line_pt2) + "\tdeg:" + str(deg))
-
                 # detect an I
                 if (0.0 < deg < 1.0) or (178.0 < deg < 180.0):
-                    ImageAnalysis.__log.debug("I - line found with deg: " + str(deg))
-
                     # get median x-value of both points
                     x = (int(x0 + 1000 * (-b)) + int(x0 - 1000 * (-b))) / 2
                     all_i.append([x, line_pt1, line_pt2])
-
-                    #ImageAnalysis.__log.debug("pos line_pt1: " + str(line_pt1) + " vertical line found with deg: " + str(deg) + ", theta: " + str(theta))
                     continue
 
                 # right hand side of V
                 elif 10.0 < deg < 20.0:
-                    ImageAnalysis.__log.debug("V / - line found with deg: " + str(deg))
-                    v_right_found = True
+                    x = (int(x0 + 1000 * (-b)) + int(x0 - 1000 * (-b))) / 2
+                    all_v_right.append([x, line_pt1, line_pt2])
                     continue
 
                 # left hand side of V
                 elif 150.0 < deg < 170.0:
-                    ImageAnalysis.__log.debug("V \ - line found with deg: " + str(deg))
-                    v_left_found = True
+                    x = (int(x0 + 1000 * (-b)) + int(x0 - 1000 * (-b))) / 2
+                    all_v_left.append([x, line_pt1, line_pt2])
                     continue
                 else:
                     ImageAnalysis.__log.debug("line with deg: " + str(deg) + "out of allowed range")
 
             # eliminate redundant detected I
-            i_count = ImageAnalysis.__eliminate_redundant_I(all_i)
+            nonredundant_i = ImageAnalysis.__eliminate_redundant_I(all_i)
+            nonredundant_v_left = ImageAnalysis.__eliminate_redundant_V(all_v_left)
+            nonredundant_v_right = ImageAnalysis.__eliminate_redundant_V(all_v_right)
+            roi_height = roi.shape[0]
+            nonintersected_i = ImageAnalysis.__eliminate_intersectioned_I(nonredundant_v_left, nonredundant_v_right, nonredundant_i.copy(), roi_height)
 
-            # enumerate the number based on detected lines
+            if len(nonredundant_v_left) > 0:
+                v_left_found = True
+            if len(nonredundant_v_right) > 0:
+                v_right_found = True
+            i_count = len(nonintersected_i)
+
             number = ImageAnalysis.__enumerate_number_withlines(v_left_found, v_right_found, i_count)
 
         else:
@@ -553,7 +594,7 @@ class ImageAnalysis(object):
         # enumerate the number based on detected lines
         if v_left and v_right:
             n = 5
-            if i == 1:
+            if i != 0:
                 n = 4
             ImageAnalysis.__log.info("detected number: " + str(n))
             return n
@@ -561,9 +602,66 @@ class ImageAnalysis(object):
             ImageAnalysis.__log.info("detected number: " + str(i))
             return i
         else:
-            ImageAnalysis.__log.error("not able to enumerate number!!")
-            # TODO: Error handling if number not detected e.g. other algorithm to detect number
+            ImageAnalysis.__log.warning("not able to enumerate number...")
             return 0
+
+    @staticmethod
+    def __eliminate_redundant_V(all_detected_V):
+        if len(all_detected_V) != 0:
+            all_detected_V.sort()
+            all_v_count = 0
+
+            nondup_v = [all_detected_V.pop(0), ]
+            for x in all_detected_V[1::1]:
+                xcor = x[0]
+                pt1 = x[1]
+                pt2 = x[2]
+                # Skip items within tolerance.
+                if abs(nondup_v[all_v_count][0] - xcor) <= ImageAnalysis.letter_tolerance_i_gap:
+                    continue
+                nondup_v.append([xcor, pt1, pt2])
+                all_v_count += 1
+
+            return nondup_v
+        else:
+            return []
+
+    @staticmethod
+    def __eliminate_intersectioned_I(all_v_left, all_v_right, all_nonredi, img_height):
+        for candidate in all_nonredi:
+            for v in all_v_left:
+                intersectionfound = ImageAnalysis.__line_intersection(v, candidate)
+                if intersectionfound:
+                    if intersectionfound[1] > img_height/5:
+                        #print("left v - intersected at: " + str(intersectionfound) + " with i: " + str(candidate) + " and v: " + str(v))
+                        all_nonredi.remove(candidate)
+                        break
+            else:
+                for v in all_v_right:
+                    intersectionfound = ImageAnalysis.__line_intersection(v, candidate)
+                    if intersectionfound:
+                        if 0 < intersectionfound[1] < img_height:
+                            #print("right v - intersected at: " + str(intersectionfound) + " with i: " + str(candidate) + " and v: " + str(v))
+                            all_nonredi.remove(candidate)
+                            break
+        return all_nonredi
+
+    @staticmethod
+    def __line_intersection(line1, line2):
+        xdiff = (line1[1][0] - line1[2][0], line2[1][0] - line2[2][0])
+        ydiff = (line1[1][1] - line1[2][1], line2[1][1] - line2[2][1])
+
+        def det(a, b):
+            return a[0] * b[1] - a[1] * b[0]
+
+        div = det(xdiff, ydiff)
+        if div == 0:
+            return False
+
+        d = (det(line1[1], line1[2]), det(line2[1], line2[2]))
+        x = det(d, xdiff) / div
+        y = det(d, ydiff) / div
+        return x, y
 
     @staticmethod
     def __eliminate_redundant_I(all_detected_I):
@@ -582,10 +680,32 @@ class ImageAnalysis(object):
                     continue
                 nondup_i.append([xcor, pt1, pt2])
                 all_i_count += 1
-            i_count = len(nondup_i)
-            ImageAnalysis.__log.debug("all I: " + str(all_detected_I))
-            ImageAnalysis.__log.debug("all nondup I: " + str(nondup_i) + "icount: " + str(i_count))
-            return i_count
+            return nondup_i
+        else:
+            return []
+
+    @staticmethod
+    def __printlines(img, lines, type):
+        """
+        Print lines on image
+        :param img: Image to apply lines on
+        :param lines: all lines to be printed
+        :param type: line type to match coloring - VALUES: I, V-LEFT, V-RIGHT
+        :return: Image with colored lines
+        """
+        if len(lines) != 0:
+            for line in lines:
+                if type == "I":
+                    cv2.line(img, line[1], line[2], (255, 255, 0), 1, cv2.LINE_AA)
+                elif type == "V-LEFT":
+                    cv2.line(img, line[1], line[2], (0, 255, 0), 1, cv2.LINE_AA)
+                elif type == "V-RIGHT":
+                    cv2.line(img, line[1], line[2], (0, 0, 255), 1, cv2.LINE_AA)
+                else:
+                    ImageAnalysis.__log.info("wrong line type provided, line will not be printed...")
+        else:
+            ImageAnalysis.__log.info("no lines provided to print...")
+        return img
 
     @staticmethod
     def most_voted_number(allnumbers):
