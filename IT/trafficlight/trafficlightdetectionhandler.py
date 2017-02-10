@@ -65,17 +65,15 @@ class TrafficLightDetection(object):
         self.red_color = 0
         self.greenpixel_count = 0
         self.redpixel_count = 0
-        self.FPS = FPSHelper()
+        self.FPS = None
         fileConfig(cfg.get_logging_config_fullpath())
         self.__log = logging.getLogger()
 
     # Main logic for TrafficLightDetection
     def detect_trafficlight(self, frame):
-        self.FPS.start()
-
+        self.FPS = FPSHelper()
         self.frame = frame
         self.image_original = frame.copy()
-
         self.crop_image()
         self.get_brightest_redpixel()
         self.get_brightest_greenpixel()
@@ -99,88 +97,56 @@ class TrafficLightDetection(object):
     # Get the brightest red pixel on frame
     def get_brightest_redpixel(self):
         # --- Get red pixels ---
-
-        red_image = self.frame.copy()
-        red_image_output = ImageConverter.mask_color_red(red_image)
-
-        #old tested...
-        """"# convert to HSV
-        red_image_hsv = ImageConverter.convertbgr2hsv(red_image)
-
-        red_image_mask0 = cv2.inRange(red_image_hsv, self.lower_red0, self.upper_red0)
-        red_image_mask1 = cv2.inRange(red_image_hsv, self.lower_red1, self.upper_red1)
-
-        # join my masks
-        red_image_mask = red_image_mask0 + red_image_mask1
-
-        # use mask
-        red_image_output = cv2.bitwise_and(red_image_hsv, red_image_hsv, mask=red_image_mask)
-        # to BGR
-        """
+        red_image = self.frame
+        red_image_output = ImageConverter.mask_color_red_traffic(red_image)
         self.red_image_bgr = ImageConverter.converthsv2bgr(red_image_output)
 
         # --- Count the red pixels ---
-        # Convert HSV to GRAY
-        #red_count_image = cv2.cvtColor(self.red_image_bgr, cv2.COLOR_HSV2BGR)
-        red_count_image = ImageConverter.convertbgr2gray(self.red_image_bgr)
-        # Count red
-        self.redpixel_count = cv2.countNonZero(red_count_image)
+        red_image_gray = ImageConverter.convertbgr2gray(self.red_image_bgr)
+        self.redpixel_count = cv2.countNonZero(red_image_gray)
 
         # Check if any red pixels are left after apply red color mask
         if self.redpixel_count > 0:
             # --- Find brightest spot ---
-            # copy image
-            red_rect_image = self.red_image_bgr.copy()
-            # convert to gray
-            red_rect_image_gray = ImageConverter.convertbgr2gray(red_rect_image)
             # perform a naive attempt to find the (x, y) coordinates of the area of the image with the largest intensity value
-            (minVal, maxVal, minLoc, self.maxLoc) = cv2.minMaxLoc(red_rect_image_gray)  # get position of pixel with max grey value
+            (minVal, maxVal, minLoc, self.maxLoc) = cv2.minMaxLoc(red_image_gray)  # get position of pixel with max grey value
 
             # Draw a circle around the detected red pixel
             if self.redfound and self.redpixelx != 0 and self.redpixely != 0:  # if first red pixel is found, draw on cropped image
                 cv2.circle(self.image_original, (self.croppointx + self.maxLoc[0], self.croppointy + self.maxLoc[1]), 5, (0, 0, 255), 2)
             else:
                 cv2.circle(self.image_original, self.maxLoc, 5, (0, 0, 255), 2)  # draw on original image
-                self.red_color = np.uint8([[red_rect_image_gray[self.maxLoc[1], self.maxLoc[0]]]])  # get value of brightest gray pixel
+                self.red_color = np.uint8([[red_image_gray[self.maxLoc[1], self.maxLoc[0]]]])  # get value of brightest gray pixel
         else:  # if no red pixels are left after apply red color mask, set value to 0
             self.red_color = 0
 
     # Get the brightest green pixel on frame
     def get_brightest_greenpixel(self):
         # --- Get green pixels ---
-        green_image = self.frame.copy()
-        green_image_output = ImageConverter.mask_color_red(green_image)
-        # to BGR
+        green_image = self.frame
+        green_image_output = ImageConverter.mask_color_green(green_image)
         self.green_image_bgr = ImageConverter.converthsv2bgr(green_image_output)
 
         # --- Count the green pixels ---
-        # Convert HSV to GRAY
-        #green_count_image = cv2.cvtColor(self.green_image_bgr, cv2.COLOR_HSV2BGR)
-        green_count_image = ImageConverter.convertbgr2gray(self.green_image_bgr)
-        # Count green
-        self.greenpixel_count = cv2.countNonZero(green_count_image)
+        green_image_gray = ImageConverter.convertbgr2gray(self.green_image_bgr)
+        self.greenpixel_count = cv2.countNonZero(green_image_gray)
 
         if self.greenpixel_count > 0:
             # --- Find brightest spot ---
-            # copy image
-            green_rect_image = self.green_image_bgr.copy()
-            # convert to gray
-            green_rect_image_gray = ImageConverter.convertbgr2gray(green_rect_image)
             # perform a naive attempt to find the (x, y) coordinates of the area of the image with the largest intensity value
-            (minVal, maxVal, minLoc, self.maxLoc) = cv2.minMaxLoc(green_rect_image_gray)  # get position of pixel with max grey value
+            (minVal, maxVal, minLoc, self.maxLoc) = cv2.minMaxLoc(green_image_gray)  # get position of pixel with max grey value
 
             # Draw a circle around the detected green pixel
             if self.redfound and self.redpixelx != 0 and self.redpixely != 0:  # if first red pixel is found, draw on cropped image
                 cv2.circle(self.image_original, (self.croppointx + self.maxLoc[0], self.croppointy + self.maxLoc[1]), 5, (0, 255, 0), 2)
             else:
                 cv2.circle(self.image_original, self.maxLoc, 5, (0, 255, 0), 2)  # draw on original image
-                self.green_color = np.uint8([[green_rect_image_gray[self.maxLoc[1], self.maxLoc[0]]]])  # get value of brightest gray pixel
+                self.green_color = np.uint8([[green_image_gray[self.maxLoc[1], self.maxLoc[0]]]])  # get value of brightest gray pixel
         else:  # if no green pixels are left after apply green color mask, set value to 0
             self.green_color = 0
 
     # Find out which pixel is brighter (red or green)
     def detect_brighter_color(self):
-        self.FPS.stop()
         font = cfg.get_opencv_font()
 
         # Add border to frame
@@ -194,9 +160,6 @@ class TrafficLightDetection(object):
             # Debug grey pixel values (of original green and red pixel)
             self.__log.debug("red color: " + str(self.red_color) + " | green color: " + str(self.green_color))
             cv2.putText(self.image_original, "red color: " + str(self.red_color) + " | green color: " + str(self.green_color), (self.textspace, (3 * self.textspace)), font, 0.7, self.color_green, 1, cv2.LINE_AA)
-            # Debug FPS
-            self.__log.debug("FPS: {0:.2f}".format(self.FPS.fps()) + " ms: {0:.2f}\n".format(self.FPS.elapsedtime_ms()))
-            cv2.putText(self.image_original, "FPS: {0:.2f}".format(self.FPS.fps()), ((self.camera_width + self.bordersize_right + self.bordersize_left) - 100 - self.textspace, (self.camera_height + self.bordersize_top + self.bordersize_bottom) - self.textspace), font, 0.7, self.color_green, 1, cv2.LINE_AA)
         # Red detected
         if self.red_color > self.green_color:
             if not self.redfound:

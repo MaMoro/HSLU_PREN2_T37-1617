@@ -257,8 +257,10 @@ def set_color_orange(val):
 def get_masktrafficlight_red_low_l():
     return __loadconfig().get('mask_trafficlight', 'red_low_l')
 
+
 def get_masktrafficlight_red_low_l_splited():
     return np.array([int(c) for c in get_masktrafficlight_red_low_l().split(',')])
+
 
 def set_masktrafficlight_red_low_l(val):
     __persistchanges('mask_trafficlight', 'red_low_l', val)
