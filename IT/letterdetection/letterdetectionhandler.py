@@ -38,43 +38,35 @@ class LetterDetectionHandler(object):
         self.__log.info("Letterdetection started")
         self.font = cfg.get_opencv_font()
         self.processing()
+        #self.rundetection()
 
     def rundetection(self):
         self.__log.info("Start capturing")
-        for frame in self.camera.capture_continuous(self.rawCapture, format="bgr", use_video_port=True):
-            img = frame.array
-            numberplate = np.zeros((100, 100), np.uint8)
+        pistream = CameraHandler().start()
+        while True:
+            img = pistream.read()
             self.FPS.start()
-
-            redmask = ImageConverter.mask_color_red(img)
-            #cv2.imshow("redmask", redmask)
-            self.__log.debug("Frame: red mask done")
+            redmask = ImageConverter.mask_color_red_fullhsv(img)
             imgmarked, edges = ImageAnalysis.get_ordered_corners_drawed(redmask, img)
-            self.__log.debug("Frame: edges for letter range detection done")
             if edges != 0:
-                self.__log.debug("Frame: correct perspective of letter range")
                 correctedimg = ImageConverter.transform_perspectiveview2topdownview(img, edges)
-                number = ImageAnalysis.get_roman_letter(correctedimg)
+                cropped = ImageConverter.minimize_roi_lettercontour(correctedimg)
+                numberimg = ImageAnalysis.get_roman_letter(cropped)
                 self.FPS.stop()
-                self.__log.debug("FPS: {0:.2f}".format(self.FPS.fps()) + " ms: {0:.2f}\n".format(self.FPS.elapsedtime_ms()))
-                cv2.putText(img, "FPS: {0:.2f}".format(self.FPS.fps()), (cfg.get_camera_width() - 90, cfg.get_camera_height() - 10), self.font, 0.7, (0, 255, 0), 1, cv2.LINE_AA)
-                cv2.imshow("Perspective", correctedimg)
-                number = str(number)
-                cv2.putText(numberplate, number, (25, 80), 0, 1, (255, 255, 255))
-                cv2.imshow("Letter", numberplate)
+                self.__log.info("FPS: " + str(self.FPS.fps()) + " | ms: " + str(self.FPS.elapsedtime_ms()))
+                #cv2.imshow("Cropped", cropped)
+                #cv2.imshow("Letter", numberimg)
                 cv2.imshow("Video", imgmarked)
             else:
-                self.__log.debug("Frame: no letter range detected")
                 self.FPS.stop()
-                self.__log.debug("FPS: {0:.2f}".format(self.FPS.fps()) + " ms: {0:.2f}\n".format(self.FPS.elapsedtime_ms()))
-                cv2.putText(img, "FPS: {0:.2f}".format(self.FPS.fps()), (550, 460), self.font, 0.7, (255, 255, 255), 1, cv2.LINE_AA)
+                #self.__log.info("FPS: " + str(self.FPS.fps()) + " | ms: " + str(self.FPS.elapsedtime_ms()))
                 cv2.imshow("Video", img)
-            self.rawCapture.truncate(0)
 
             key = cv2.waitKey(1) & 0xFF
             if key == ord("q"):
                 self.__log.info("Finished capturing")
                 break
+        CameraHandler().stop()
         cv2.destroyAllWindows()
 
     def processing(self):
@@ -90,14 +82,10 @@ class LetterDetectionHandler(object):
         pistream = CameraHandler().start()
         while True:
             img = pistream.read()
-            #self.FPS.start()
-            #redmask = ImageConverter.mask_color_red(img)
+            self.FPS.start()
             redmask = ImageConverter.mask_color_red_fullhsv(img)
-            #self.FPS.stop()
-            #self.FPS.start()
-            #imgmarked, edges = ImageAnalysis.get_ordered_corners_drawed(redmask, img)
-            edges = ImageAnalysis.get_ordered_corners(redmask)
-            #self.FPS.stop()
+            imgmarked, edges = ImageAnalysis.get_ordered_corners_drawed(redmask, img)
+            #edges = ImageAnalysis.get_ordered_corners(redmask)
             if edges != 0:
                 processingqueue.put(ImageNumber(img, edges))
                 imgcount += 1
@@ -107,11 +95,9 @@ class LetterDetectionHandler(object):
                     processingqueue.put(None)   # enforce ImageProcessing instances to terminate
                 processingqueue.join()          # waiting for alle processes to be terminated
                 break
-            #self.FPS.stop()
-            #cv2.imshow("redmask", redmask)
-            #cv2.imshow("imagemarked", imgmarked)
-            #self.__log.info("ms: " + str(self.FPS.elapsedtime_ms()))
-            #self.__log.info("FPS: " + str(self.FPS.fps()))
+            self.FPS.stop()
+            cv2.imshow("imagemarked", imgmarked)
+            self.__log.info("FPS: " + str(self.FPS.fps()) + " | ms: " + str(self.FPS.elapsedtime_ms()))
 
             key = cv2.waitKey(1) & 0xFF
             if key == ord("q"):
