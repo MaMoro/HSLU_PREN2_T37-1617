@@ -107,7 +107,7 @@
     <div id="tabs-5">
         <form id="save_form">
             <div id="accordion">
-                <h3>Settings</h3>
+                <h3>General - Settings</h3>
                 <div>
                     <table>
                         <tr>
@@ -133,309 +133,371 @@
                         </tr>
                         <tr>
                             <td>Debug:</td>
-                            <td><input type="checkbox" name="settings_debug" value="settings_debug" {{ settings_debug
-                                       }}></td>
+                            <td><input type="checkbox" name="settings_debug" value="settings_debug" {{ settings_debug }}></td>
                         </tr>
                     </table>
                 </div>
-                <h3>Color HSV mask values for Trafficlight detection</h3>
+                <h3>General - Color BGR values</h3>
+                <div>
+                    <table>
+                        <tr>
+                            <td>Black:</td>
+                            <td><input type="text" id="color_black" class="colorbgr" name="color_black" value="{{ color_black }}">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Black low:</td>
+                            <td><input type="text" id="color_black_low" class="colorbgr" name="color_black_low"
+                                       value="{{ color_black_low }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Black high:</td>
+                            <td><input type="text" id="color_black_high" class="colorbgr" name="color_black_high"
+                                       value="{{ color_black_high }}"></td>
+                        </tr>
+                        <tr>
+                            <td>White:</td>
+                            <td><input type="text" id="color_white" class="colorbgr" name="color_white" value="{{ color_white }}">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Red:</td>
+                            <td><input type="text" id="color_red" class="colorbgr" name="color_red" value="{{ color_red }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Green:</td>
+                            <td><input type="text" id="color_green" class="colorbgr" name="color_green" value="{{ color_green }}">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Blue:</td>
+                            <td><input type="text" id="color_blue" class="colorbgr" name="color_blue" value="{{ color_blue }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Cyan:</td>
+                            <td><input type="text" id="color_cyan" class="colorbgr" name="color_cyan" value="{{ color_cyan }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Magenta:</td>
+                            <td><input type="text" id="color_magenta" class="colorbgr" name="color_magenta"
+                                       value="{{ color_magenta }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Yellow:</td>
+                            <td><input type="text" id="color_yellow" class="colorbgr" name="color_yellow"
+                                       value="{{ color_yellow }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Gray:</td>
+                            <td><input type="text" id="color_gray" class="colorbgr" name="color_gray" value="{{ color_gray }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Orange:</td>
+                            <td><input type="text" id="color_orange" class="colorbgr" name="color_orange"
+                                       value="{{ color_orange }}"></td>
+                        </tr>
+                    </table>
+                </div>
+                <h3>IT - TrafficlightDetection - Color HSV mask values</h3>
                 <div>
                     <table>
                         <tr>
                             <td>Low red mask minimal value:</td>
                             <td><input type="text" id="mask_trafficlight_red_low_l" class="colorhsv"
                                        name="mask_trafficlight_red_low_l" value="{{ mask_trafficlight_red_low_l }}">
-                </div>
-                </td>
-                </tr>
-                <tr>
-                    <td>Low red mask maximal value:</td>
-                    <td><input type="text" id="mask_trafficlight_red_low_h" class="colorhsv"
-                               name="mask_trafficlight_red_low_h" value="{{ mask_trafficlight_red_low_h }}"></td>
-                </tr>
-                <tr>
-                    <td>High red mask minimal value:</td>
-                    <td><input type="text" id="mask_trafficlight_red_high_l" class="colorhsv"
-                               name="mask_trafficlight_red_high_l" value="{{ mask_trafficlight_red_high_l }}"></td>
-                </tr>
-                <tr>
-                    <td>High red mask maximal value:</td>
-                    <td><input type="text" id="mask_trafficlight_red_high_h" class="colorhsv"
-                               name="mask_trafficlight_red_high_h" value="{{ mask_trafficlight_red_high_h }}"></td>
-                </tr>
-                <tr>
-                    <td>Green mask minimal value:</td>
-                    <td><input type="text" id="mask_trafficlight_green_l" class="colorhsv"
-                               name="mask_trafficlight_green_l" value="{{ mask_trafficlight_green_l }}"></td>
-                </tr>
-                <tr>
-                    <td>Green mask maximal value:</td>
-                    <td><input type="text" id="mask_trafficlight_green_h" class="colorhsv"
-                               name="mask_trafficlight_green_h" value="{{ mask_trafficlight_green_h }}"></td>
-                </tr>
+                        </td>
+                        </tr>
+                        <tr>
+                            <td>Low red mask maximal value:</td>
+                            <td><input type="text" id="mask_trafficlight_red_low_h" class="colorhsv"
+                                       name="mask_trafficlight_red_low_h" value="{{ mask_trafficlight_red_low_h }}"></td>
+                        </tr>
+                        <tr>
+                            <td>High red mask minimal value:</td>
+                            <td><input type="text" id="mask_trafficlight_red_high_l" class="colorhsv"
+                                       name="mask_trafficlight_red_high_l" value="{{ mask_trafficlight_red_high_l }}"></td>
+                        </tr>
+                        <tr>
+                            <td>High red mask maximal value:</td>
+                            <td><input type="text" id="mask_trafficlight_red_high_h" class="colorhsv"
+                                       name="mask_trafficlight_red_high_h" value="{{ mask_trafficlight_red_high_h }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Green mask minimal value:</td>
+                            <td><input type="text" id="mask_trafficlight_green_l" class="colorhsv"
+                                       name="mask_trafficlight_green_l" value="{{ mask_trafficlight_green_l }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Green mask maximal value:</td>
+                            <td><input type="text" id="mask_trafficlight_green_h" class="colorhsv"
+                                       name="mask_trafficlight_green_h" value="{{ mask_trafficlight_green_h }}"></td>
+                        </tr>
                 </table>
             </div>
-            <h3>Color HSV mask values for Letter detection</h3>
-            <div>
-                <table>
-                    <tr>
-                        <td>Low red mask minimal value:</td>
-                        <td><input type="text" id="mask_letter_red_low_l" class="colorhsv" name="mask_letter_red_low_l"
-                                   value="{{ mask_letter_red_low_l }}">
+                <h3>IT - TrafficlightDetection - Cropimage</h3>
+                <div>
+                    <table>
+                        <tr>
+                            <td>Height:</td>
+                            <td><input class="spinner" name="cropimage_height" value="{{ cropimage_height }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Width:</td>
+                            <td><input class="spinner" name="cropimage_width" value="{{ cropimage_width }}"></td>
+                        </tr>
+                    </table>
+                </div>
+                <h3>IT - LetterDetection - Color HSV mask values</h3>
+                <div>
+                    <table>
+                        <tr>
+                            <td>Low red mask minimal value:</td>
+                            <td><input type="text" id="mask_letter_red_low_l" class="colorhsv" name="mask_letter_red_low_l"
+                                       value="{{ mask_letter_red_low_l }}">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Low red mask maximal value:</td>
+                            <td><input type="text" id="mask_letter_red_low_h" class="colorhsv" name="mask_letter_red_low_h"
+                                       value="{{ mask_letter_red_low_h }}"></td>
+                        </tr>
+                        <tr>
+                            <td>High red mask minimal value:</td>
+                            <td><input type="text" id="mask_letter_red_high_l" class="colorhsv" name="mask_letter_red_high_l"
+                                       value="{{ mask_letter_red_high_l }}"></td>
+                        </tr>
+                        <tr>
+                            <td>High red mask maximal value:</td>
+                            <td><input type="text" id="mask_letter_red_high_h" class="colorhsv" name="mask_letter_red_high_h"
+                                       value="{{ mask_letter_red_high_h }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Red mask shift minimal value:</td>
+                            <td><input type="text" id="mask_letter_red_shift_l" class="colorhsv" name="mask_letter_red_shift_l"
+                                       value="{{ mask_letter_red_shift_l }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Red mask shift maximal value:</td>
+                            <td><input type="text" id="mask_letter_red_shift_h" class="colorhsv" name="mask_letter_red_shift_h"
+                                       value="{{ mask_letter_red_shift_h }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Red low full value:</td>
+                            <td><input type="text" id="mask_letter_red_low_full" class="colorhsv" name="mask_letter_red_low_full"
+                                       value="{{ mask_letter_red_low_full }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Red high full value:</td>
+                            <td><input type="text" id="mask_letter_red_high_full" class="colorhsv" name="mask_letter_red_high_full"
+                                       value="{{ mask_letter_red_high_full }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Minimal areasize in pixel for mask:</td>
+                            <td><input class="spinner" id="mask_letter_min_maskarea_size" name="mask_letter_min_maskarea_size"
+                               value="{{ mask_letter_min_maskarea_size }}"></td>
+                        </tr>
+                </table>
+        </div>
+                <h3>IT - LetterDetection - Processing</h3>
+                <div>
+                    <table>
+                        <tr>
+                            <td>Tolerance gap for letter I:</td>
+                            <td><input class="spinner" id="letter_tolerance_i_gap" name="letter_tolerance_i_gap"
+                                       value="{{ letter_tolerance_i_gap }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Tolerance gap for letter V:</td>
+                            <td><input class="spinner" id="letter_tolerance_v_gap" name="letter_tolerance_v_gap"
+                                       value="{{ letter_tolerance_v_gap }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Minimal amount of letters to process:</td>
+                            <td><input class="spinner" id="letter_min_amount_processed_letters" name="letter_min_amount_processed_letters"
+                                       value="{{ letter_min_amount_processed_letters }}"></td>
+                        </tr>
+                    </table>
+                </div>
+                <h3>IT - Debug &amp; Logging</h3>
+                <div>
+                    <table>
+                        <tr>
+                            <td>Write red filtered image when red detected:</td>
+                            <td><input type="checkbox" name="debug_output_red" value="debug_output_red" {{ debug_output_red }}></td>
+                        </tr>
+                        <tr>
+                            <td>Write green filtered image when green detected:</td>
+                            <td><input type="checkbox" name="debug_output_green" value="debug_output_green" {{ debug_output_green
+                                       }}></td>
+                        </tr>
+                        <tr>
+                            <td>Set background white when writing image:</td>
+                            <td><input type="checkbox" name="debug_output_bgwhite" value="debug_output_bgwhite" {{
+                                       debug_output_bgwhite }}></td>
+                        </tr>
+                        <tr>
+                            <td>Path to logging.ini:</td>
+                            <td><input type="text" name="debug_logging_config" value="{{ debug_logging_config }}"></td>
+                        </tr>
+                    </table>
+                </div>
+                <h3>IT - Camera</h3>
+                <div>
+                    <table>
+                        <tr>
+                            <td>Width:</td>
+                            <td><input class="spinner" name="camera_width" value="{{ camera_width }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Height:</td>
+                            <td><input class="spinner" name="camera_height" value="{{ camera_height }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Framerate:</td>
+                            <td><input class="spinner" name="camera_framerate" value="{{ camera_framerate }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Iso:</td>
+                            <td><input class="spinner" name="camera_iso" value="{{ camera_iso }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Awb:</td>
+                            <td><input type="text" name="camera_awb" value="{{ camera_awb }}"></td>
+                        </tr>
+                    </table>
+                </div>
+                <h3>IT - Image Files</h3>
+                <div>
+                    <table>
+                        <tr>
+                            <td>Image filename part 1:</td>
+                            <td><input type="text" name="files_multiimg1" value="{{ files_multiimg1 }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Image filename part 2:</td>
+                            <td><input type="text" name="files_multiimg2" value="{{ files_multiimg2 }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Image count:</td>
+                            <td><input class="spinner" name="files_multiimgcount" value="{{ files_multiimgcount }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Video filename:</td>
+                            <td><input type="text" name="files_video" value="{{ files_video }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Stream number:</td>
+                            <td><input class="spinner" name="files_stream" value="{{ files_stream }}"></td>
+                        </tr>
+                    </table>
+                </div>
+                <h3>IT - Image Text</h3>
+                <div>
+                    <table>
+                        <tr>
+                            <td>Space left:</td>
+                            <td><input class="spinner" name="imagetext_bordersize_left" value="{{ imagetext_bordersize_left }}">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Space top:</td>
+                            <td><input class="spinner" name="imagetext_bordersize_top" value="{{ imagetext_bordersize_top }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Space bottom:</td>
+                            <td><input class="spinner" name="imagetext_bordersize_bottom" value="{{ imagetext_bordersize_bottom }}">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Space right:</td>
+                            <td><input class="spinner" name="imagetext_bordersize_right" value="{{ imagetext_bordersize_right }}">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Textspace:</td>
+                            <td><input class="spinner" name="imagetext_textspace" value="{{ imagetext_textspace }}"></td>
+                        </tr>
+                    </table>
+                </div>
+                <h3>IT - Image Filter</h3>
+                <div>
+                    <table>
+                        <tr>
+                            <td>Kernel size:</td>
+                            <td><input class="spinner" name="filter_kernel_size" value="{{ filter_kernel_size }}"></td>
+                        </tr>
+                        <tr>
+                            <td>HSV shift:</td>
+                            <td><input class="spinner" name="filter_hsv_shift" value="{{ filter_hsv_shift }}"></td>
+                        </tr>
+                    </table>
+                </div>
+                <h3>ET - Gyroskop</h3>
+                <div>
+                    <table>
+                        <tr>
+                            <td>Power level PWM:</td>
+                            <td><input class="spinner" name="#" value="{{ 0 }}"></td>
+                        </tr>
+                    </table>
+                </div>
+                <h3>ET - Engines</h3>
+                <div>
+                    <table>
+                        <tr>
+                            <td>Speed Left Engine (cm/s):</td>
+                            <td><input class="spinner" name="#" value="{{ 0 }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Speed Right Engine (cm/s):</td>
+                            <td><input class="spinner" name="#" value="{{ 0 }}"></td>
+                        </tr>
+                    </table>
+                </div>
+                <h3>ET - Distance sensors</h3>
+                <div>
+                    <table>
+                        <tr>
+                            <td>ToF distance left (mm):</td>
+                            <td><input class="spinner" name="#" value="{{ 0 }}"></td>
+                        </tr>
+                        <tr>
+                            <td>ToF distance right (mm):</td>
+                            <td><input class="spinner" name="#" value="{{ 0 }}"></td>
+                        </tr>
+                        <tr>
+                            <td>ToF distance front (mm):</td>
+                            <td><input class="spinner" name="#" value="{{ 0 }}"></td>
+                        </tr>
+                    </table>
+                </div>
+                <h3>ET - Servo</h3>
+                <div>
+                    <table>
+                        <tr>
+                            <td>Angle servo:</td>
+                            <td><input class="spinner" name="#" value="{{ 0 }}"></td>
+                        </tr>
+                    </table>
+                </div>
+
             </div>
-            </td>
-            </tr>
-            <tr>
-                <td>Low red mask maximal value:</td>
-                <td><input type="text" id="mask_letter_red_low_h" class="colorhsv" name="mask_letter_red_low_h"
-                           value="{{ mask_letter_red_low_h }}"></td>
-            </tr>
-            <tr>
-                <td>High red mask minimal value:</td>
-                <td><input type="text" id="mask_letter_red_high_l" class="colorhsv" name="mask_letter_red_high_l"
-                           value="{{ mask_letter_red_high_l }}"></td>
-            </tr>
-            <tr>
-                <td>High red mask maximal value:</td>
-                <td><input type="text" id="mask_letter_red_high_h" class="colorhsv" name="mask_letter_red_high_h"
-                           value="{{ mask_letter_red_high_h }}"></td>
-            </tr>
-            <tr>
-                <td>Red mask shift minimal value:</td>
-                <td><input type="text" id="mask_letter_red_shift_l" class="colorhsv" name="mask_letter_red_shift_l"
-                           value="{{ mask_letter_red_shift_l }}"></td>
-            </tr>
-            <tr>
-                <td>Red mask shift maximal value:</td>
-                <td><input type="text" id="mask_letter_red_shift_h" class="colorhsv" name="mask_letter_red_shift_h"
-                           value="{{ mask_letter_red_shift_h }}"></td>
-            </tr>
-            <tr>
-                <td>Red low full value:</td>
-                <td><input type="text" id="mask_letter_red_low_full" class="colorhsv" name="mask_letter_red_low_full"
-                           value="{{ mask_letter_red_low_full }}"></td>
-            </tr>
-            <tr>
-                <td>Red high full value:</td>
-                <td><input type="text" id="mask_letter_red_high_full" class="colorhsv" name="mask_letter_red_high_full"
-                           value="{{ mask_letter_red_high_full }}"></td>
-            </tr>
-            </table>
+            <br>
+            <button type="submit" id="save" value="save">Save</button>
+        </form>
     </div>
-    <h3>Color BGR values</h3>
-    <div>
-        <table>
-            <tr>
-                <td>Black:</td>
-                <td><input type="text" id="color_black" class="colorbgr" name="color_black" value="{{ color_black }}">
-                </td>
-            </tr>
-            <tr>
-                <td>Black low:</td>
-                <td><input type="text" id="color_black_low" class="colorbgr" name="color_black_low"
-                           value="{{ color_black_low }}"></td>
-            </tr>
-            <tr>
-                <td>Black high:</td>
-                <td><input type="text" id="color_black_high" class="colorbgr" name="color_black_high"
-                           value="{{ color_black_high }}"></td>
-            </tr>
-            <tr>
-                <td>White:</td>
-                <td><input type="text" id="color_white" class="colorbgr" name="color_white" value="{{ color_white }}">
-                </td>
-            </tr>
-            <tr>
-                <td>Red:</td>
-                <td><input type="text" id="color_red" class="colorbgr" name="color_red" value="{{ color_red }}"></td>
-            </tr>
-            <tr>
-                <td>Green:</td>
-                <td><input type="text" id="color_green" class="colorbgr" name="color_green" value="{{ color_green }}">
-                </td>
-            </tr>
-            <tr>
-                <td>Blue:</td>
-                <td><input type="text" id="color_blue" class="colorbgr" name="color_blue" value="{{ color_blue }}"></td>
-            </tr>
-            <tr>
-                <td>Cyan:</td>
-                <td><input type="text" id="color_cyan" class="colorbgr" name="color_cyan" value="{{ color_cyan }}"></td>
-            </tr>
-            <tr>
-                <td>Magenta:</td>
-                <td><input type="text" id="color_magenta" class="colorbgr" name="color_magenta"
-                           value="{{ color_magenta }}"></td>
-            </tr>
-            <tr>
-                <td>Yellow:</td>
-                <td><input type="text" id="color_yellow" class="colorbgr" name="color_yellow"
-                           value="{{ color_yellow }}"></td>
-            </tr>
-            <tr>
-                <td>Gray:</td>
-                <td><input type="text" id="color_gray" class="colorbgr" name="color_gray" value="{{ color_gray }}"></td>
-            </tr>
-            <tr>
-                <td>Orange:</td>
-                <td><input type="text" id="color_orange" class="colorbgr" name="color_orange"
-                           value="{{ color_orange }}"></td>
-            </tr>
-        </table>
-    </div>
-    <h3>Debug</h3>
-    <div>
-        <table>
-            <tr>
-                <td>Write red filtered image when red detected:</td>
-                <td><input type="checkbox" name="debug_output_red" value="debug_output_red" {{ debug_output_red }}></td>
-            </tr>
-            <tr>
-                <td>Write green filtered image when green detected:</td>
-                <td><input type="checkbox" name="debug_output_green" value="debug_output_green" {{ debug_output_green
-                           }}></td>
-            </tr>
-            <tr>
-                <td>Set background white when writing image:</td>
-                <td><input type="checkbox" name="debug_output_bgwhite" value="debug_output_bgwhite" {{
-                           debug_output_bgwhite }}></td>
-            </tr>
-            <tr>
-                <td>Path to logging.ini:</td>
-                <td><input type="text" name="debug_logging_config" value="{{ debug_logging_config }}"></td>
-            </tr>
-        </table>
-    </div>
-    <h3>Camera</h3>
-    <div>
-        <table>
-            <tr>
-                <td>Width:</td>
-                <td><input class="spinner" name="camera_width" value="{{ camera_width }}"></td>
-            </tr>
-            <tr>
-                <td>Height:</td>
-                <td><input class="spinner" name="camera_height" value="{{ camera_height }}"></td>
-            </tr>
-            <tr>
-                <td>Framerate:</td>
-                <td><input class="spinner" name="camera_framerate" value="{{ camera_framerate }}"></td>
-            </tr>
-            <tr>
-                <td>Iso:</td>
-                <td><input class="spinner" name="camera_iso" value="{{ camera_iso }}"></td>
-            </tr>
-            <tr>
-                <td>Awb:</td>
-                <td><input type="text" name="camera_awb" value="{{ camera_awb }}"></td>
-            </tr>
-        </table>
-    </div>
-    <h3>Files</h3>
-    <div>
-        <table>
-            <tr>
-                <td>Image filename part 1:</td>
-                <td><input type="text" name="files_multiimg1" value="{{ files_multiimg1 }}"></td>
-            </tr>
-            <tr>
-                <td>Image filename part 2:</td>
-                <td><input type="text" name="files_multiimg2" value="{{ files_multiimg2 }}"></td>
-            </tr>
-            <tr>
-                <td>Image count:</td>
-                <td><input class="spinner" name="files_multiimgcount" value="{{ files_multiimgcount }}"></td>
-            </tr>
-            <tr>
-                <td>Video filename:</td>
-                <td><input type="text" name="files_video" value="{{ files_video }}"></td>
-            </tr>
-            <tr>
-                <td>Stream number:</td>
-                <td><input class="spinner" name="files_stream" value="{{ files_stream }}"></td>
-            </tr>
-        </table>
-    </div>
-    <h3>Cropimage</h3>
-    <div>
-        <table>
-            <tr>
-                <td>Height:</td>
-                <td><input class="spinner" name="cropimage_height" value="{{ cropimage_height }}"></td>
-            </tr>
-            <tr>
-                <td>Width:</td>
-                <td><input class="spinner" name="cropimage_width" value="{{ cropimage_width }}"></td>
-            </tr>
-        </table>
-    </div>
-    <h3>Imagetext</h3>
-    <div>
-        <table>
-            <tr>
-                <td>Space left:</td>
-                <td><input class="spinner" name="imagetext_bordersize_left" value="{{ imagetext_bordersize_left }}">
-                </td>
-            </tr>
-            <tr>
-                <td>Space top:</td>
-                <td><input class="spinner" name="imagetext_bordersize_top" value="{{ imagetext_bordersize_top }}"></td>
-            </tr>
-            <tr>
-                <td>Space bottom:</td>
-                <td><input class="spinner" name="imagetext_bordersize_bottom" value="{{ imagetext_bordersize_bottom }}">
-                </td>
-            </tr>
-            <tr>
-                <td>Space right:</td>
-                <td><input class="spinner" name="imagetext_bordersize_right" value="{{ imagetext_bordersize_right }}">
-                </td>
-            </tr>
-            <tr>
-                <td>Textspace:</td>
-                <td><input class="spinner" name="imagetext_textspace" value="{{ imagetext_textspace }}"></td>
-            </tr>
-        </table>
-    </div>
-    <h3>Filter</h3>
-    <div>
-        <table>
-            <tr>
-                <td>Kernel size:</td>
-                <td><input class="spinner" name="filter_kernel_size" value="{{ filter_kernel_size }}"></td>
-            </tr>
-            <tr>
-                <td>HSV shift:</td>
-                <td><input class="spinner" name="filter_hsv_shift" value="{{ filter_hsv_shift }}"></td>
-            </tr>
-        </table>
-    </div>
-    <h3>Letter detection</h3>
-    <div>
-        <table>
-            <tr>
-                <td>Tolerance gap:</td>
-                <td><input class="spinner" id="letter_tolerance_i_gap" name="letter_tolerance_i_gap"
-                           value="{{ letter_tolerance_i_gap }}"></td>
-            </tr>
-        </table>
-    </div>
-</div>
-<br>
-<button type="submit" id="save" value="save"/>
-Save</button>
-</form>
-</div>
 </div>
 <script>
     // Initialize jQuery UI controls
     $(".spinner").spinner();
     $("#letter_tolerance_i_gap").spinner('option', 'step', '0.1');
+    $("#letter_tolerance_v_gap").spinner('option', 'step', '0.1');
+    $("#letter_min_amount_processed_letters").spinner('option', 'step', '1');
     $("#settings_loglevel").spinner('option', 'step', '10');
-    $(".spinner").spinner('option', 'min', '0');
-    $(".spinner").spinner('option', 'max', '1000');
     $("#settings_loglevel").spinner('option', 'min', '10');
     $("#settings_loglevel").spinner('option', 'max', '40');
+    $(".spinner").spinner('option', 'min', '0');
+    $(".spinner").spinner('option', 'max', '1000');
     $(".colorhsv").spectrum({preferredFormat: "hsv", showInput: true});
     $(".colorbgr").spectrum({preferredFormat: "rgb", showInput: true});
     $("#mask_trafficlight_red_low_l").spectrum("set", py_hsv2js_hsv([{{mask_trafficlight_red_low_l}}]));
@@ -450,8 +512,8 @@ Save</button>
     $("#mask_letter_red_high_h").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_high_h}}]));
     $("#mask_letter_red_shift_l").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_shift_l}}]));
     $("#mask_letter_red_shift_h").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_shift_h}}]));
-    $("#mask_letter_red_low_full").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_low_full}}]));
-    $("#mask_letter_red_high_full").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_high_full}}]));
+    $("#mask_letter_red_low_full").spectrum("set", py_hsv2js_hsvfull([{{mask_letter_red_low_full}}]));
+    $("#mask_letter_red_high_full").spectrum("set", py_hsv2js_hsvfull([{{mask_letter_red_high_full}}]));
     $("#color_black").spectrum("set", bgr2rgb([{{color_black}}]));
     $("#color_black_low").spectrum("set", bgr2rgb([{{color_black_low}}]));
     $("#color_black_high").spectrum("set", bgr2rgb([{{color_black_high}}]));
@@ -478,8 +540,18 @@ Save</button>
         return 'hsv(' + inputcolor[0] + ', ' + inputcolor[1] + '%, ' + inputcolor[2] + '%)';
     }
 
+    // Convert HSV color values from Config.ini to HSV color values for jQuery Spectrum control
+    // Ex.: HSV color value from Config.ini: 0, 69, 61 -> HSV color value for jQuery Spectrum control: hsv(0, 27%, 24%)
+    //                                       0-255, 0-255, 0-255 -> hsv(0-360, 0-100%, 0-100%)
+    function py_hsv2js_hsvfull(inputcolor) {
+        inputcolor[0] = Math.round(inputcolor[0] / 255 * 360);
+        inputcolor[1] = Math.round(100 * inputcolor[1] / 255);
+        inputcolor[2] = Math.round(100 * inputcolor[2] / 255);
+        return 'hsv(' + inputcolor[0] + ', ' + inputcolor[1] + '%, ' + inputcolor[2] + '%)';
+    }
+
     // Convert HSV color values from jQuery Spectrum control to HSV color values for Config.ini
-    // Ex.: HSV color value from jQuery Spectrum control: hsv(120, 76%, 80%) -> HSV color value for Config.ini: 0, 69, 61
+    // Ex.: HSV color value from jQuery Spectrum control: hsv(0, 27%, 24%) -> HSV color value for Config.ini: 0, 69, 61
     //                                                    hsv(0-360, 0-100%, 0-100%) -> 0-180, 0-255, 0-255
     function js_hsv2py_hsv(inputcolor) {
         inputcolor = inputcolor.substring(4, inputcolor.length - 1);
@@ -492,6 +564,19 @@ Save</button>
         return inputcolor[0] + ', ' + inputcolor[1] + ', ' + inputcolor[2];
     }
 
+    // Convert HSV color values from jQuery Spectrum control to HSV color values for Config.ini
+    // Ex.: HSV color value from jQuery Spectrum control: hsv(0, 27%, 24%) -> HSV color value for Config.ini: 0, 69, 61
+    //                                                    hsv(0-360, 0-100%, 0-100%) -> 0-180, 0-255, 0-255
+    function js_hsv2py_hsvfull(inputcolor) {
+        inputcolor = inputcolor.substring(4, inputcolor.length - 1);
+        inputcolor = inputcolor.split(', ');
+        inputcolor[0] = Math.round(inputcolor[0] / 360 * 255);
+        inputcolor[1] = inputcolor[1].substring(0, inputcolor[1].length - 1);
+        inputcolor[1] = Math.round(255 * inputcolor[1] / 100);
+        inputcolor[2] = inputcolor[2].substring(0, inputcolor[2].length - 1);
+        inputcolor[2] = Math.round(255 * inputcolor[2] / 100);
+        return inputcolor[0] + ', ' + inputcolor[1] + ', ' + inputcolor[2];
+    }
     // Convert BGR color value from Config.ini to RGB color value for jQuery Spectrum control
     // Ex.: BGR color value from Config.ini: 255, 0, 0 -> RGB color value for jQuery Spectrum control 0, 0, 255
     //                                       0-255, 0-255, 0-255 -> 0-255, 0-255, 0-255
@@ -589,8 +674,8 @@ Save</button>
         $("#mask_letter_red_high_h").val(js_hsv2py_hsv(mask_letter_red_high_h));
         $("#mask_letter_red_shift_l").val(js_hsv2py_hsv(mask_letter_red_shift_l));
         $("#mask_letter_red_shift_h").val(js_hsv2py_hsv(mask_letter_red_shift_h));
-        $("#mask_letter_red_low_full").val(js_hsv2py_hsv(mask_letter_red_low_full));
-        $("#mask_letter_red_high_full").val(js_hsv2py_hsv(mask_letter_red_high_full));
+        $("#mask_letter_red_low_full").val(js_hsv2py_hsvfull(mask_letter_red_low_full));
+        $("#mask_letter_red_high_full").val(js_hsv2py_hsvfull(mask_letter_red_high_full));
         $("#color_black").val(rgb2bgr(color_black));
         $("#color_black_low").val(rgb2bgr(color_black_low));
         $("#color_black_high").val(rgb2bgr(color_black_high));
