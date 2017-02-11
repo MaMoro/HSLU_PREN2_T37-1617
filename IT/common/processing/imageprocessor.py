@@ -19,12 +19,14 @@ import logging
 import common.config.confighandler as cfg
 import math
 import logging.config
+
 from common.logging.fpshelper import FPSHelper
 from skimage.morphology import skeletonize
 from collections import Counter
 
 
 class ImageConverter(object):
+    # Configure logging component
     logging.config.fileConfig(cfg.get_logging_config_fullpath())
     __log = logging.getLogger()
     __log.setLevel(cfg.get_settings_loglevel())
@@ -50,30 +52,61 @@ class ImageConverter(object):
 
     @staticmethod
     def convertbgr2gray(image):
+        """
+        Converts an BGR-Image to grayscale
+        :param image: image with bgr color scheme
+        :return: grayscaled image
+        """
         return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     @staticmethod
     def convertbgr2hsv(image):
+        """
+        Converts an BGR-Image to HSV color space (standard)
+        :param image: image with bgr color scheme
+        :return: image in HSV color space
+        """
         return cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
     @staticmethod
     def convertbgr2hsvfull(image):
+        """
+        Converts an BGR-Image to HSV color space (Fullrange)
+        :param image: image with bgr color scheme
+        :return: image in HSV color space
+        """
         return cv2.cvtColor(image, cv2.COLOR_BGR2HSV_FULL)
 
     @staticmethod
     def convertgray2bgr(image):
+        """
+        Converts a grayscaled image to BGR color scheme
+        :param image: grayscaled image (1-channel)
+        :return: image in BGR color scheme (3-channel)
+        """
         return cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
 
     @staticmethod
     def converthsv2bgr(image):
+        """
+        Converts a HSV-Image to BGR color space
+        :param image: image in HSV color space
+        :return: image in BGR color scheme
+        """
         return cv2.cvtColor(image, cv2.COLOR_HSV2BGR)
 
     @staticmethod
     def convert2blackwhite(image):
-        mask = cv2.inRange(image, ImageConverter.color_black_low, ImageConverter.color_black_high)     # create overlay mask for all none matching bits to zero
-        output_img = cv2.bitwise_and(image, image, mask=mask)    # apply mask on image
-        img_gray = ImageConverter.convertbgr2gray(output_img)   # convert image to grayscale
-        img_gray[img_gray > 0] = 1                              # set all non black pixels to white for BW-image
+        """
+        Converts any image to black&white
+        :param image: image to be converted to black&white
+        :return: black&white image (pixelvalues: 0 = black, 1 = white)
+        """
+        mask = cv2.inRange(image, ImageConverter.color_black_low,
+                           ImageConverter.color_black_high)  # create overlay mask for all none matching bits to zero
+        output_img = cv2.bitwise_and(image, image, mask=mask)  # apply mask on image
+        img_gray = ImageConverter.convertbgr2gray(output_img)  # convert image to grayscale
+        img_gray[img_gray > 0] = 1  # set all non black pixels to white for BW-image
         return img_gray
 
     @staticmethod
@@ -87,83 +120,74 @@ class ImageConverter(object):
         pts = np.array(edges, np.float32)
         (tl, tr, br, bl) = pts
 
-        # compute the width of the new image, which will be the
-        # maximum distance between bottom-right and bottom-left
+        # compute the width of the new image, which will be the maximum distance between bottom-right and bottom-left
         # x-coordiates or the top-right and top-left x-coordinates
-        widthA = np.sqrt(((br[0] - bl[0]) ** 2) + ((br[1] - bl[1]) ** 2))
-        widthB = np.sqrt(((tr[0] - tl[0]) ** 2) + ((tr[1] - tl[1]) ** 2))
-        maxWidth = max(int(widthA), int(widthB))
+        width_a = np.sqrt(((br[0] - bl[0]) ** 2) + ((br[1] - bl[1]) ** 2))
+        width_b = np.sqrt(((tr[0] - tl[0]) ** 2) + ((tr[1] - tl[1]) ** 2))
+        max_width = max(int(width_a), int(width_b))
 
-        # compute the height of the new image, which will be the
-        # maximum distance between the top-right and bottom-right
+        # compute the height of the new image, which will be the maximum distance between the top-right and bottom-right
         # y-coordinates or the top-left and bottom-left y-coordinates
-        heightA = np.sqrt(((tr[0] - br[0]) ** 2) + ((tr[1] - br[1]) ** 2))
-        heightB = np.sqrt(((tl[0] - bl[0]) ** 2) + ((tl[1] - bl[1]) ** 2))
-        maxHeight = max(int(heightA), int(heightB))
+        height_a = np.sqrt(((tr[0] - br[0]) ** 2) + ((tr[1] - br[1]) ** 2))
+        height_b = np.sqrt(((tl[0] - bl[0]) ** 2) + ((tl[1] - bl[1]) ** 2))
+        max_height = max(int(height_a), int(height_b))
 
-        # now that we have the dimensions of the new image, construct
-        # the set of destination points to obtain a "birds eye view",
-        # (i.e. top-down view) of the image, again specifying points
-        # in the top-left, top-right, bottom-right, and bottom-left
-        # order
-        dst = np.array([[0, 0], [maxWidth - 1, 0], [maxWidth - 1, maxHeight - 1], [0, maxHeight - 1]], dtype="float32")
+        # now that we have the dimensions of the new image, construct the set of destination points to obtain a "birds eye view",
+        # (i.e. top-down view) of the image, again specifying points in the top-left, top-right, bottom-right, and bottom-left order
+        dst = np.array([[0, 0], [max_width - 1, 0], [max_width - 1, max_height - 1], [0, max_height - 1]],
+                       dtype="float32")
+
         # compute the perspective transform matrix and then apply it
-        M = cv2.getPerspectiveTransform(pts, dst)
-        img2 = cv2.warpPerspective(img, M, (maxWidth, maxHeight))
-        return img2
+        trans_matrix = cv2.getPerspectiveTransform(pts, dst)
+        img_transformed = cv2.warpPerspective(img, trans_matrix, (max_width, max_height))
+        return img_transformed
 
     @staticmethod
     def minimize_roi_lettercontour(roi):
-        img_gray = ImageConverter.convert2blackwhite(roi)
-        img_gray[img_gray > 0] = 255
-        # remove border erosion
-        i_h, i_w = img_gray.shape
-        img_gray_s = img_gray[1:i_h-1, 1:i_w-1]
+        """
+        Minimize image region by cropping image around black letters
+        :param roi: original image to crop
+        :return: cropped original image
+        """
+        img_bw = ImageConverter.convert2blackwhite(roi)
+        img_bw[img_bw > 0] = 255
 
-        #get rectangle around letter and crop original image
-        x, y, w, h = cv2.boundingRect(img_gray_s)
-        cropped = roi[y:y+h, x:x+w]
-        return cropped
+        # remove border erosion
+        img_height, img_width = img_bw.shape
+        img_bw_unbordered = img_bw[1:img_height - 1, 1:img_width - 1]
+
+        # get rectangle around letter and crop original image
+        pos_x, pos_y, width, height = cv2.boundingRect(img_bw_unbordered)
+        img_cropped = roi[pos_y:pos_y + height, pos_x:pos_x + width]
+        return img_cropped
 
     @staticmethod
     def thinningblackwhiteimage(image):
+        """
+        Applies thinning algorithm to an black&white image
+        :param image: black&white image
+        :return:
+        """
         edges = skeletonize(image)
-        edges = edges * 1
-        edges[edges == 1] = 255
-        edges = np.uint8(edges)
+        edges = edges * 1  # convert float values to integer (do not optimize!)
+        edges[edges == 1] = 255  # change white value from 1 to 255
+        edges = np.uint8(edges)  # flatten values
         return edges
 
     @staticmethod
     def mask_color_red(img):
         """
-        This function extracts only red color parts of the provided image with Hue-Range shifted
+        This function extracts only red color parts of the provided image with Hue-Range shifted method
         :param img: image to extract red color parts
         :return: image (mask) with only red color parts, all other pixels are black (zero)
         """
-        fps = FPSHelper()
-        # convert image to HSV
-        fps.start()
-        img_hsv = ImageConverter.convertbgr2hsv(img)
-        fps.stop()
-        ImageConverter.__log.debug("processing time hsv: " + str(fps.elapsedtime_ms()) + " ms")
+        img_hsv = ImageConverter.convertbgr2hsv(img)  # convert image to HSV
+        img_hsv[..., 0] = (img_hsv[
+                               ..., 0] + cfg.get_filter_hsv_shift()) % 180  # shift Hue Channel to remove issue on transition from value 180 to 0
 
-        # shift Hue Channel to remove issue on transition from value 180 to 0
-        fps.start()
-        img_hsv[..., 0] = (img_hsv[..., 0] + cfg.get_filter_hsv_shift()) % 180
-        fps.stop()
-        ImageConverter.__log.debug("processing time shift: " + str(fps.elapsedtime_ms()) + " ms")
-
-        # create overlay mask for all none matching bits to zero (black)
-        fps.start()
-        mask = cv2.inRange(img_hsv, ImageConverter.lower_red, ImageConverter.upper_red)
-        fps.stop()
-        ImageConverter.__log.debug("processing time inRange: " + str(fps.elapsedtime_ms()) + " ms")
-
-        # apply mask on image
-        fps.start()
-        output_img = cv2.bitwise_and(img, img, mask=mask)
-        fps.stop()
-        ImageConverter.__log.debug("processing time masking: " + str(fps.elapsedtime_ms()) + " ms")
+        mask = cv2.inRange(img_hsv, ImageConverter.lower_red,
+                           ImageConverter.upper_red)  # create overlay mask for all none matching bits to zero (black)
+        output_img = cv2.bitwise_and(img, img, mask=mask)  # apply mask on image
 
         return output_img
 
@@ -179,11 +203,9 @@ class ImageConverter(object):
         red_image_mask0 = cv2.inRange(img_hsv, ImageConverter.lower_red_traffic0, ImageConverter.upper_red_traffic0)
         red_image_mask1 = cv2.inRange(img_hsv, ImageConverter.lower_red_traffic1, ImageConverter.upper_red_traffic1)
 
-        # join my masks
-        mask = red_image_mask0 + red_image_mask1
+        mask = red_image_mask0 + red_image_mask1  # join my masks
+        output_img = cv2.bitwise_and(img_hsv, img_hsv, mask=mask)  # apply mask
 
-        # use mask
-        output_img = cv2.bitwise_and(img_hsv, img_hsv, mask=mask)
         return output_img
 
     @staticmethod
@@ -193,68 +215,50 @@ class ImageConverter(object):
         :param img: image to extract green color parts
         :return: image (mask) with only green color parts, all other pixels are black (zero)
         """
+        img_hsv = ImageConverter.convertbgr2hsv(img)  # convert image to HSV
 
-        fps = FPSHelper()
-        # convert image to HSV
-        fps.start()
-        img_hsv = ImageConverter.convertbgr2hsv(img)
-        fps.stop()
-        ImageConverter.__log.debug("processing time hsv: " + str(fps.elapsedtime_ms()) + " ms")
-
-        # create overlay mask for all none matching bits to zero (black)
-        fps.start()
-        mask = cv2.inRange(img_hsv, ImageConverter.lower_green, ImageConverter.upper_green)
-        fps.stop()
-        ImageConverter.__log.debug("processing time inRange: " + str(fps.elapsedtime_ms()) + " ms")
-
-        # apply mask on image
-        fps.start()
-        output_img = cv2.bitwise_and(img, img, mask=mask)
-        fps.stop()
-        ImageConverter.__log.debug("processing time masking: " + str(fps.elapsedtime_ms()) + " ms")
+        mask = cv2.inRange(img_hsv, ImageConverter.lower_green,
+                           ImageConverter.upper_green)  # create overlay mask for all none matching bits to zero (black)
+        output_img = cv2.bitwise_and(img, img, mask=mask)  # apply mask on image
 
         return output_img
 
     @staticmethod
     def mask_color_red_fullhsv(img):
         """
-        This function extracts only red color parts of the provided image with Hue-Range shifted
+        This function extracts only red color parts of the provided image with Full-HSV color space
         :param img: image to extract red color parts
         :return: image (mask) with only red color parts, all other pixels are black (zero)
         """
-        fps = FPSHelper()
-        # convert image to HSV
-        fps.start()
-        img_hsv = ImageConverter.convertbgr2hsvfull(img)
-        fps.stop()
-        ImageConverter.__log.debug("processing time hsv: " + str(fps.elapsedtime_ms()) + " ms")
+        img_hsv = ImageConverter.convertbgr2hsvfull(img)  # convert image to HSV
 
-        # create overlay mask for all none matching bits to zero (black)
-        fps.start()
-        mask = cv2.inRange(img_hsv, ImageConverter.lower_red_full, ImageConverter.upper_red_full)
-        fps.stop()
-        ImageConverter.__log.debug("processing time inRange: " + str(fps.elapsedtime_ms()) + " ms")
-
-        # apply mask on image
-        fps.start()
-        output_img = cv2.bitwise_and(img, img, mask=mask)
-        fps.stop()
-        ImageConverter.__log.debug("processing time masking: " + str(fps.elapsedtime_ms()) + " ms")
+        mask = cv2.inRange(img_hsv, ImageConverter.lower_red_full,
+                           ImageConverter.upper_red_full)  # create overlay mask for all none matching bits to zero (black)
+        output_img = cv2.bitwise_and(img, img, mask=mask)  # apply mask on image
 
         return output_img
 
     @staticmethod
     def remove_erosions(img):
+        """
+        Removes erosions on an image with dilation method
+        :param img: image to remove erosions
+        :return: image with removed erosions
+        """
         kernel = np.ones((ImageConverter.kernel_size, ImageConverter.kernel_size), np.uint8)
         return cv2.dilate(img, kernel, iterations=1)
 
 
 class ImageAnalysis(object):
+    # Configure logging component
     logging.config.fileConfig(cfg.get_logging_config_fullpath())
     __log = logging.getLogger()
     __log.setLevel(cfg.get_settings_loglevel())
 
+    # Gather config settings
     letter_tolerance_i_gap = cfg.get_letter_tolerance_i_gap()
+    letter_tolerance_v_gap = cfg.get_letter_tolerance_v_gap()
+    min_maskarea_size = cfg.get_maskletter_min_maskarea_size()
 
     @staticmethod
     def reorder_edgepoints_clockwise(pts):
@@ -289,11 +293,11 @@ class ImageAnalysis(object):
         :return: reordered edges/corners (top left, top right, bottom right, bottom left)
         """
 
-        img_gray = ImageConverter.convertbgr2gray(mask)         # set image to grayscale
-        img_gray[img_gray > 0] = 255                            # set all non black pixels to white for BW-image
+        img_gray = ImageConverter.convertbgr2gray(mask)  # set image to grayscale
+        img_gray[img_gray > 0] = 255  # set all non black pixels to white for BW-image
         img_dilated = ImageConverter.remove_erosions(img_gray)  # dilated image for remove of small erosions
 
-        # find all contours and
+        # find all contours
         (_, cnts, _) = cv2.findContours(img_dilated, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         # resort contours based on their area from highest to lowest and get only the two greatest
@@ -301,7 +305,7 @@ class ImageAnalysis(object):
 
         # all edges (top left, bottom left, top right, bottom right)
         edges = []
-        i = False
+        left_mask_area_processed = False
         for c in cnts:
 
             # TODO: based on angle the solution can be made more robust as the angles need to be approx the same...
@@ -312,22 +316,24 @@ class ImageAnalysis(object):
             # TODO: risk of cut red line, need to guarantee that both red blocks are fully visible
             # e.g. ignore red color on image boarder
 
-            rect = cv2.minAreaRect(c)       # get minimal area rectangle
-            box = cv2.boxPoints(rect)       # represent area as points
-            box = np.int0(np.around(box))   # round values and normalize array
+            rect = cv2.minAreaRect(c)  # get minimal area rectangle
+            box = cv2.boxPoints(rect)  # represent area as points
+            box = np.int0(np.around(box))  # round values and normalize array
 
             box = ImageAnalysis.reorder_edgepoints_clockwise(box)
-            if not i:
-                pt_top = tuple(np.int0(box[1]))         # top right position
-                pt_bottom = tuple(np.int0(box[2]))      # bottom right position
+            if not left_mask_area_processed:
+                pt_top = tuple(np.int0(box[1]))  # top right position
+                pt_bottom = tuple(np.int0(box[2]))  # bottom right position
             else:
-                pt_top = tuple(np.int0(box[0]))         # top left position
-                pt_bottom = tuple(np.int0(box[3]))      # bottom right position
+                pt_top = tuple(np.int0(box[0]))  # top left position
+                pt_bottom = tuple(np.int0(box[3]))  # bottom right position
+
+            # only allow rectangles with minimal area size
             dist = math.sqrt((abs(pt_top[0] - pt_bottom[0])) ** 2 + (abs(pt_top[1] - pt_bottom[1])) ** 2)
-            if dist > 80:
+            if dist > ImageAnalysis.min_maskarea_size:
                 edges.append(pt_top)
                 edges.append(pt_bottom)
-            i = True
+            left_mask_area_processed = True
 
         if len(edges) == 4:
             # reorder edges to (top left, top right, bottom right, bottom left)
@@ -335,8 +341,6 @@ class ImageAnalysis(object):
             ImageAnalysis.__log.debug("edges: " + str(edges))
             return edges
         else:
-            # not 4 edges found
-            # TODO: Error handling, e.g. take next image or so
             return 0
 
     @staticmethod
@@ -348,11 +352,11 @@ class ImageAnalysis(object):
         :return: reordered edges/corners (top left, top right, bottom right, bottom left)
         """
 
-        img_gray = ImageConverter.convertbgr2gray(mask)         # set image to grayscale
-        img_gray[img_gray > 0] = 255                            # set all non black pixels to white for BW-image
+        img_gray = ImageConverter.convertbgr2gray(mask)  # set image to grayscale
+        img_gray[img_gray > 0] = 255  # set all non black pixels to white for BW-image
         img_dilated = ImageConverter.remove_erosions(img_gray)  # dilated image for remove of small erosions
 
-        # find all contours and
+        # find all contours
         (_, cnts, _) = cv2.findContours(img_dilated, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         # resort contours based on their area from highest to lowest and get only the two greatest
@@ -360,7 +364,7 @@ class ImageAnalysis(object):
 
         # all edges (top left, bottom left, top right, bottom right)
         edges = []
-        i = False
+        left_mask_area_processed = False
         for c in cnts:
 
             # TODO: based on angle the solution can be made more robust as the angles need to be approx the same...
@@ -371,27 +375,28 @@ class ImageAnalysis(object):
             # TODO: risk of cut red line, need to guarantee that both red blocks are fully visible
             # e.g. ignore red color on image boarder
 
-            rect = cv2.minAreaRect(c)       # get minimal area rectangle
-            box = cv2.boxPoints(rect)       # represent area as points
+            rect = cv2.minAreaRect(c)  # get minimal area rectangle
+            box = cv2.boxPoints(rect)  # represent area as points
             box = np.int0(np.around(box))  # round values and normalize array
-
             cv2.drawContours(img, [box], 0, (0, 255, 255), 1)
+
             box = ImageAnalysis.reorder_edgepoints_clockwise(box)
-            if not i:
-                pt_top = tuple(np.int0(box[1]))     # top right position
+            if not left_mask_area_processed:
+                pt_top = tuple(np.int0(box[1]))  # top right position
                 pt_bottom = tuple(np.int0(box[2]))  # bottom right position
             else:
-                pt_top = tuple(np.int0(box[0]))     # top left position
+                pt_top = tuple(np.int0(box[0]))  # top left position
                 pt_bottom = tuple(np.int0(box[3]))  # bottom right position
 
+            # only allow rectangles with minimal area size
             dist = math.sqrt((abs(pt_top[0] - pt_bottom[0])) ** 2 + (abs(pt_top[1] - pt_bottom[1])) ** 2)
-            if dist > 80:
+            if dist > ImageAnalysis.min_maskarea_size:
                 edges.append(pt_top)
                 edges.append(pt_bottom)
                 cv2.line(img, pt_top, pt_bottom, (0, 0, 255), 1)
                 cv2.circle(img, pt_top, 2, (0, 255, 0), -1)
                 cv2.circle(img, pt_bottom, 2, (0, 255, 0), -1)
-            i = True
+            left_mask_area_processed = True
 
         if len(edges) == 4:
             # reorder edges to (top left, top right, bottom right, bottom left)
@@ -399,14 +404,12 @@ class ImageAnalysis(object):
             ImageAnalysis.__log.debug("edges: " + str(edges))
             return img, edges
         else:
-            # not 4 edges found
-            # TODO: Error handling, e.g. take next image or so
             return img, 0
 
     @staticmethod
     def get_roman_letter_drawed(roi):
         """
-        This function determines the number of a roman letter (only I, II, III, IV, V)
+        Determines the number of an image with roman letter on it (only I, II, III, IV, V) and draws line on image
         :param roi: cropped image with only the letters on it
         :return: image with all detected lines for the number
         """
@@ -444,7 +447,8 @@ class ImageAnalysis(object):
                 line_pt1 = (int(x0 + 1000 * (-b)), int(y0 + 1000 * a))
                 line_pt2 = (int(x0 - 1000 * (-b)), int(y0 - 1000 * a))
 
-                ImageAnalysis.__log.debug("-----\nlinept1: " + str(line_pt1)+ "\nlinept2: " + str(line_pt2) + "\ndeg:" + str(deg))
+                ImageAnalysis.__log.debug(
+                    "-----\nlinept1: " + str(line_pt1) + "\nlinept2: " + str(line_pt2) + "\ndeg:" + str(deg))
 
                 # detect an I
                 if (0.0 < deg < 1.0) or (178.0 < deg < 180.0):
@@ -454,7 +458,9 @@ class ImageAnalysis(object):
                     x = (int(x0 + 1000 * (-b)) + int(x0 - 1000 * (-b))) / 2
                     all_i.append([x, line_pt1, line_pt2])
 
-                    ImageAnalysis.__log.debug("pos line_pt1: " + str(line_pt1) + " vertical line found with deg: " + str(deg) + ", theta: " + str(theta))
+                    ImageAnalysis.__log.debug(
+                        "pos line_pt1: " + str(line_pt1) + " vertical line found with deg: " + str(
+                            deg) + ", theta: " + str(theta))
                     continue
 
                 # right hand side of V
@@ -474,21 +480,26 @@ class ImageAnalysis(object):
                     ImageAnalysis.__log.debug("line with deg: " + str(deg) + "out of allowed range")
             FPS.stop()
             ImageAnalysis.__log.info("processing time evaluate all lines: " + str(FPS.elapsedtime_ms()) + " ms")
+
             # eliminate redundant detected I
             FPS.start()
-            nonredundant_i = ImageAnalysis.__eliminate_redundant_I(all_i)
-            nonredundant_v_left = ImageAnalysis.__eliminate_redundant_V(all_v_left)
-            nonredundant_v_right = ImageAnalysis.__eliminate_redundant_V(all_v_right)
+            nonredundant_i = ImageAnalysis.__eliminate_redundant_i(all_i)
+            nonredundant_v_left = ImageAnalysis.__eliminate_redundant_v(all_v_left)
+            nonredundant_v_right = ImageAnalysis.__eliminate_redundant_v(all_v_right)
             FPS.stop()
             ImageAnalysis.__log.info("processing time remove redundances: " + str(FPS.elapsedtime_ms()) + " ms")
+
             FPS.start()
             roi_height = roi.shape[0]
-            nonintersected_i = ImageAnalysis.__eliminate_intersectioned_I(nonredundant_v_left, nonredundant_v_right, nonredundant_i.copy(), roi_height)
+            nonintersected_i = ImageAnalysis.__eliminate_intersectioned_i_with_v(nonredundant_v_left,
+                                                                                 nonredundant_v_right,
+                                                                                 nonredundant_i.copy(), roi_height)
             FPS.stop()
             ImageAnalysis.__log.info("processing time intersection: " + str(FPS.elapsedtime_ms()) + " ms")
 
             # enumerate the number based on detected lines
-            ImageAnalysis.__log.debug("v_left: " + str(len(nonredundant_v_left)) + " | v_right: " + str(len(nonredundant_v_right)) + " | i: " + str(len(nonintersected_i)))
+            ImageAnalysis.__log.debug("v_left: " + str(len(nonredundant_v_left)) + " | v_right: " + str(
+                len(nonredundant_v_right)) + " | i: " + str(len(nonintersected_i)))
 
             FPS.start()
             if len(nonredundant_v_left) > 0:
@@ -515,11 +526,10 @@ class ImageAnalysis(object):
     @staticmethod
     def get_roman_letter(roi):
         """
-        This function determines the number of a roman letter (only I, II, III, IV, V)
+        Determines the number of an image with roman letter on it (only I, II, III, IV, V)
         :param roi: cropped image with only the letters on it
-        :return: image with all detected lines for the number
+        :return: detected number  as integer, zero if not able to enumerate
         """
-        FPS = FPSHelper()
         number = 0
         img_bw = ImageConverter.convert2blackwhite(roi)
 
@@ -569,11 +579,13 @@ class ImageAnalysis(object):
                     ImageAnalysis.__log.debug("line with deg: " + str(deg) + "out of allowed range")
 
             # eliminate redundant detected I
-            nonredundant_i = ImageAnalysis.__eliminate_redundant_I(all_i)
-            nonredundant_v_left = ImageAnalysis.__eliminate_redundant_V(all_v_left)
-            nonredundant_v_right = ImageAnalysis.__eliminate_redundant_V(all_v_right)
+            nonredundant_i = ImageAnalysis.__eliminate_redundant_i(all_i)
+            nonredundant_v_left = ImageAnalysis.__eliminate_redundant_v(all_v_left)
+            nonredundant_v_right = ImageAnalysis.__eliminate_redundant_v(all_v_right)
             roi_height = roi.shape[0]
-            nonintersected_i = ImageAnalysis.__eliminate_intersectioned_I(nonredundant_v_left, nonredundant_v_right, nonredundant_i.copy(), roi_height)
+            nonintersected_i = ImageAnalysis.__eliminate_intersectioned_i_with_v(nonredundant_v_left,
+                                                                                 nonredundant_v_right,
+                                                                                 nonredundant_i.copy(), roi_height)
 
             if len(nonredundant_v_left) > 0:
                 v_left_found = True
@@ -591,13 +603,20 @@ class ImageAnalysis(object):
 
     @staticmethod
     def __enumerate_number_withlines(v_left, v_right, i):
-        # enumerate the number based on detected lines
+        """
+        Gets number based on detected lines
+        :param v_left:  bool if left side of V detected
+        :param v_right: bool if right side of V detected
+        :param i: amount of detected I's
+        :return: number 0-5, 0 if not able to enumerate
+        """
+
         if v_left and v_right:
-            n = 5
+            number = 5
             if i != 0:
-                n = 4
-            ImageAnalysis.__log.info("detected number: " + str(n))
-            return n
+                number = 4
+            ImageAnalysis.__log.info("detected number: " + str(number))
+            return number
         elif (i is not None) and (0 < i < 4):
             ImageAnalysis.__log.info("detected number: " + str(i))
             return i
@@ -606,48 +625,93 @@ class ImageAnalysis(object):
             return 0
 
     @staticmethod
-    def __eliminate_redundant_V(all_detected_V):
-        if len(all_detected_V) != 0:
-            all_detected_V.sort()
-            all_v_count = 0
+    def __eliminate_redundant_i(all_detected_i):
+        """
+        Eliminates all redundant detected of an I
+        :param all_detected_i: all possible I lines in a list
+        :return: list with all non-redundant I lines
+        """
+        if len(all_detected_i) != 0:
+            all_detected_i.sort()
+            nondup_i = [all_detected_i.pop(0), ]
+            all_i_count = 0
 
-            nondup_v = [all_detected_V.pop(0), ]
-            for x in all_detected_V[1::1]:
+            for x in all_detected_i[1::1]:
                 xcor = x[0]
                 pt1 = x[1]
                 pt2 = x[2]
                 # Skip items within tolerance.
-                if abs(nondup_v[all_v_count][0] - xcor) <= ImageAnalysis.letter_tolerance_i_gap:
+                if abs(nondup_i[all_i_count][0] - xcor) <= ImageAnalysis.letter_tolerance_i_gap:
+                    continue
+                nondup_i.append([xcor, pt1, pt2])
+                all_i_count += 1
+            return nondup_i
+        else:
+            return []
+
+    @staticmethod
+    def __eliminate_redundant_v(all_detected_v):
+        """
+        Eliminates all redundant lines of a V (only one side of V)
+        :param all_detected_v: all possible V lines in a list
+        :return: list with all non-redundant V lines (only one side of V)
+        """
+        if len(all_detected_v) != 0:
+            all_detected_v.sort()
+            nondup_v = [all_detected_v.pop(0), ]
+            all_v_count = 0
+
+            for x in all_detected_v[1::1]:
+                xcor = x[0]
+                pt1 = x[1]
+                pt2 = x[2]
+                # Skip items within tolerance.
+                if abs(nondup_v[all_v_count][0] - xcor) <= ImageAnalysis.letter_tolerance_v_gap:
                     continue
                 nondup_v.append([xcor, pt1, pt2])
                 all_v_count += 1
-
             return nondup_v
         else:
             return []
 
     @staticmethod
-    def __eliminate_intersectioned_I(all_v_left, all_v_right, all_nonredi, img_height):
-        for candidate in all_nonredi:
+    def __eliminate_intersectioned_i_with_v(all_v_left, all_v_right, all_i, img_height):
+        """
+        Eliminate all intersecting I with any V line
+        :param all_v_left: list with all non-redundant V left side lines
+        :param all_v_right: list with all non-redundant V right side lines
+        :param all_i: list with all non-redundanz I lines
+        :param img_height: image height to allow correct calculations
+        :return: list with all non-intersected I lines
+        """
+        for candidate in all_i:
             for v in all_v_left:
                 intersectionfound = ImageAnalysis.__line_intersection(v, candidate)
                 if intersectionfound:
-                    if intersectionfound[1] > img_height/5:
-                        #print("left v - intersected at: " + str(intersectionfound) + " with i: " + str(candidate) + " and v: " + str(v))
-                        all_nonredi.remove(candidate)
+                    # ignore intersection if line is intersectioned in the top 20% of the image as a V left line could possibly correctly intersect in this area
+                    if intersectionfound[1] > img_height / 5:
+                        all_i.remove(candidate)
                         break
             else:
                 for v in all_v_right:
                     intersectionfound = ImageAnalysis.__line_intersection(v, candidate)
                     if intersectionfound:
+                        # ignore intersection if it's outter image
                         if 0 < intersectionfound[1] < img_height:
-                            #print("right v - intersected at: " + str(intersectionfound) + " with i: " + str(candidate) + " and v: " + str(v))
-                            all_nonredi.remove(candidate)
+                            all_i.remove(candidate)
                             break
-        return all_nonredi
+        return all_i
 
     @staticmethod
     def __line_intersection(line1, line2):
+        """
+        Check if two lines intersect themself
+        :param line1: first line (note: list e.g. (22.3, (x1,y1), (x2,y2))
+        :param line2: second line (note: list e.g. (22.3, (x1,y1), (x2,y2))
+        :return: x,y position of intersection or if no intersection => False
+        """
+        # TODO: Exception handling if params not provided correctly
+
         xdiff = (line1[1][0] - line1[2][0], line2[1][0] - line2[2][0])
         ydiff = (line1[1][1] - line1[2][1], line2[1][1] - line2[2][1])
 
@@ -664,42 +728,21 @@ class ImageAnalysis(object):
         return x, y
 
     @staticmethod
-    def __eliminate_redundant_I(all_detected_I):
-        # eliminate redundant detected I
-        if len(all_detected_I) != 0:
-            all_detected_I.sort()
-            nondup_i = [all_detected_I.pop(0), ]
-            all_i_count = 0
-
-            for x in all_detected_I[1::1]:
-                xcor = x[0]
-                pt1 = x[1]
-                pt2 = x[2]
-                # Skip items within tolerance.
-                if abs(nondup_i[all_i_count][0] - xcor) <= ImageAnalysis.letter_tolerance_i_gap:
-                    continue
-                nondup_i.append([xcor, pt1, pt2])
-                all_i_count += 1
-            return nondup_i
-        else:
-            return []
-
-    @staticmethod
-    def __printlines(img, lines, type):
+    def __printlines(img, lines, linetype):
         """
         Print lines on image
         :param img: Image to apply lines on
         :param lines: all lines to be printed
-        :param type: line type to match coloring - VALUES: I, V-LEFT, V-RIGHT
-        :return: Image with colored lines
+        :param linetype: line type to match coloring - VALUES: I, V-LEFT, V-RIGHT
+        :return: image with colored lines
         """
         if len(lines) != 0:
             for line in lines:
-                if type == "I":
+                if linetype == "I":
                     cv2.line(img, line[1], line[2], (255, 255, 0), 1, cv2.LINE_AA)
-                elif type == "V-LEFT":
+                elif linetype == "V-LEFT":
                     cv2.line(img, line[1], line[2], (0, 255, 0), 1, cv2.LINE_AA)
-                elif type == "V-RIGHT":
+                elif linetype == "V-RIGHT":
                     cv2.line(img, line[1], line[2], (0, 0, 255), 1, cv2.LINE_AA)
                 else:
                     ImageAnalysis.__log.info("wrong line type provided, line will not be printed...")
@@ -709,8 +752,12 @@ class ImageAnalysis(object):
 
     @staticmethod
     def most_voted_number(allnumbers):
+        """
+        Enumerates most voted numbers of provided list
+        :param allnumbers: list to enumerate most voted number
+        :return: most voted number
+        """
         count = Counter(allnumbers)
         mostvotednumber = count.most_common(1)[0][0]
         ImageAnalysis.__log.info("Most voted number is: " + str(mostvotednumber))
         return mostvotednumber
-
