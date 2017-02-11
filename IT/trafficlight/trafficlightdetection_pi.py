@@ -72,7 +72,7 @@ class TrafficLightDetectionPi(object):
             if cls.stopped or t - cls.last_access > 20:
                 cls.stream.close()
                 cls.rawCapture.close()
-                CameraHandler().close_pi_camerainstance()
+                CameraHandler().stop()
                 break
         cls.thread = None
 
