@@ -31,7 +31,7 @@ class ImageProcessing(multiprocessing.Process):
     def run(self):
         proc_name = self.name
         firstrun = False
-        self.__log.info('++process %s started' % proc_name)
+        self.__log.info('Process-Unit %s started' % proc_name)
         while True:
             queueitem = self.processingqueue.get()
             if queueitem is None and firstrun:
@@ -47,7 +47,7 @@ class ImageProcessing(multiprocessing.Process):
                 self.__log.debug('calculation done, got %s' % number)
                 if number != 0:
                     self.resultqueue.put(number)
-        self.__log.info('++process %s ended++' % proc_name)
+        self.__log.info('Process-Unit %s stopped' % proc_name)
         return
 
 
@@ -60,7 +60,10 @@ class ImageNumber(object):
     def __call__(self):
         correctedimg = ImageConverter.transform_perspectiveview2topdownview(self.image, self.edges)
         roi = ImageConverter.minimize_roi_lettercontour(correctedimg)
-        self.number = ImageAnalysis.get_roman_letter(roi)
+        if len(roi) != 0:
+            self.number = ImageAnalysis.get_roman_letter(roi)
+        else:
+            self.number = 0
         return self.number
 
     def __str__(self):
