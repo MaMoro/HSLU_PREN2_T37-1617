@@ -698,4 +698,12 @@ def get_letter_tolerance_v_gap():
 def set_letter_tolerance_v_gap(val):
     __persistchanges('letter', 'tolerance_v_gap', val)
 
+
+def get_letter_min_amount_processed_letters():
+    return __loadconfig().getint('letter', 'min_amount_processed_letters')
+
+
+def set_letter_min_amount_processed_letters(val):
+    __persistchanges('letter', 'min_amount_processed_letters', val)
+
 # End Section "Letter" #
