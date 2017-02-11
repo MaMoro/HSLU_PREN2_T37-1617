@@ -243,6 +243,7 @@ def save():
     cfg.set_maskletter_red_shift_h(request.form['mask_letter_red_shift_h'])
     cfg.set_maskletter_red_low_full(request.form['mask_letter_red_low_full'])
     cfg.set_maskletter_red_high_full(request.form['mask_letter_red_high_full'])
+    cfg.set_maskletter_min_maskarea_size(request.form['mask_letter_min_maskarea_size'])
     cfg.set_color_black(request.form['color_black'])
     cfg.set_color_black_low(request.form['color_black_low'])
     cfg.set_color_black_high(request.form['color_black_high'])
@@ -279,6 +280,8 @@ def save():
     cfg.set_filter_kernel_size(request.form['filter_kernel_size'])
     cfg.set_filter_hsv_shift(request.form['filter_hsv_shift'])
     cfg.set_letter_tolerance_i_gap(request.form['letter_tolerance_i_gap'])
+    cfg.set_letter_tolerance_v_gap(request.form['letter_tolerance_v_gap'])
+    cfg.set_letter_min_amount_processed_letters(request.form['letter_min_amount_processed_letters'])
 
     return Response("Data successfully saved")
 
@@ -353,6 +356,7 @@ def __call_render_template():
                            mask_letter_red_shift_h=cfg.get_maskletter_red_shift_h(),
                            mask_letter_red_low_full=cfg.get_maskletter_red_low_full(),
                            mask_letter_red_high_full=cfg.get_maskletter_red_high_full(),
+                           mask_letter_min_maskarea_size=cfg.get_maskletter_min_maskarea_size(),
                            color_black=cfg.get_color_black(),
                            color_black_low=cfg.get_color_black_low(),
                            color_black_high=cfg.get_color_black_high(),
@@ -388,8 +392,9 @@ def __call_render_template():
                            imagetext_textspace=cfg.get_imagetext_textspace(),
                            filter_kernel_size=cfg.get_filter_kernel_size(),
                            filter_hsv_shift=cfg.get_filter_hsv_shift(),
-                           letter_tolerance_i_gap=cfg.get_letter_tolerance_i_gap())
-
+                           letter_tolerance_i_gap=cfg.get_letter_tolerance_i_gap(),
+                           letter_tolerance_v_gap=cfg.get_letter_tolerance_v_gap(),
+                           letter_min_amount_processed_letters=cfg.get_letter_min_amount_processed_letters())
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True, threaded=True)
