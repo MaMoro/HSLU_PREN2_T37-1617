@@ -39,7 +39,7 @@ class CameraHandler(object):
             """
             This function will initialize the Raspbian Cam with the predefined settings in the configuration file
             """
-            self.__log.info("camera init started")
+            self.__log.info("PiCamera initialization started")
             self.camera.resolution = (cfg.get_camera_width(), cfg.get_camera_height())
             self.camera.framerate = cfg.get_camera_framerate()
             self.camera.iso = cfg.get_camera_iso()
@@ -54,7 +54,7 @@ class CameraHandler(object):
             self.rawcapture = PiRGBArray(self.camera, size=self.camera.resolution)
             self.stream = self.camera.capture_continuous(self.rawcapture, format="bgr", use_video_port=True)
             time.sleep(0.1)
-            self.__log.debug("camera init finished")
+            self.__log.info("PiCamera initialization finished")
             self.stopped = False
 
         def calibratePiCamera(self):
