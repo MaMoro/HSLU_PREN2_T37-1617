@@ -1,7 +1,7 @@
 # ================================================================================
 # !/usr/bin/python
 # TITLE           : imageprocessor.py
-# DESCRIPTION     : Handler for letter detection
+# DESCRIPTION     : supportive classes for image processing
 # AUTHOR          : Moro Marco I.BSCI_F14.1301 <marco.moro@stud.hslu.ch>
 # DATE            : 25.10.2016
 # USAGE           : python3 letterdetectionhandler.py
@@ -110,6 +110,80 @@ class ImageConverter(object):
         return img_gray
 
     @staticmethod
+    def mask_color_red(img):
+        """
+        This function extracts only red color parts of the provided image with Hue-Range shifted method
+        :param img: image to extract red color parts
+        :return: image (mask) with only red color parts, all other pixels are black (zero)
+        """
+        img_hsv = ImageConverter.convertbgr2hsv(img)  # convert image to HSV
+        img_hsv[..., 0] = (img_hsv[
+                               ..., 0] + cfg.get_filter_hsv_shift()) % 180  # shift Hue Channel to remove issue on transition from value 180 to 0
+
+        mask = cv2.inRange(img_hsv, ImageConverter.lower_red,
+                           ImageConverter.upper_red)  # create overlay mask for all none matching bits to zero (black)
+        output_img = cv2.bitwise_and(img, img, mask=mask)  # apply mask on image
+
+        return output_img
+
+    @staticmethod
+    def mask_color_red_fullhsv(img):
+        """
+        This function extracts only red color parts of the provided image with Full-HSV color space
+        :param img: image to extract red color parts
+        :return: image (mask) with only red color parts, all other pixels are black (zero)
+        """
+        img_hsv = ImageConverter.convertbgr2hsvfull(img)  # convert image to HSV
+
+        mask = cv2.inRange(img_hsv, ImageConverter.lower_red_full,
+                           ImageConverter.upper_red_full)  # create overlay mask for all none matching bits to zero (black)
+        output_img = cv2.bitwise_and(img, img, mask=mask)  # apply mask on image
+
+        return output_img
+
+    @staticmethod
+    def mask_color_red_traffic(img):
+        """
+        This function extracts red green color parts of the provided image for trafficlight detection
+        :param img: image to extract red color parts
+        :return: image (mask) with only red color parts, all other pixels are black (zero)
+        """
+        img_hsv = ImageConverter.convertbgr2hsv(img)
+
+        red_image_mask0 = cv2.inRange(img_hsv, ImageConverter.lower_red_traffic0, ImageConverter.upper_red_traffic0)
+        red_image_mask1 = cv2.inRange(img_hsv, ImageConverter.lower_red_traffic1, ImageConverter.upper_red_traffic1)
+
+        mask = red_image_mask0 + red_image_mask1  # join my masks
+        output_img = cv2.bitwise_and(img_hsv, img_hsv, mask=mask)  # apply mask
+
+        return output_img
+
+    @staticmethod
+    def mask_color_green(img):
+        """
+        This function extracts only green color parts of the provided image
+        :param img: image to extract green color parts
+        :return: image (mask) with only green color parts, all other pixels are black (zero)
+        """
+        img_hsv = ImageConverter.convertbgr2hsv(img)  # convert image to HSV
+
+        mask = cv2.inRange(img_hsv, ImageConverter.lower_green,
+                           ImageConverter.upper_green)  # create overlay mask for all none matching bits to zero (black)
+        output_img = cv2.bitwise_and(img, img, mask=mask)  # apply mask on image
+
+        return output_img
+
+    @staticmethod
+    def remove_erosions(img):
+        """
+        Removes erosions on an image with dilation method
+        :param img: image to remove erosions
+        :return: image with removed erosions
+        """
+        kernel = np.ones((ImageConverter.kernel_size, ImageConverter.kernel_size), np.uint8)
+        return cv2.dilate(img, kernel, iterations=1)
+
+    @staticmethod
     def transform_perspectiveview2topdownview(img, edges):
         """
         This function transforms a perspective image to a the "birds eye view"
@@ -173,81 +247,6 @@ class ImageConverter(object):
         edges[edges == 1] = 255  # change white value from 1 to 255
         edges = np.uint8(edges)  # flatten values
         return edges
-
-    @staticmethod
-    def mask_color_red(img):
-        """
-        This function extracts only red color parts of the provided image with Hue-Range shifted method
-        :param img: image to extract red color parts
-        :return: image (mask) with only red color parts, all other pixels are black (zero)
-        """
-        img_hsv = ImageConverter.convertbgr2hsv(img)  # convert image to HSV
-        img_hsv[..., 0] = (img_hsv[
-                               ..., 0] + cfg.get_filter_hsv_shift()) % 180  # shift Hue Channel to remove issue on transition from value 180 to 0
-
-        mask = cv2.inRange(img_hsv, ImageConverter.lower_red,
-                           ImageConverter.upper_red)  # create overlay mask for all none matching bits to zero (black)
-        output_img = cv2.bitwise_and(img, img, mask=mask)  # apply mask on image
-
-        return output_img
-
-    @staticmethod
-    def mask_color_red_traffic(img):
-        """
-        This function extracts red green color parts of the provided image for trafficlight detection
-        :param img: image to extract red color parts
-        :return: image (mask) with only red color parts, all other pixels are black (zero)
-        """
-        img_hsv = ImageConverter.convertbgr2hsv(img)
-
-        red_image_mask0 = cv2.inRange(img_hsv, ImageConverter.lower_red_traffic0, ImageConverter.upper_red_traffic0)
-        red_image_mask1 = cv2.inRange(img_hsv, ImageConverter.lower_red_traffic1, ImageConverter.upper_red_traffic1)
-
-        mask = red_image_mask0 + red_image_mask1  # join my masks
-        output_img = cv2.bitwise_and(img_hsv, img_hsv, mask=mask)  # apply mask
-
-        return output_img
-
-    @staticmethod
-    def mask_color_green(img):
-        """
-        This function extracts only green color parts of the provided image
-        :param img: image to extract green color parts
-        :return: image (mask) with only green color parts, all other pixels are black (zero)
-        """
-        img_hsv = ImageConverter.convertbgr2hsv(img)  # convert image to HSV
-
-        mask = cv2.inRange(img_hsv, ImageConverter.lower_green,
-                           ImageConverter.upper_green)  # create overlay mask for all none matching bits to zero (black)
-        output_img = cv2.bitwise_and(img, img, mask=mask)  # apply mask on image
-
-        return output_img
-
-    @staticmethod
-    def mask_color_red_fullhsv(img):
-        """
-        This function extracts only red color parts of the provided image with Full-HSV color space
-        :param img: image to extract red color parts
-        :return: image (mask) with only red color parts, all other pixels are black (zero)
-        """
-        img_hsv = ImageConverter.convertbgr2hsvfull(img)  # convert image to HSV
-
-        mask = cv2.inRange(img_hsv, ImageConverter.lower_red_full,
-                           ImageConverter.upper_red_full)  # create overlay mask for all none matching bits to zero (black)
-        output_img = cv2.bitwise_and(img, img, mask=mask)  # apply mask on image
-
-        return output_img
-
-    @staticmethod
-    def remove_erosions(img):
-        """
-        Removes erosions on an image with dilation method
-        :param img: image to remove erosions
-        :return: image with removed erosions
-        """
-        kernel = np.ones((ImageConverter.kernel_size, ImageConverter.kernel_size), np.uint8)
-        return cv2.dilate(img, kernel, iterations=1)
-
 
 class ImageAnalysis(object):
     # Configure logging component
