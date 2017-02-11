@@ -18,7 +18,7 @@ import multiprocessing
 import cv2
 import logging
 import common.config.confighandler as cfg
-import numpy as np
+import time
 
 from logging.config import fileConfig
 from common.logging.fpshelper import FPSHelper
@@ -37,6 +37,7 @@ class LetterDetectionHandler(object):
         self.FPS = FPSHelper()
         self.__log.info("Letterdetection started")
         self.font = cfg.get_opencv_font()
+        self.min_amount_processed_letters = cfg.get_letter_min_amount_processed_letters()
         self.processing()
         #self.rundetection()
 
@@ -70,34 +71,38 @@ class LetterDetectionHandler(object):
         cv2.destroyAllWindows()
 
     def processing(self):
-        self.__log.info("Start processing, create ")
+        self.__log.info("Start processing, create Image-Processing-Units..")
         num_units = 4
         processingqueue = multiprocessing.JoinableQueue()
         resultqueue = multiprocessing.Queue()
         processingunits = [ImageProcessing(processingqueue, resultqueue) for i in range(num_units)]
         for w in processingunits:
             w.start()
-        self.__log.info("Start capturing")
+        time.sleep(1)
+        self.__log.info("Image-Processing-Units created, ready to process...")
         imgcount = 0
         pistream = CameraHandler().start()
+        self.__log.info("Ready! Start capturing")
         while True:
             img = pistream.read()
-            self.FPS.start()
+            #self.FPS.start()
             redmask = ImageConverter.mask_color_red_fullhsv(img)
             imgmarked, edges = ImageAnalysis.get_ordered_corners_drawed(redmask, img)
             #edges = ImageAnalysis.get_ordered_corners(redmask)
             if edges != 0:
                 processingqueue.put(ImageNumber(img, edges))
                 imgcount += 1
-            elif imgcount > 40:
-                # if more than 40 images processed and no more edges found it's assumed that the number on the wall has passed
+                #self.FPS.stop()
+                #self.__log.info("FPS: " + str(self.FPS.fps()) + " | ms: " + str(self.FPS.elapsedtime_ms()))
+            elif imgcount > self.min_amount_processed_letters:
+                # if more than specified images processed and no more edges found it's assumed that the number on the wall has passed
                 for i in range(num_units):
                     processingqueue.put(None)   # enforce ImageProcessing instances to terminate
                 processingqueue.join()          # waiting for alle processes to be terminated
+                self.FPS.stop()
                 break
-            self.FPS.stop()
+
             cv2.imshow("imagemarked", imgmarked)
-            self.__log.info("FPS: " + str(self.FPS.fps()) + " | ms: " + str(self.FPS.elapsedtime_ms()))
 
             key = cv2.waitKey(1) & 0xFF
             if key == ord("q"):
@@ -106,7 +111,7 @@ class LetterDetectionHandler(object):
 
         CameraHandler().stop()
         cv2.destroyAllWindows()
-
+        self.__log.info("Processed " + str(imgcount) + " images")
         allnumbers = []
         while resultqueue.qsize() != 0:
             allnumbers.append(resultqueue.get())
