@@ -5,7 +5,7 @@
 # AUTHOR          : Moro Marco I.BSCI_F14.1301 <marco.moro@stud.hslu.ch>
 # DATE            : 30.01.2017
 # USAGE           :
-# VERSION         : 0.2
+# VERSION         : 0.5
 # USAGE           :
 # NOTES           :
 # PYTHON_VERSION  : 3.4.2
@@ -37,6 +37,7 @@ def __str2bool(val):
 def get_proj_rootdir():
     return __project_root_dir
 
+
 # save changes to configfile
 def __persistchanges(section, item, val):
     config = __loadconfig()
@@ -51,7 +52,10 @@ def get_opencv_font():
     return cv2.FONT_HERSHEY_COMPLEX_SMALL
 
 
-# getter / setter for configfile values
+# getter / setter for configfile values #
+
+# Start Section "Settings" #
+
 def get_settings_title():
     return __loadconfig().get('settings', 'title')
 
@@ -110,6 +114,9 @@ def set_settings_debug(val):
         __persistchanges('settings', 'debug', 'False')
 
 
+# End Section "Settings" #
+
+# Start Section "Color" #
 def get_color_black_low():
     return __loadconfig().get('color', 'black_low')
 
@@ -254,6 +261,10 @@ def set_color_orange(val):
     __persistchanges('color', 'orange', val)
 
 
+# End Section "Color" #
+
+# Start Section "Masktrafficlight" #
+
 def get_masktrafficlight_red_low_l():
     return __loadconfig().get('mask_trafficlight', 'red_low_l')
 
@@ -324,6 +335,11 @@ def get_masktrafficlight_green_h_splited():
 
 def set_masktrafficlight_green_h(val):
     __persistchanges('mask_trafficlight', 'green_h', val)
+
+
+# End Section "Masktrafficlight" #
+
+# Start Section "Maskletter" #
 
 
 def get_maskletter_red_low_l():
@@ -406,6 +422,19 @@ def set_maskletter_red_high_full(val):
     __persistchanges('mask_letter', 'red_high_full', val)
 
 
+def get_maskletter_min_maskarea_size():
+    return __loadconfig().getint('mask_letter', 'min_maskarea_size')
+
+
+def set_maskletter_min_maskarea_size(val):
+    __persistchanges('mask_letter', 'min_maskarea_size', val)
+
+
+# End Section "Maskletter" #
+
+# Start Section "Debug" #
+
+
 def get_debug_output_red():
     return __loadconfig().getboolean('debug', 'output_red')
 
@@ -472,6 +501,11 @@ def set_debug_logging_config(val):
     __persistchanges('debug', 'logging_config', val)
 
 
+# End Section "Debug" #
+
+# Start Section "Camera" #
+
+
 def get_camera_width():
     return __loadconfig().getint('camera', 'width')
 
@@ -510,6 +544,11 @@ def get_camera_awb():
 
 def set_camera_awb(val):
     __persistchanges('camera', 'awb', val)
+
+
+# End Section "Camera" #
+
+# Start Section "Files" #
 
 
 def get_files_multiimg1():
@@ -552,6 +591,11 @@ def set_files_stream(val):
     __persistchanges('files', 'stream', val)
 
 
+# End Section "Files" #
+
+# Start Section "Cropimage" #
+
+
 def get_cropimage_width():
     return __loadconfig().getint('cropimage', 'width')
 
@@ -566,6 +610,11 @@ def get_cropimage_height():
 
 def set_cropimage_height(val):
     __persistchanges('cropimage', 'height', val)
+
+
+# End Section "Cropimage" #
+
+# Start Section "Imagetext" #
 
 
 def get_imagetext_bordersize_left():
@@ -608,6 +657,11 @@ def set_imagetext_textspace(val):
     __persistchanges('imagetext', 'textspace', val)
 
 
+# End Section "Imagetext" #
+
+# Start Section "Filter" #
+
+
 def get_filter_kernel_size():
     return __loadconfig().getint('filter', 'kernel_size')
 
@@ -624,9 +678,24 @@ def set_filter_hsv_shift(val):
     __persistchanges('filter', 'hsv_shift', val)
 
 
+# End Section "Filter" #
+
+# Start Section "Letter" #
+
+
 def get_letter_tolerance_i_gap():
     return __loadconfig().getint('letter', 'tolerance_i_gap')
 
 
 def set_letter_tolerance_i_gap(val):
     __persistchanges('letter', 'tolerance_i_gap', val)
+
+
+def get_letter_tolerance_v_gap():
+    return __loadconfig().getint('letter', 'tolerance_v_gap')
+
+
+def set_letter_tolerance_v_gap(val):
+    __persistchanges('letter', 'tolerance_v_gap', val)
+
+# End Section "Letter" #
