@@ -1,7 +1,7 @@
 # ================================================================================
 # !/usr/bin/python
-# TITLE           : parcourshandler.py
-# DESCRIPTION     : Handler for parcours and its state
+# TITLE           : parcoursstate.py
+# DESCRIPTION     : Parcour states as enum
 # AUTHOR          : Moro Marco I.BSCI_F14.1301 <marco.moro@stud.hslu.ch>
 # DATE            : 30.01.2017
 # USAGE           :
@@ -12,7 +12,20 @@
 # OPENCV_VERSION  : 3.1.0
 # ================================================================================
 
+# import the necessary packages
+from enum import Enum
 
-class ParcoursHandler:
-    def __init__(_self):
-        print("TODO")
+
+class ParcoursState(Enum):
+     NotInitalized = 0
+     Setup = 1
+     StartField = 2
+     Treppe = 3
+     Verschrenkung = 4
+     Wendebereich = 5
+     Torbogen = 6
+     Bodenwelle = 7
+     Wippe = 8
+     Lichtschranke = 9
+     Taster = 10
+     Error = 99
