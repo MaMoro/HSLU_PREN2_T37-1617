@@ -22,16 +22,19 @@ from threading import Thread
 from logging.config import fileConfig
 
 
+# https://pyserial.readthedocs.io/en/latest/shortintro.html
+# https://github.com/pyserial/pyserial/blob/master/serial/threaded/__init__.py
+# http://stackoverflow.com/questions/17553543/pyserial-non-blocking-read-loop
+# http://pyserial.readthedocs.io/en/latest/pyserial_api.html#module-serial.threaded
+
+
 class SerialCommunicationHandler:
     class __SerialCommunicationHandler:
         def __init__(self):
             fileConfig(cfg.get_logging_config_fullpath())
             self.__log = logging.getLogger()
-            self.gpiopinsconfigured = False
-            # https://pyserial.readthedocs.io/en/latest/shortintro.html
             self.serialcom = None
             self.__initCOMPort()
-            self.__initGPIOPins()
 
         def __initCOMPort(self):
             """
@@ -44,30 +47,30 @@ class SerialCommunicationHandler:
             self.serialcom.baudrate = 9600
             self.serialcom.port = '/dev/ttyAMA0'
 
-        def __initCommunicationToFreedomBoard(self):
-            """
-            This function will initialize the corresponding GPIO-Pins for serial
-            """
-            self.__log.info("Setup communication with FreedomBoard started")
-            # TODO: Setup communication with FreedomBoard over seriaö
-
-        def transmit(self, value):
+        def send(self, value):
             self.__log.debug("sending value: " + str(value))
-            self.serialcom.write(value)
-            self.serialcom.close()
-            # TODO: transmit value over serial
-            self.__log.info("value: " + str(value) + " sent!")
+            self.data_str = value
 
         def receive(self):
-            val = self.serialcom.read(8)
-            self.serialcom.close()
-            self.__log.debug("got value: XXX")
-            # TODO: receive value
-            return val
+            return self.data_str
+
+        def _handle(self):
+            try:
+                while self.serialcom.is_open():
+                    if self.serialcom.inWaiting() > 0:  # if incoming bytes are waiting to be read from the serial input buffer
+                        self.data_str = self.serialcom.read(self.serialcom.inWaiting()).decode('ascii',
+                                                                                               'ignore')  # read the bytes and convert from binary array to ASCII
+                    elif self.data_str is not None:
+                        self.serialcom.write(self.data_str.encode('ascii', 'ignore'))
+                        self.__log.info("value: " + str(self.data_str) + " sent!")
+                        self.data_str = None
+            except serial.SerialException as e:
+                self.__log.error("serial connection lost...")
+
 
         def start(self):
             # start the thread to read frames from the video stream
-            t = Thread()
+            t = Thread(target=self._handle())
             t.daemon = True
             t.start()
             time.sleep(1)
