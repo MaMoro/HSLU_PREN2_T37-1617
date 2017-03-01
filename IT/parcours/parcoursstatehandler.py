@@ -4,7 +4,7 @@
 # DESCRIPTION     : Handler for parcours and its state
 # AUTHOR          : Moro Marco I.BSCI_F14.1301 <marco.moro@stud.hslu.ch>
 # DATE            : 30.01.2017
-# USAGE           :
+# USAGE           : parcoursposition = ParcoursStateHandler().start()
 # VERSION         : 0.1
 # USAGE           :
 # NOTES           :
@@ -16,8 +16,8 @@
 import logging
 import time
 import common.config.confighandler as cfg
-from threading import Thread
 
+from threading import Thread
 from logging.config import fileConfig
 from parcours.parcourstate import ParcoursState
 
@@ -27,7 +27,6 @@ class ParcoursStateHandler:
         def __init__(self):
             fileConfig(cfg.get_logging_config_fullpath())
             self.__log = logging.getLogger()
-            self.stopped = False
             self.currentParcoursState = ParcoursState.NotInitalized
             self.__initparcours()
 
@@ -36,32 +35,33 @@ class ParcoursStateHandler:
             This function will initialize the ParcoursStateHandler with the predefined settings in the configuration file
             """
             self.__log.info("Parcours initialization started")
+            self.currentParcoursState = ParcoursState.StartField
 
         def start(self):
             # start the thread to read frames from the video stream
-            t = Thread(target=self.update, args=())
+            t = Thread()
             t.daemon = True
-            self.stopped = False
             t.start()
             time.sleep(1)
             return self
 
         def setcurrentstate(self, state):
+            """
+            Sets current parcours state
+            :param state: ParcoursState to set
+            """
             if isinstance(state, ParcoursState):
                 self.currentParcoursState = state
-            elif (state).is_integer():
+                self.__log.info("State set to: " + str(state))
+            elif state.is_integer():
                 self.currentParcoursState = ParcoursState(state)
+                self.__log.info("State set to: " + str(state))
             else:
                 self.__log.warning("State unknown, tried to set " + str(state))
                 self.currentParcoursState = ParcoursState.Error
 
         def getcurrentstate(self):
-            if self.stopped:
-                self.calibratePiCamera()
-            return self.frame  # return the frame most recently read
-
-        def stop(self):
-            self.stopped = True  # indicate that the thread should be stopped
+            return self.currentParcoursState
 
     instance = None
 
