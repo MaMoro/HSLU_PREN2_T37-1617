@@ -16,6 +16,7 @@
 import logging
 import time
 import serial
+import queue
 import common.config.confighandler as cfg
 
 from threading import Thread
@@ -34,9 +35,11 @@ class SerialCommunicationHandler:
             fileConfig(cfg.get_logging_config_fullpath())
             self.__log = logging.getLogger()
             self.serialcom = None
-            self.__initCOMPort()
+            self.data_send = queue.Queue()
+            self.data_receive = queue.Queue()
+            self.__initserialcom()
 
-        def __initCOMPort(self):
+        def __initserialcom(self):
             """
             This function will initialize the corresponding GPIO-Pins for serial
             """
@@ -47,32 +50,43 @@ class SerialCommunicationHandler:
             self.serialcom.baudrate = 9600
             self.serialcom.port = '/dev/ttyAMA0'
 
-        def send(self, value):
-            self.__log.debug("sending value: " + str(value))
-            self.data_str = value
-
-        def receive(self):
-            return self.data_str
-
-        def _handle(self):
+        def __txhandle(self):
             try:
                 while self.serialcom.is_open():
-                    if self.serialcom.inWaiting() > 0:  # if incoming bytes are waiting to be read from the serial input buffer
-                        self.data_str = self.serialcom.read(self.serialcom.inWaiting()).decode('ascii',
-                                                                                               'ignore')  # read the bytes and convert from binary array to ASCII
-                    elif self.data_str is not None:
-                        self.serialcom.write(self.data_str.encode('ascii', 'ignore'))
-                        self.__log.info("value: " + str(self.data_str) + " sent!")
-                        self.data_str = None
+                    while not self.data_send.empty():
+                        currentqueueitem = self.data_send.get()
+                        currentsenditem = currentqueueitem.encode('ascii', 'ignore')
+                        self.serialcom.write(currentsenditem)
+                        self.__log.info("value: " + str(currentsenditem) + " sent!")
             except serial.SerialException as e:
                 self.__log.error("serial connection lost...")
 
+        def __rxhandle(self):
+            try:
+                while self.serialcom.is_open():
+                    if self.serialcom.inWaiting() > 0:  # if incoming bytes are waiting to be read from the serial input buffer
+                        currentreceiveitem = self.serialcom.read(self.serialcom.inWaiting())
+                        currentqueueitem = currentreceiveitem.decode('ascii', 'ignore')
+                        self.data_receive.put(currentqueueitem)
+                        self.__log.info("value: " + str(currentqueueitem) + " received!")
+            except serial.SerialException as e:
+                self.__log.error("serial connection lost...")
+            return self.data_str
+
+        def send(self, value):
+            self.data_send.put(value.decode('ascii', 'ignore'))
+
+        def receive(self):
+            receiveitem = self.data_receive.get()
+            return receiveitem.encode('ascii', 'ignore')
 
         def start(self):
-            # start the thread to read frames from the video stream
-            t = Thread(target=self._handle())
-            t.daemon = True
-            t.start()
+            t_read = Thread(target=self.__rxhandle())
+            t_write = Thread(target=self.__txhandle())
+            t_read.daemon = True
+            t_write.daemon = True
+            t_read.start()
+            t_write.start()
             time.sleep(1)
             return self
 
