@@ -55,30 +55,38 @@ class SerialCommunicationHandler:
                 while self.serialcom.is_open():
                     while not self.data_send.empty():
                         currentqueueitem = self.data_send.get()
-                        currentsenditem = currentqueueitem.encode('ascii', 'ignore')
+                        currentsenditem = self.__encodestring(currentqueueitem)
                         self.serialcom.write(currentsenditem)
                         self.__log.info("value: " + str(currentsenditem) + " sent!")
+                else:
+                    self.__reconnectcommunication()
             except serial.SerialException as e:
-                self.__log.error("serial connection lost...")
+                self.__log.error("serial connection lost..." + str(e.strerror))
+                if self.serialcom.is_open():
+                    self.__reconnectcommunication()
 
         def __rxhandle(self):
             try:
                 while self.serialcom.is_open():
                     if self.serialcom.inWaiting() > 0:  # if incoming bytes are waiting to be read from the serial input buffer
                         currentreceiveitem = self.serialcom.read(self.serialcom.inWaiting())
-                        currentqueueitem = currentreceiveitem.decode('ascii', 'ignore')
+                        currentqueueitem = self.__decodestring(currentreceiveitem)
                         self.data_receive.put(currentqueueitem)
                         self.__log.info("value: " + str(currentqueueitem) + " received!")
+                else:
+                    self.__reconnectcommunication()
             except serial.SerialException as e:
-                self.__log.error("serial connection lost...")
-            return self.data_str
+                self.__log.error("serial connection lost..." + str(e.strerror))
+
+        def __reconnectcommunication(self):
+            self.start()
 
         def send(self, value):
             self.data_send.put(value.decode('ascii', 'ignore'))
 
         def receive(self):
             receiveitem = self.data_receive.get()
-            return receiveitem.encode('ascii', 'ignore')
+            return receiveitem
 
         def start(self):
             t_read = Thread(target=self.__rxhandle())
@@ -89,6 +97,16 @@ class SerialCommunicationHandler:
             t_write.start()
             time.sleep(1)
             return self
+
+        def __encodestring(self, inputvalue):
+            inputvalue_enc = inputvalue.encode('ascii', 'ignore')
+            operation, opval = inputvalue_enc.split(",")
+            return operation, opval
+
+        def __decodestring(self, operation, opval):
+            combinedvalue = operation.encode('ascii', 'ignore') + "," + opval.encode('ascii', 'ignore')
+            return combinedvalue
+
 
     instance = None
 
