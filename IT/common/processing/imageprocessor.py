@@ -600,6 +600,10 @@ class ImageAnalysis(object):
 
         return number
 
+    #public method for unit testing
+    def enumerate_number_withlines(v_left, v_right, i):
+        return ImageAnalysis.__enumerate_number_withlines(v_left, v_right, i)
+
     @staticmethod
     def __enumerate_number_withlines(v_left, v_right, i):
         """
