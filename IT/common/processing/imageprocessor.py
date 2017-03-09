@@ -514,7 +514,7 @@ class ImageAnalysis(object):
             FPS.stop()
             ImageAnalysis.__log.info("processing time printlines: " + str(FPS.elapsedtime_ms()) + " ms")
 
-            number = ImageAnalysis.__enumerate_number_withlines(v_left_found, v_right_found, i_count)
+            number = ImageAnalysis._enumerate_number_withlines(v_left_found, v_right_found, i_count)
 
         else:
             ImageAnalysis.__log.warning("no lines detected on image")
@@ -592,7 +592,7 @@ class ImageAnalysis(object):
                 v_right_found = True
             i_count = len(nonintersected_i)
 
-            number = ImageAnalysis.__enumerate_number_withlines(v_left_found, v_right_found, i_count)
+            number = ImageAnalysis._enumerate_number_withlines(v_left_found, v_right_found, i_count)
 
         else:
             ImageAnalysis.__log.warning("no lines detected on image")
@@ -600,14 +600,10 @@ class ImageAnalysis(object):
 
         return number
 
-    #public method for unit testing
-    def enumerate_number_withlines(v_left, v_right, i):
-        return ImageAnalysis.__enumerate_number_withlines(v_left, v_right, i)
-
     @staticmethod
-    def __enumerate_number_withlines(v_left, v_right, i):
+    def _enumerate_number_withlines(v_left, v_right, i):
         """
-        Gets number based on detected lines
+        Gets number based on detected lines - protected not private for unittest
         :param v_left:  bool if left side of V detected
         :param v_right: bool if right side of V detected
         :param i: amount of detected I's
