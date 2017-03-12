@@ -29,7 +29,7 @@ from logging.config import fileConfig
 # http://pyserial.readthedocs.io/en/latest/pyserial_api.html#module-serial.threaded
 
 
-class SerialCommunicationHandler:
+class SerialCommunicationHandler(object):
     class __SerialCommunicationHandler:
         def __init__(self):
             fileConfig(cfg.get_logging_config_fullpath())
@@ -48,16 +48,16 @@ class SerialCommunicationHandler:
             self.__log.info("Serial communication initialization started")
             self.serialcom = serial.Serial()
             self.serialcom.baudrate = 9600
-            self.serialcom.port = '/dev/ttyAMA0'
+            self.serialcom.port = '/dev/serial0'
+            self.serialcom.open()
 
         def __txhandle(self):
             try:
-                while self.serialcom.is_open():
+                while self.serialcom.is_open:
                     while not self.data_send.empty():
                         currentqueueitem = self.data_send.get()
-                        currentsenditem = self.__encodestring(currentqueueitem)
-                        self.serialcom.write(currentsenditem)
-                        self.__log.info("value: " + str(currentsenditem) + " sent!")
+                        self.serialcom.write(currentqueueitem.encode('utf-8'))
+                        self.__log.info("value sent: " + str(currentqueueitem))
                 else:
                     self.__reconnectcommunication()
             except serial.SerialException as e:
@@ -67,46 +67,45 @@ class SerialCommunicationHandler:
 
         def __rxhandle(self):
             try:
-                while self.serialcom.is_open():
-                    if self.serialcom.inWaiting() > 0:  # if incoming bytes are waiting to be read from the serial input buffer
-                        currentreceiveitem = self.serialcom.read(self.serialcom.inWaiting())
-                        currentqueueitem = self.__decodestring(currentreceiveitem)
-                        self.data_receive.put(currentqueueitem)
-                        self.__log.info("value: " + str(currentqueueitem) + " received!")
+                while self.serialcom.is_open:
+                    currentreceiveitem = self.serialcom.readline()
+                    currentqueueitem_op, currentqueueitem_value = self.__encodestring(currentreceiveitem)
+                    self.data_receive.put([currentqueueitem_op, currentqueueitem_value])
+                    self.__log.info("value received: " + str(currentreceiveitem.rstrip()))
                 else:
                     self.__reconnectcommunication()
             except serial.SerialException as e:
-                self.__log.error("serial connection lost..." + str(e.strerror))
+                self.__log.error("serial connection lost..." + str(e))
+                if self.serialcom.is_open:
+                    self.__reconnectcommunication()
 
         def __reconnectcommunication(self):
             self.start()
 
-        def send(self, value):
-            self.data_send.put(value.decode('ascii', 'ignore'))
+        def send(self, operation, value):
+            decodedvalue = self.__decodestring(operation, value)
+            self.data_send.put(decodedvalue + '\n')
 
         def receive(self):
-            receiveitem = self.data_receive.get()
-            return receiveitem
+            operation, opval = self.data_receive.get()
+            return operation, opval
 
         def start(self):
-            t_read = Thread(target=self.__rxhandle())
-            t_write = Thread(target=self.__txhandle())
+            t_read = Thread(target=self.__rxhandle, args=())
+            t_write = Thread(target=self.__txhandle, args=())
             t_read.daemon = True
             t_write.daemon = True
             t_read.start()
             t_write.start()
-            time.sleep(1)
             return self
 
         def __encodestring(self, inputvalue):
-            inputvalue_enc = inputvalue.encode('ascii', 'ignore')
-            operation, opval = inputvalue_enc.split(",")
-            return operation, opval
+            operation, opval = inputvalue.split(b',')
+            return operation.rstrip(), opval.rstrip()
 
         def __decodestring(self, operation, opval):
-            combinedvalue = operation.encode('ascii', 'ignore') + "," + opval.encode('ascii', 'ignore')
+            combinedvalue = operation + "," + str(opval)
             return combinedvalue
-
 
     instance = None
 
