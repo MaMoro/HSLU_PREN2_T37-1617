@@ -7,26 +7,19 @@
 # USAGE           : comm = SerialCommunicationHandler().start()
 # VERSION         : 0.1
 # USAGE           :
-# NOTES           :
+# NOTES           :  Tx GPIO14 - BOARD-Layout: Pin8 Rx GPIO15 - BOARD-Layout: Pin10
 # PYTHON_VERSION  : 3.4.2
 # OPENCV_VERSION  : 3.1.0
 # ================================================================================
 
 # import the necessary packages
 import logging
-import time
 import serial
 import queue
 import common.config.confighandler as cfg
 
 from threading import Thread
 from logging.config import fileConfig
-
-
-# https://pyserial.readthedocs.io/en/latest/shortintro.html
-# https://github.com/pyserial/pyserial/blob/master/serial/threaded/__init__.py
-# http://stackoverflow.com/questions/17553543/pyserial-non-blocking-read-loop
-# http://pyserial.readthedocs.io/en/latest/pyserial_api.html#module-serial.threaded
 
 
 class SerialCommunicationHandler(object):
@@ -43,8 +36,6 @@ class SerialCommunicationHandler(object):
             """
             This function will initialize the corresponding GPIO-Pins for serial
             """
-            # Tx GPIO14 - BOARD-Layout: Pin8
-            # Rx GPIO15 - BOARD-Layout: Pin10
             self.__log.info("Serial communication initialization started")
             self.serialcom = serial.Serial()
             self.serialcom.baudrate = 9600
