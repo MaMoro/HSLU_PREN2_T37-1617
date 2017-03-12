@@ -18,6 +18,19 @@ def main():
     print("**************************************************")
 
 
+    #Load configuration / config handler
+    #Init Webserver
+    #Wait for parcour setting (left/right) - new site?
+
+    #Init communication between raspi and freedom
+    #Init needed Components.... Motor? Cervo?
+    #Init camera and power LED
+
+    #Traffic Light Detection
+
+    #Letter Detection
+
+
 # ================================================================================
 # main routine
 # ================================================================================
