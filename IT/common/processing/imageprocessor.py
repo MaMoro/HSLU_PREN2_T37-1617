@@ -248,6 +248,7 @@ class ImageConverter(object):
         edges = np.uint8(edges)  # flatten values
         return edges
 
+
 class ImageAnalysis(object):
     # Configure logging component
     logging.config.fileConfig(cfg.get_logging_config_fullpath())
