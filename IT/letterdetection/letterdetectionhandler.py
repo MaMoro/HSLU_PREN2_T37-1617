@@ -102,6 +102,7 @@ class LetterDetectionHandler(object):
                 self.FPS.stop()
                 break
 
+            cv2.imshow("mask", redmask)
             cv2.imshow("imagemarked", imgmarked)
 
             key = cv2.waitKey(1) & 0xFF
