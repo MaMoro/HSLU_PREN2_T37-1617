@@ -22,7 +22,7 @@ class LEDStripHandler:
 
     __gpio_init = False
     __letterledpins = [11, 12, 13, 15, 16]
-    __powerledpin = 14
+    __powerledpin = 18
     fileConfig(cfg.get_logging_config_fullpath())
     __log = logging.getLogger()
     __log.setLevel(cfg.get_settings_loglevel())
