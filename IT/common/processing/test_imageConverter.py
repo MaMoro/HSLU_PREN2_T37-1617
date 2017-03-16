@@ -5,7 +5,6 @@ import cv2
 import numpy as np
 from common.processing.imageprocessor import ImageConverter
 
-
 class TestImageConverter(TestCase):
 
     #read original images from media
@@ -130,6 +129,7 @@ class TestImageConverter(TestCase):
         self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/letter_IV_top_bw.png', 0), ImageConverter.convert2blackwhite(self.img_letter_IV_top)), True)
 
     def test_mask_color_red(self):
+        #TODO Pictures from traffic light
         self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/letter_II_angle_red.png'), ImageConverter.mask_color_red(self.img_letter_II_angle)), True)
         self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/letter_II_normal_red.png'), ImageConverter.mask_color_red(self.img_letter_II_normal)), True)
         self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/letter_III_normal_red.png'), ImageConverter.mask_color_red(self.img_letter_III_normal)), True)
@@ -137,6 +137,7 @@ class TestImageConverter(TestCase):
         self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/letter_IV_top_red.png'), ImageConverter.mask_color_red(self.img_letter_IV_top)), True)
 
     def test_mask_color_red_fullhsv(self):
+        #TODO Pictures from traffic light
         self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/letter_II_angle_redfull.png'), ImageConverter.mask_color_red_fullhsv(self.img_letter_II_angle)), True)
         self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/letter_II_normal_redfull.png'), ImageConverter.mask_color_red_fullhsv(self.img_letter_II_normal)), True)
         self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/letter_III_normal_redfull.png'), ImageConverter.mask_color_red_fullhsv(self.img_letter_III_normal)), True)
@@ -144,6 +145,7 @@ class TestImageConverter(TestCase):
         self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/letter_IV_top_redfull.png'), ImageConverter.mask_color_red_fullhsv(self.img_letter_IV_top)), True)
 
     def test_mask_color_red_traffic(self):
+        #TODO Pictures from traffic light
         self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/letter_II_angle_redtraffic.png'), ImageConverter.mask_color_red_traffic(self.img_letter_II_angle)), True)
         self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/letter_II_normal_redtraffic.png'), ImageConverter.mask_color_red_traffic(self.img_letter_II_normal)), True)
         self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/letter_III_normal_redtraffic.png'), ImageConverter.mask_color_red_traffic(self.img_letter_III_normal)), True)
@@ -151,24 +153,22 @@ class TestImageConverter(TestCase):
         self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/letter_IV_top_redtraffic.png'), ImageConverter.mask_color_red_traffic(self.img_letter_IV_top)), True)
 
     def test_mask_color_green(self):
+        #TODO Pictures from traffic light
         self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/letter_II_angle_green.png'), ImageConverter.mask_color_green(self.img_letter_II_angle)), True)
         self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/letter_II_normal_green.png'), ImageConverter.mask_color_green(self.img_letter_II_normal)), True)
         self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/letter_III_normal_green.png'), ImageConverter.mask_color_green(self.img_letter_III_normal)), True)
         self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/letter_IV_near_green.png'), ImageConverter.mask_color_green(self.img_letter_IV_near)), True)
         self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/letter_IV_top_green.png'), ImageConverter.mask_color_green(self.img_letter_IV_top)), True)
 
-    def test_remove_erosions(self):
-        #TODO
-        self.fail()
 
     def test_transform_perspectiveview2topdownview(self):
-        #TODO
+        #TODO Prio B
         self.fail()
 
     def test_minimize_roi_lettercontour(self):
-        # TODO
+        # TODO Prio B
         self.fail()
 
     def test_thinningblackwhiteimage(self):
-        #TODO as soon as BW image works...
+        #TODO Not tested due to the fact that it is not visible
         self.fail()
