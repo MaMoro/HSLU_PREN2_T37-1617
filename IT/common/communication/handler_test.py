@@ -12,7 +12,7 @@
 # OPENCV_VERSION  : 3.1.0
 # ================================================================================
 import time
-from common.communication.communicationhandler import SerialCommunicationHandler
+from common.communication.serialcommunicationhandler import SerialCommunicationHandler
 
 from common.communication.communicationvalues import CommunicationValues
 
@@ -55,9 +55,19 @@ def main_old():
 def main():
     comm = CommunicationValues().start()
     comm.send_hello()
-    print(comm.get_hello())
+    print(comm.get_hello_blocking())
+    comm.send_start()
+    print(comm.get_start())
+    print("run")
+    count = 0
+    while count <= 180:
+        comm.send_error(count)
+        count += 1
     time.sleep(1)
-    print(comm.get_hello())
+    while count >= 0:
+        print(comm.get_error())
+        count -= 1
+
 
 
 
