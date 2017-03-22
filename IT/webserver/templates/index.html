@@ -18,13 +18,14 @@
 <h1>Control-Interface : Autonomes Fahrzeug - PREN 2 - Team 37</h1>
 <div id="tabs">
     <ul>
-        <li><a href="#tabs-1">Images</a></li>
+        <!-- <li><a href="#tabs-1">Images</a></li>
         <li><a href="#tabs-2">Video</a></li>
-        <li><a href="#tabs-3">Stream</a></li>
-        <li><a href="#tabs-4">Pi</a></li>
-        <li><a href="#tabs-5">Config</a></li>
+        <li><a href="#tabs-3">Stream</a></li>-->
+        <li><a href="#tabs-4">LiveView</a></li>
+        <li><a href="#tabs-5">Steuerung</a></li>
+        <li><a href="#tabs-6">Config</a></li>
     </ul>
-    <div id="tabs-1">
+    <!--<div id="tabs-1">
         <img height="480" width="640" src="{{ url_for('img_feed') }}" onerror="this.style.display='none';"></br>
         <table>
             <tr>
@@ -83,7 +84,7 @@
                 </form>
             </tr>
         </table>
-    </div>
+    </div>-->
     <div id="tabs-4">
         <img height="480" width="640" src="{{ url_for('pi_feed') }}" onerror="this.style.display='none';"></br>
         <table>
@@ -92,10 +93,7 @@
                     <td>
                         <button type="submit" value="Start">Start</button>
                     </td>
-                    <td><input type="checkbox" name="preview" value="pi"> Show preview</td>
                 </form>
-            </tr>
-            <tr>
                 <form id="pi_stop_form" action="/stop_pi" method="post">
                     <td>
                         <button type="submit" value="Stop">Stop</button>
@@ -105,6 +103,139 @@
         </table>
     </div>
     <div id="tabs-5">
+        <form id="steering_form">
+            <div>
+                <table>
+                    <tr>
+                        <td style="vertical-align: top;">
+                            <h3>General</h3>
+                            <table>
+                                <tr>
+                                    <td>Serial Communication established:</td>
+                                    <td><input type="checkbox" name="serial_hello" value="{{ 0 }}"></td>
+                                </tr>
+                                <tr>
+                                    <td>Start Command set:</td>
+                                    <td><input type="checkbox" name="serial_start" value="{{ 0 }}"></td>
+                                </tr>
+                                <tr>
+                                    <td>Course Selection:</td>
+                                    <td><input type="checkbox" name="serial_course" value="{{ 0 }}"></td>
+                                </tr>
+                                <tr>
+                                    <td>Letter:</td>
+                                    <td>Soll:<input class="spinner" name="serial_letter_s" id="serial_letter_s"
+                                                    value="{{ 0 }}"> <br/>&nbsp;&nbsp;&nbsp;Ist:<input class="spinner"
+                                                                                                       name="serial_letter_i"
+                                                                                                       id="serial_letter_i"
+                                                                                                       value="{{ 0 }}">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Parcours state:</td>
+                                    <td><input class="spinner" name="serial_parcours" value="{{ 0 }}"></td>
+                                </tr>
+                                <tr>
+                                    <td>Errors:</td>
+                                    <td><textarea name="serial_errors" value="{{ 0 }}"></textarea></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style="padding-left: 25px; vertical-align: top;">
+                            <h3>Distance sensors</h3>
+                            <table>
+                                <tr>
+                                    <td>ToF distance left (mm):</td>
+                                    <td>Soll:<input class="spinner" name="serial_tof_l_s" id="serial_tof_l_s"
+                                                    value="{{ 0 }}"> <br/>&nbsp;&nbsp;&nbsp;Ist: <input class="spinner"
+                                                                                                        name="serial_tof_l_i"
+                                                                                                        id="serial_tof_l_i"
+                                                                                                        value="{{ 0 }}">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>ToF distance right (mm):</td>
+                                    <td>Soll:<input class="spinner" name="serial_tof_r_s" id="serial_tof_r_s"
+                                                    value="{{ 0 }}"> <br/>&nbsp;&nbsp;&nbsp;Ist: <input class="spinner"
+                                                                                                        name="serial_tof_r_i"
+                                                                                                        id="serial_tof_r_i"
+                                                                                                        value="{{ 0 }}">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>ToF distance front (mm):</td>
+                                    <td>Soll:<input class="spinner" name="serial_tof_f_s" id="serial_tof_f_s"
+                                                    value="{{ 0 }}"> <br/>&nbsp;&nbsp;&nbsp;Ist: <input class="spinner"
+                                                                                                        name="serial_tof_f_i"
+                                                                                                        id="serial_tof_f_i"
+                                                                                                        value="{{ 0 }}">
+                                    </td>
+                                </tr>
+                            </table>
+                            <h3>Gyro / Gyroskop</h3>
+                            <table>
+                                <tr>
+                                    <td>Gyroskop - PWM level (%)</td>
+                                    <td>Soll: <input class="spinner" name="serial_gyroskop_s" id="serial_gyroskop_s"
+                                                     value="{{ 0 }}"> <br/>&nbsp;&nbsp;&nbsp;Ist: <input class="spinner"
+                                                                                                         name="serial_gyroskop_i"
+                                                                                                         id="serial_gyroskop_i"
+                                                                                                         value="{{ 0 }}">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Gyro - NICK (°)</td>
+                                    <td>Ist:<input class="spinner" name="serial_gyro_n" id="serial_gyro_n"
+                                                   value="{{ 0 }}"></td>
+                                </tr>
+                                <tr>
+                                    <td>Gyro - GEAR (°)</td>
+                                    <td>Ist:<input class="spinner" name="serial_gyro_g" id="serial_gyro_g"
+                                                   value="{{ 0 }}"></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style="padding-left: 25px; vertical-align: top;">
+                            <h3>Engines</h3>
+                            <table>
+                                <tr>
+                                    <td>Speed Left Track (%):</td>
+                                    <td>Soll:<input class="spinner" name="serial_raupe_l_s" id="serial_raupe_l_s"
+                                                    value="{{ 0 }}"> <br/>&nbsp;&nbsp;&nbsp;Ist: <input class="spinner"
+                                                                                                        name="serial_raupe_l_i"
+                                                                                                        id="serial_raupe_l_i"
+                                                                                                        value="{{ 0 }}">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Speed Right Track (%):</td>
+                                    <td>Soll:<input class="spinner" name="serial_raupe_r_s" id="serial_raupe_r_s"
+                                                    value="{{ 0 }}"> <br/>&nbsp;&nbsp;&nbsp;Ist: <input class="spinner"
+                                                                                                        name="serial_raupe_r_i"
+                                                                                                        id="serial_raupe_r_i"
+                                                                                                        value="{{ 0 }}">
+                                    </td>
+                                </tr>
+                            </table>
+                            <h3>Servo</h3>
+                            <table>
+                                <tr>
+                                    <td>Angle servo:</td>
+                                    <td>Soll:<input class="spinner" name="serial_servo_s" id="serial_servo_s"
+                                                    value="{{ 0 }}"> <br/>&nbsp;&nbsp;&nbsp;Ist: <input class="spinner"
+                                                                                                        name="serial_servo_i"
+                                                                                                        id="serial_servo_i"
+                                                                                                        value="{{ 0 }}">
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </form>
+    </div>
+    <div id="tabs-6">
         <form id="save_form">
             <div id="accordion">
                 <h3>General - Settings</h3>
@@ -205,7 +336,7 @@
                             <td>Low red mask minimal value:</td>
                             <td><input type="text" id="mask_trafficlight_red_low_l" class="colorhsv"
                                        name="mask_trafficlight_red_low_l" value="{{ mask_trafficlight_red_low_l }}">
-                        </td>
+                            </td>
                         </tr>
                         <tr>
                             <td>Low red mask maximal value:</td>
@@ -232,8 +363,8 @@
                             <td><input type="text" id="mask_trafficlight_green_h" class="colorhsv"
                                        name="mask_trafficlight_green_h" value="{{ mask_trafficlight_green_h }}"></td>
                         </tr>
-                </table>
-            </div>
+                    </table>
+                </div>
                 <h3>IT - TrafficlightDetection - Cropimage</h3>
                 <div>
                     <table>
@@ -294,10 +425,10 @@
                         <tr>
                             <td>Minimal areasize in pixel for mask:</td>
                             <td><input class="spinner" id="mask_letter_min_maskarea_size" name="mask_letter_min_maskarea_size"
-                               value="{{ mask_letter_min_maskarea_size }}"></td>
+                                       value="{{ mask_letter_min_maskarea_size }}"></td>
                         </tr>
-                </table>
-        </div>
+                    </table>
+                </div>
                 <h3>IT - LetterDetection - Processing</h3>
                 <div>
                     <table>
@@ -327,13 +458,11 @@
                         </tr>
                         <tr>
                             <td>Write green filtered image when green detected:</td>
-                            <td><input type="checkbox" name="debug_output_green" value="debug_output_green" {{ debug_output_green
-                                       }}></td>
+                            <td><input type="checkbox" name="debug_output_green" value="debug_output_green" {{ debug_output_green }}></td>
                         </tr>
                         <tr>
                             <td>Set background white when writing image:</td>
-                            <td><input type="checkbox" name="debug_output_bgwhite" value="debug_output_bgwhite" {{
-                                       debug_output_bgwhite }}></td>
+                            <td><input type="checkbox" name="debug_output_bgwhite" value="debug_output_bgwhite" {{ debug_output_bgwhite }}></td>
                         </tr>
                         <tr>
                             <td>Path to logging.ini:</td>
@@ -490,6 +619,16 @@
 <script>
     // Initialize jQuery UI controls
     $(".spinner").spinner();
+    $("#serial_letter_i").spinner('option', 'disabled', true);
+    $("#serial_tof_l_i").spinner('option', 'disabled', true);
+    $("#serial_tof_r_i").spinner('option', 'disabled', true);
+    $("#serial_tof_f_i").spinner('option', 'disabled', true);
+    $("#serial_raupe_l_i").spinner('option', 'disabled', true);
+    $("#serial_raupe_r_i").spinner('option', 'disabled', true);
+    $("#serial_gyro_n").spinner('option', 'disabled', true);
+    $("#serial_gyro_g").spinner('option', 'disabled', true);
+    $("#serial_gyroskop_i").spinner('option', 'disabled', true);
+    $("#serial_servo_i").spinner('option', 'disabled', true);
     $("#letter_tolerance_i_gap").spinner('option', 'step', '0.1');
     $("#letter_tolerance_v_gap").spinner('option', 'step', '0.1');
     $("#letter_min_amount_processed_letters").spinner('option', 'step', '1');

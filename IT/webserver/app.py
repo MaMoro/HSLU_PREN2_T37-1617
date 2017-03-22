@@ -151,11 +151,12 @@ def start_pi():
     value = request.form.getlist('preview')
     global pi_running
     global pi_preview_running
+    pi_preview_running = True
     pi_running = True
-    if len(value) > 0:
+    """if len(value) > 0:
         pi_preview_running = True
     else:
-        pi_preview_running = False
+        pi_preview_running = False"""
 
     return __call_render_template()
 
