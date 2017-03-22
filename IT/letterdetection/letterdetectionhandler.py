@@ -85,21 +85,16 @@ class LetterDetectionHandler(object):
         self.__log.info("Ready! Start capturing")
         while True:
             img = pistream.read()
-            #self.FPS.start()
             redmask = ImageConverter.mask_color_red_fullhsv(img)
             imgmarked, edges = ImageAnalysis.get_ordered_corners_drawed(redmask, img)
-            #edges = ImageAnalysis.get_ordered_corners(redmask)
             if edges != 0:
                 processingqueue.put(ImageNumber(img, edges))
                 imgcount += 1
-                #self.FPS.stop()
-                #self.__log.info("FPS: " + str(self.FPS.fps()) + " | ms: " + str(self.FPS.elapsedtime_ms()))
             elif imgcount > self.min_amount_processed_letters:
                 # if more than specified images processed and no more edges found it's assumed that the number on the wall has passed
                 for i in range(num_units):
                     processingqueue.put(None)   # enforce ImageProcessing instances to terminate
                 processingqueue.join()          # waiting for alle processes to be terminated
-                self.FPS.stop()
                 break
 
             cv2.imshow("mask", redmask)
