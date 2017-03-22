@@ -14,8 +14,10 @@
 import time
 from common.communication.communicationhandler import SerialCommunicationHandler
 
+from common.communication.communicationvalues import CommunicationValues
 
-def main():
+
+def main_old():
     comm = SerialCommunicationHandler().start()
     time.sleep(2)
     comm.send("method",1)
@@ -48,6 +50,17 @@ def main():
     print(comm.receive())
     print(comm.receive())
     #print(comm.receive())
+
+
+def main():
+    comm = CommunicationValues().start()
+    comm.send_hello()
+    print(comm.get_hello())
+    time.sleep(1)
+    print(comm.get_hello())
+
+
+
 
 
 # ================================================================================
