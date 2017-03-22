@@ -1,7 +1,7 @@
 # ================================================================================
 # !/usr/bin/python
-# TITLE           : communicationhandler.py
-# DESCRIPTION     : Handler for communication with FreedomBoard
+# TITLE           : serialcommunicationhandler.py
+# DESCRIPTION     : Handler for serial communication with FreedomBoard
 # AUTHOR          : Moro Marco I.BSCI_F14.1301 <marco.moro@stud.hslu.ch>
 # DATE            : 30.01.2017
 # USAGE           : comm = SerialCommunicationHandler().start()
