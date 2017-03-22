@@ -62,7 +62,7 @@ class SerialCommunicationHandler(object):
                     currentreceiveitem = self.serialcom.readline()
                     currentqueueitem_op, currentqueueitem_value = self.__encodestring(currentreceiveitem)
                     self.data_receive.put([currentqueueitem_op, currentqueueitem_value])
-                    # self.__log.info("value received: " + str(currentqueueitem_op) + "," + str(currentqueueitem_value))
+                    self.__log.info("value received: " + str(currentqueueitem_op) + "," + str(currentqueueitem_value))
                 else:
                     self.__reconnectcommunication()
             except serial.SerialException as e:
