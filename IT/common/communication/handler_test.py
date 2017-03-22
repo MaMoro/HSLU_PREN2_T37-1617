@@ -60,13 +60,15 @@ def main():
     print(comm.get_start())
     print("run")
     count = 0
-    while count <= 180:
+    while count <= 1000:
         comm.send_error(count)
         count += 1
-    time.sleep(1)
-    while count >= 0:
-        print(comm.get_error())
-        count -= 1
+    # time.sleep(1)
+    # while count >= 0:
+    #    print(comm.get_error())
+    #    count -= 1
+
+    time.sleep(16)
 
 
 
