@@ -19,7 +19,7 @@ import time
 import common.config.confighandler as cfg
 from threading import Thread
 from logging.config import fileConfig
-from common.communication.communicationhandler import SerialCommunicationHandler
+from common.communication.serialcommunicationhandler import SerialCommunicationHandler
 
 
 class CommunicationValues(object):
@@ -96,7 +96,7 @@ class CommunicationValues(object):
         def get_parcstate(self):
             return self.op_parcstate
 
-        def get_errorstate(self):
+        def get_error(self):
             return self.op_errstate
 
         def send_hello(self):
@@ -180,13 +180,13 @@ class CommunicationValues(object):
                 operation, value = self.__serialcomm.receive()
                 self.__log.info("got op:" + str(operation) + " val: " + str(value))
                 if operation == "hello":
-                    if value == 1:
+                    if value == '1':
                         self.op_hello = 1
                 elif operation == "start":
-                    if value == 1:
+                    if value == '1':
                         self.op_start = 1
                 elif operation == "course":
-                    self.op_course = 1
+                    self.op_course = '1'
                 elif operation == "tof_l_i":
                     self.op_tof_l_i = value
                 elif operation == "tof_r_i":
