@@ -12,63 +12,32 @@
 # OPENCV_VERSION  : 3.1.0
 # ================================================================================
 import time
-from common.communication.serialcommunicationhandler import SerialCommunicationHandler
-
 from common.communication.communicationvalues import CommunicationValues
-
-
-def main_old():
-    comm = SerialCommunicationHandler().start()
-    time.sleep(2)
-    comm.send("method",1)
-    comm.send("method",2)
-    comm.send("method",3)
-    comm.send("method",4)
-    comm.send("method",5)
-    comm.send("method",6)
-    comm.send("method",7)
-    comm.send("method",8)
-    comm.send("method",9)
-    comm.send("method",10)
-    comm.send("method",11)
-    comm.send("method",254)
-    comm.send("method",255)
-    time.sleep(0.5)
-    print(comm.receive())
-    comm.send("uii",33)
-    print(comm.receive())
-    print(comm.receive())
-    print(comm.receive())
-    print(comm.receive())
-    print(comm.receive())
-    print(comm.receive())
-    print(comm.receive())
-    print(comm.receive())
-    print(comm.receive())
-    print(comm.receive())
-    print(comm.receive())
-    print(comm.receive())
-    print(comm.receive())
-    #print(comm.receive())
 
 
 def main():
     comm = CommunicationValues().start()
-    comm.send_hello()
-    print(comm.get_hello_blocking())
-    comm.send_start()
-    print(comm.get_start())
     print("run")
+    comm.send_hello()
+    comm.send_course(1)
+    comm.send_start()
+    # time.sleep(2)
+    # comm.send_letter(2)
+    # time.sleep(1)
+    # comm.send
+    # print(comm.get_hello_blocking())
+    # comm.send_start()
+    # print(comm.get_start())
     count = 0
-    while count <= 1000:
-        comm.send_error(count)
-        count += 1
+    # while count <= 1000:
+    #    comm.send_error(count)
+    #    count += 1
     # time.sleep(1)
     # while count >= 0:
     #    print(comm.get_error())
     #    count -= 1
 
-    time.sleep(16)
+    time.sleep(120)
 
 
 
