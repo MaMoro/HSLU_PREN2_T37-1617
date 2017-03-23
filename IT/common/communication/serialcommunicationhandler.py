@@ -16,6 +16,7 @@
 import logging
 import serial
 import queue
+import time
 import common.config.confighandler as cfg
 
 from threading import Thread
@@ -45,6 +46,7 @@ class SerialCommunicationHandler(object):
         def __txhandle(self):
             try:
                 while self.serialcom.is_open:
+                    time.sleep(0.05)  # wait 50ms to prevent buffer overflow on FRDM
                     while not self.data_send.empty():
                         currentqueueitem = self.data_send.get()
                         self.serialcom.write(currentqueueitem.encode('utf-8'))
@@ -59,6 +61,7 @@ class SerialCommunicationHandler(object):
         def __rxhandle(self):
             try:
                 while self.serialcom.is_open:
+                    time.sleep(0.01)  # wait 10ms to retrieve next value to reduce CPU load
                     currentreceiveitem = self.serialcom.readline()
                     currentqueueitem_op, currentqueueitem_value = self.__encodestring(currentreceiveitem)
                     self.data_receive.put([currentqueueitem_op, currentqueueitem_value])
@@ -91,10 +94,14 @@ class SerialCommunicationHandler(object):
             return self
 
         def __encodestring(self, inputvalue):
-            operation, opval = inputvalue.split(b',')
-            operation = operation.decode()
-            opval = opval.decode()
-            return operation.rstrip(), opval.rstrip()
+            try:
+                operation, opval = inputvalue.split(b',')
+                operation = operation.decode()
+                opval = opval.decode()
+                return operation.rstrip(), opval.rstrip()
+            except:
+                self.__log.error("org: " + str(inputvalue))
+                return "ERROR", "ERROR"
 
         def __decodestring(self, operation, opval):
             combinedvalue = operation + "," + str(opval)
