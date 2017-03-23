@@ -49,6 +49,7 @@ class CommunicationValues(object):
             self.op_letter = None
             self.op_parcstate = None
             self.op_errstate = None
+            self.timeout = 0.3
             self.__serialcomm = SerialCommunicationHandler().start()
             time.sleep(1)
 
@@ -56,7 +57,7 @@ class CommunicationValues(object):
             hellocounter = 0
             while self.op_hello is None:
                 if hellocounter < 20:
-                    time.sleep(0.05)
+                    time.sleep(self.timeout)
                     hellocounter += 1
                 else:
                     self.__log.error("timeout hello blocking...")
@@ -103,8 +104,9 @@ class CommunicationValues(object):
             self.__serialcomm.send("hello", 1)
             hellocounter = 0
             while self.op_hello is None:
+                time.sleep(0.05)
                 if hellocounter < 20:
-                    time.sleep(0.05)
+                    time.sleep(self.timeout)
                     self.__serialcomm.send("hello", 1)
                     hellocounter += 1
                 else:
@@ -115,7 +117,7 @@ class CommunicationValues(object):
             startcounter = 0
             while self.op_start is None:
                 if startcounter < 20:
-                    time.sleep(0.05)
+                    time.sleep(self.timeout)
                     self.__serialcomm.send("start", 1)
                     startcounter += 1
                 else:
@@ -126,7 +128,7 @@ class CommunicationValues(object):
             coursecounter = 0
             while self.op_course is None:
                 if coursecounter < 20:
-                    time.sleep(0.05)
+                    time.sleep(self.timeout)
                     self.__serialcomm.send("course", course)
                     coursecounter += 1
                 else:
@@ -137,7 +139,7 @@ class CommunicationValues(object):
             lettercounter = 0
             while self.op_letter is None:
                 if lettercounter < 20:
-                    time.sleep(0.05)
+                    time.sleep(self.timeout)
                     self.__serialcomm.send("letter", detectedletter)
                     lettercounter += 1
                 else:
@@ -178,7 +180,7 @@ class CommunicationValues(object):
         def __handleoperations(self):
             while True:
                 operation, value = self.__serialcomm.receive()
-                self.__log.info("got op:" + str(operation) + " val: " + str(value))
+                # self.__log.info("got op:" + str(operation) + " val: " + str(value))
                 if operation == "hello":
                     if value == '1':
                         self.op_hello = 1
@@ -213,7 +215,7 @@ class CommunicationValues(object):
                     self.op_errstate = value
                     self.__log.error("got error from FRDM: " + value)
                 else:
-                    self.__log.warning("got unknown operation: " + str(operation) + "with val: " + str(value))
+                    self.__log.warning("got unknown operation: " + str(operation) + " with val: " + str(value))
 
         def start(self):
             thread = Thread(target=self.__handleoperations, args=())
