@@ -34,8 +34,8 @@ class LetterDetectionHandler(object):
     def __init__(self):
         self.__log = logging.getLogger()
         self.__log.setLevel(cfg.get_settings_loglevel())
-        self.FPS = FPSHelper()
         self.__log.info("Letterdetection started")
+        self.FPS = FPSHelper()
         self.font = cfg.get_opencv_font()
         self.min_amount_processed_letters = cfg.get_letter_min_amount_processed_letters()
         self.processing()
