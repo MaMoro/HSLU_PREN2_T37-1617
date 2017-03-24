@@ -17,10 +17,12 @@ import common.config.confighandler as cfg
 
 from logging.config import fileConfig
 from flask import Flask, render_template, request, Response
+from serial.serialjava import comm
 from trafficlight.trafficlightdetection_pi import TrafficLightDetectionPi
 from trafficlight.trafficlightdetection_video import TrafficLightDetectionVideo
 from trafficlight.trafficlightdetection_img import TrafficLightDetectionImg
 from trafficlight.trafficlightdetection_stream import TrafficLightDetectionStream
+from common.communication.communicationvalues import CommunicationValues
 
 # Initialize Logger
 fileConfig(cfg.get_logging_config_fullpath())
@@ -39,7 +41,7 @@ video_preview_running = False
 stream_preview_running = False
 pi_preview_running = False
 pi_thread = None
-
+communicationvalues = None
 
 # http://localhost:5000/
 @app.route('/')
@@ -54,6 +56,7 @@ def index():
     global stream_preview_running
     global pi_preview_running
     global pi_thread
+    global communicationvalues
     images_running = False
     video_running = False
     stream_running = False
@@ -63,9 +66,45 @@ def index():
     stream_preview_running = False
     pi_preview_running = False
     pi_thread = None
+    communicationvalues = CommunicationValues()
 
     return __call_render_template()
 
+#Values for POST
+    #serial_tof_l_s = 0
+    #serial_tof_r_s = 0
+    #serial_tof_f_s = 0
+    #serial_raupe_l_s = 0
+    #serial_raupe_r_s = 0
+    #serial_gyroskop_s = 0
+    #serial_servo_s = 0
+
+
+
+#Bla
+@app.route('/get_serialvalues', methods=['GET'])
+def get_serialvalues():
+    serial_hello = communicationvalues.get_hello
+    serial_start = communicationvalues.get_start
+    serial_course = communicationvalues.get_course
+    serial_tof_l_i = communicationvalues.get_tof_left
+    serial_tof_r_i = communicationvalues.get_tof_right
+    serial_tof_f_i = communicationvalues.get_tof_front
+    serial_raupe_l_i = communicationvalues.get_raupe_left
+    serial_raupe_r_i = communicationvalues.get_raupe_right
+    #serial_gyro_n = 0
+    #serial_gyro_g = 0
+    serial_gyroskop_i = communicationvalues.get_gyroskop
+    serial_servo_i = communicationvalues.get_servo
+    #serial_letter = None
+    serial_parcstate = communicationvalues.get_parcstate
+    serial_errstate = communicationvalues.get_error
+
+    allSerialValues = [serial_hello, serial_start, serial_course, serial_tof_l_i, serial_tof_l_s, serial_tof_r_i,
+                       serial_tof_r_s, serial_tof_f_i, serial_tof_f_s, serial_raupe_l_i, serial_raupe_l_s, serial_raupe_r_i,
+                       serial_raupe_r_s, serial_gyro_n, serial_gyro_g, serial_gyroskop_i, serial_gyroskop_s, serial_servo_s,
+                       serial_servo_i, serial_letter, serial_parcstate, serial_errstate]
+    return allSerialValues
 
 # Start TrafficLightDetection on images - http://localhost:5000/start_images
 @app.route('/start_images', methods=['POST'])

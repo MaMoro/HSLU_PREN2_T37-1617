@@ -21,9 +21,9 @@
         <!-- <li><a href="#tabs-1">Images</a></li>
         <li><a href="#tabs-2">Video</a></li>
         <li><a href="#tabs-3">Stream</a></li>-->
-        <li><a href="#tabs-4">LiveView</a></li>
-        <li><a href="#tabs-5">Steuerung</a></li>
-        <li><a href="#tabs-6">Config</a></li>
+        <li><a href="#tabs-4" id="LiveView">LiveView</a></li>
+        <li><a href="#tabs-5" id="Steuerung">Steuerung</a></li>
+        <li><a href="#tabs-6" id="Config">Config</a></li>
     </ul>
     <!--<div id="tabs-1">
         <img height="480" width="640" src="{{ url_for('img_feed') }}" onerror="this.style.display='none';"></br>
@@ -758,6 +758,16 @@
             }
         }
     });
+
+    //Function when steering tab is activated
+    $("#tabs").tabs({
+        activate: function(event, ui) {
+            if(ui.newPanel[0].id == "tabs-5"){
+                alert("hello");
+            }
+        }
+    });
+
 
     // Variable to hold request
     var request;
