@@ -114,6 +114,13 @@ def set_settings_debug(val):
         __persistchanges('settings', 'debug', 'False')
 
 
+def get_settings_course():
+    return __loadconfig().getint('settings', 'course')
+
+
+def set_settings_course(val):
+    __persistchanges('settings', 'course', val)
+
 # End Section "Settings" #
 
 # Start Section "Color" #
