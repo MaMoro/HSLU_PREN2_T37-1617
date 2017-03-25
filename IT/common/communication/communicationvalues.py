@@ -88,11 +88,20 @@ class CommunicationValues(object):
         def get_raupe_right(self):
             return self.op_raupe_r_i
 
+        def get_gyro_n(self):
+            return self.op_gyro_n
+
+        def get_gyro_g(self):
+            return self.op_gyro_g
+
         def get_gyroskop(self):
             return self.op_gyroskop_i
 
         def get_servo(self):
             return self.op_servo_i
+
+        def get_letter(self):
+            return self.op_letter
 
         def get_parcstate(self):
             return self.op_parcstate
