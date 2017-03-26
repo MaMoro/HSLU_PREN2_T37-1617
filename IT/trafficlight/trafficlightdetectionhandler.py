@@ -65,9 +65,11 @@ class TrafficLightDetection(object):
         self.red_color = 0
         self.greenpixel_count = 0
         self.redpixel_count = 0
+        self.green_hit_counter = 0
         self.FPS = None
         fileConfig(cfg.get_logging_config_fullpath())
         self.__log = logging.getLogger()
+        self.__log.setLevel(cfg.get_settings_loglevel())
 
     # Main logic for TrafficLightDetection
     def detect_trafficlight(self, frame):
@@ -175,7 +177,7 @@ class TrafficLightDetection(object):
         # Green detected
         elif self.red_color < self.green_color:
             self.__log.info('Green detected!')
-            # TODO: Jump to next action!
+            self.green_hit_counter += 1
             cv2.putText(self.image_original, '{:%H:%M:%S.%f} - Green detected!'.format(datetime.datetime.now()), (self.textspace, self.textspace), font, 0.7, self.color_green, 1, cv2.LINE_AA)
             if self.output_green:
                 if self.output_bgwhite:
@@ -185,3 +187,9 @@ class TrafficLightDetection(object):
         else:
             self.__log.info('Red detected!')
             cv2.putText(self.image_original, '{:%H:%M:%S.%f} - Red detected!'.format(datetime.datetime.now()), (self.textspace, self.textspace), font, 0.7, self.color_green, 1, cv2.LINE_AA)
+
+    def get_green_counter(self):
+        if self.green_hit_counter < 10:
+            return "red"
+        else:
+            return "green"
