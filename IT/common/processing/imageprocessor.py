@@ -228,11 +228,17 @@ class ImageConverter(object):
 
         # remove border erosion
         img_height, img_width = img_bw.shape
-        img_bw_unbordered = img_bw[1:img_height - 1, 1:img_width - 1]
+        img_bw_unbordered = img_bw[2:img_height - 4, 2:img_width - 4]
 
         # get rectangle around letter and crop original image
         pos_x, pos_y, width, height = cv2.boundingRect(img_bw_unbordered)
         img_cropped = roi[pos_y:pos_y + height, pos_x:pos_x + width]
+
+        #resize to original size
+        if 0 < img_cropped.shape[1] < 150:
+            r = 150 / img_cropped.shape[1]
+            dim = (150, int(img_cropped.shape[0] * r))
+            img_cropped = cv2.resize(img_cropped, dim, interpolation=cv2.INTER_AREA)
         return img_cropped
 
     @staticmethod
