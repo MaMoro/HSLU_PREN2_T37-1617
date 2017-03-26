@@ -112,15 +112,16 @@
                             <table>
                                 <tr>
                                     <td>Serial Communication established:</td>
-                                    <td><input type="checkbox" name="serial_hello" value="{{ 0 }}"></td>
+                                    <td><input type="checkbox" name="serial_hello" id="serial_hello" value="{{ 0 }}"></td>
                                 </tr>
                                 <tr>
                                     <td>Start Command set:</td>
-                                    <td><input type="checkbox" name="serial_start" value="{{ 0 }}"></td>
+                                    <td><input type="checkbox" name="serial_start" id="serial_start" value="{{ 0 }}"></td>
                                 </tr>
                                 <tr>
                                     <td>Course Selection:</td>
-                                    <td><input type="checkbox" name="serial_course" value="{{ 0 }}"></td>
+                                    <td><input type="radio" name="serial_course" id="serial_course_l" value="{{ 0 }}">Left</td>
+                                    <td><input type="radio" name="serial_course" id="serial_course_r" value="{{ 0 }}">Right</td>
                                 </tr>
                                 <tr>
                                     <td>Letter:</td>
@@ -133,11 +134,11 @@
                                 </tr>
                                 <tr>
                                     <td>Parcours state:</td>
-                                    <td><input class="spinner" name="serial_parcours" value="{{ 0 }}"></td>
+                                    <td><input class="spinner" name="serial_parcours" id="serial_parcours" value="{{ 0 }}"></td>
                                 </tr>
                                 <tr>
                                     <td>Errors:</td>
-                                    <td><textarea name="serial_errors" value="{{ 0 }}"></textarea></td>
+                                    <td><textarea name="serial_errors" id="serial_errors" value="{{ 0 }}"></textarea></td>
                                 </tr>
                             </table>
                         </td>
@@ -669,6 +670,9 @@
     $(":button").button();
     $("#tabs").tabs();
 
+    //Brauchts für root pfad von script (values lesen)
+    $SCRIPT_ROOT ={{ request.script_root|tojson |safe}}
+
     // Convert HSV color values from Config.ini to HSV color values for jQuery Spectrum control
     // Ex.: HSV color value from Config.ini: 0, 69, 61 -> HSV color value for jQuery Spectrum control: hsv(120, 76%, 80%)
     //                                       0-180, 0-255, 0-255 -> hsv(0-360, 0-100%, 0-100%)
@@ -762,12 +766,45 @@
     //Function when steering tab is activated
     $("#tabs").tabs({
         activate: function(event, ui) {
-            if(ui.newPanel[0].id == "tabs-5"){
-                alert("hello");
-            }
+            //function update(){
+                if (ui.newPanel[0].id == "tabs-5") {
+                    $.getJSON($SCRIPT_ROOT + "/get_serialvalues", null, function (data) {
+                        //hello checked if value 1
+                        if(data.result.serial_hello == 1){
+                            $("#serial_hello").prop('checked', true);
+                        }
+                        //start checked if value 1
+                        if(data.result.serial_start == 1){
+                            $("#serial_start").prop('checked', true);
+                        }
+                        //course right false 0, left true 1
+                        if(data.result.serial_course == 0){
+                            $("#serial_course_r").prop('checked', true);
+                        }
+                        if(data.result.serial_course == 1){
+                            $("#serial_course_l").prop('checked', true);
+                        }
+
+                        $("#serial_letter_i").val(data.result.serial_letter);
+                        $("#serial_parcours").val(data.result.serial_parcstate);
+                        $('#serial_errors').append(data.result.serial_errstate);
+                        $("#serial_tof_l_i").val(data.result.serial_tof_l_i);
+                        $("#serial_tof_r_i").val(data.result.serial_tof_r_i);
+                        $("#serial_tof_f_i").val(data.result.serial_tof_f_i);
+                        $("#serial_gyroskop_i").val(data.result.serial_gyroskop_i);
+                        $("#serial_gyro_n").val(data.result.serial_gyro_n);
+                        $("#serial_gyro_g").val(data.result.serial_gyro_g);
+                        $("#serial_raupe_l_i").val(data.result.serial_raupe_l_i);
+                        $("#serial_raupe_r_i").val(data.result.serial_raupe_r_i);
+                        $("#serial_servo_i").val(data.result.serial_servo_i);
+                    });
+                }
+            //}
+            //TODO: Intervallproblem lösen
+            //setInterval(update(), 3000);
+            //update();
         }
     });
-
 
     // Variable to hold request
     var request;
