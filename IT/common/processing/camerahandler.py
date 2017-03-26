@@ -32,7 +32,7 @@ class CameraHandler(object):
             self.rawcapture = None
             self.stream = None
             self.frame = None
-            self.stopped = False
+            self.stopped = True
             self.__initpicamera()
 
         def __initpicamera(self):
@@ -55,13 +55,18 @@ class CameraHandler(object):
             self.stream = self.camera.capture_continuous(self.rawcapture, format="bgr", use_video_port=True)
             time.sleep(0.1)
             self.__log.info("PiCamera initialization finished")
-            self.stopped = False
+            self.stopped = True
 
         def calibratePiCamera(self):
-            self.__log.info("Recalibrate PiCamera setting")
-            self.stop()
-            self.__initpicamera()
-            self.start()
+            try:
+                self.__log.info("Recalibrate PiCamera setting")
+                self.stop()
+                time.sleep(1)
+                self.camera = PiCamera()
+                self.__initpicamera()
+                self.start()
+            except:
+                pass
 
         def get_pi_camerainstance(self):
             if self.stopped:
@@ -75,11 +80,12 @@ class CameraHandler(object):
 
         def start(self):
             # start the thread to read frames from the video stream
-            t = Thread(target=self.update, args=())
-            t.daemon = True
-            self.stopped = False
-            t.start()
-            time.sleep(2)
+            if self.stopped:
+                t = Thread(target=self.update, args=())
+                t.daemon = True
+                self.stopped = False
+                t.start()
+                time.sleep(2)
             return self
 
         def update(self):
