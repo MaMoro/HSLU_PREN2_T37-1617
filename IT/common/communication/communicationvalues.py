@@ -120,6 +120,7 @@ class CommunicationValues(object):
                     hellocounter += 1
                 else:
                     self.__log.error("hello message not acknowledged")
+                    break
 
         def send_start(self):
             self.__serialcomm.send("start", 1)
