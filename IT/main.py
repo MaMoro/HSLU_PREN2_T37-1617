@@ -14,17 +14,18 @@
 
 #Import all needed classes
 import logging
+import os
+import subprocess
+import sys
 import time
 import common.config.confighandler as cfg
-import webserver.app as webserver
 
 from logging.config import fileConfig
 from common.communication.communicationvalues import CommunicationValues
-
 from common.processing.camerahandler import CameraHandler
-from letterdetection.letterdetectionhandler import LetterDetectionHandler
-from trafficlight.trafficlightdetectionhandler import TrafficLightDetection
 from letterdisplay.ledstriphandler import LEDStripHandler
+from trafficlight.trafficlightdetection_pi import TrafficLightDetectionPi
+from letterdetection.letterdetectionhandler import LetterDetectionHandler
 
 
 class RunPiHandler(object):
@@ -37,14 +38,16 @@ class RunPiHandler(object):
         fileConfig(cfg.get_logging_config_fullpath())
         self.__log = logging.getLogger()
         self.__log.setLevel(cfg.get_settings_loglevel())
-        self.__log.info("Letterdetection started")
+        self.__log.info("Pi ready! :)")
         self.serialcomm = None
         self.currentcourse = 0
+        self.runparcours()
 
     def runparcours(self):
 
         # Init Webserver
-        webserver()
+        subprocess.Popen([sys.executable, '/home/pi/Desktop/PREN/webserver/app.py'], env=os.environ.copy())
+        time.sleep(15)
 
         # Wait for parcour setting (left/right)
         while self.currentcourse == 0:
@@ -64,23 +67,28 @@ class RunPiHandler(object):
         CameraHandler().start()
 
         # Traffic Light Detection
-
-        # TrafficLightDetection.detect_trafficlight(self, frame) needs frame!
-        # TODO: Define how frame is delivered to detect_trafficlight
-        # mainTrafficLightDetection = TrafficLightDetection()
-        # mainTrafficLightDetection.detect_trafficlight(self, frame)
+        t = TrafficLightDetectionPi()
+        #while t.getstatus() == "red":
+        #    time.sleep(0.3)
+        self.__log.info("Green signal detected...")
+        time.sleep(5)
 
         # Init PowerLED
-        #LEDStripHandler.start_powerled()
+        LEDStripHandler.start_powerled()
+        CameraHandler().calibratePiCamera()
 
         # Letter Detection
-        # LetterDetectionHandler()
-        #Somehow number = LetterDetectionHandler()
+        LetterDetectionHandler().start()
 
         # Stop PowerLED
-        #LEDStripHandler.stop_powerled()
+        LEDStripHandler.stop_powerled()
 
-        # Display Letter on LEDStrip
-        #LEDStripHandler.display_letter_on_LEDs(number)
+        print("**************************************************")
+        print("*                Jobs done on RPi                *")
+        print("**************************************************")
 
-    def init
+if __name__ == '__main__':
+    RunPiHandler()
+    # keep alive till poweroff
+    while True:
+        pass
