@@ -13,16 +13,21 @@
 
 # Import the modules needed to run the script.
 import logging
+import cv2
 import common.config.confighandler as cfg
 
 from logging.config import fileConfig
 from flask import Flask, render_template, request, Response, jsonify
-#from serial.serialjava import comm
 from trafficlight.trafficlightdetection_pi import TrafficLightDetectionPi
 from trafficlight.trafficlightdetection_video import TrafficLightDetectionVideo
 from trafficlight.trafficlightdetection_img import TrafficLightDetectionImg
 from trafficlight.trafficlightdetection_stream import TrafficLightDetectionStream
 from common.communication.communicationvalues import CommunicationValues
+
+
+from common.processing.camerahandler import CameraHandler
+from letterdetection.letterdetectionhandler import LetterDetectionHandler
+
 
 # Initialize Logger
 fileConfig(cfg.get_logging_config_fullpath())
@@ -73,6 +78,7 @@ def index():
 #Function for serial communication values - getter / IST Werte holen
 @app.route('/get_serialvalues', methods=['GET'])
 def get_serialvalues():
+    global communicationvalues
     communicationvalues = CommunicationValues()
     serial_hello = communicationvalues.get_hello()
     serial_start = communicationvalues.get_start()
@@ -256,7 +262,8 @@ def pi_feed():
     global pi_preview_running
     global pi_thread
     if pi_running:
-        pi_thread = TrafficLightDetectionPi()
+        # pi_thread = CameraHandler().start()
+        pi_thread = LetterDetectionHandler()
         return Response(gen_pi(pi_thread), mimetype='multipart/x-mixed-replace; boundary=frame')
     else:
         return Response()
@@ -370,6 +377,13 @@ def gen_pi(camera):
     global pi_preview_running
     while True:
         frame = camera.get_frame()
+        if frame is not None:
+            _, jpeg = cv2.imencode('.png', frame)
+            frame = jpeg.tobytes()
+        else:
+            jpeg = cv2.imread(cfg.get_proj_rootdir() + '/medias/images/keepcalm.png')
+            _, jpeg = cv2.imencode('.png', jpeg)
+            frame = jpeg.tobytes()
         if pi_running and pi_preview_running and frame is not None:
             yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
         else:
