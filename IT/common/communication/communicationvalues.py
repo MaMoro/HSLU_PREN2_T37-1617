@@ -48,7 +48,7 @@ class CommunicationValues(object):
             self.op_servo_i = 0
             self.op_letter = None
             self.op_parcstate = None
-            self.op_errstate = None
+            self.op_errstate = "None"
             self.timeout = 0.3
             self.__serialcomm = SerialCommunicationHandler().start()
             time.sleep(1)

@@ -738,39 +738,53 @@
         return inputcolor[0] + ', ' + inputcolor[1] + ', ' + inputcolor[2];
     }
 
+
+    // Function to Update all Debug values
+     var errorstate_before = "Null";
+
      function updateDebugVals(){
+        $.getJSON($SCRIPT_ROOT + "/get_serialvalues", null, function (data) {
+            //hello checked if value 1
+            if(data.result.serial_hello == 1){
+                $("#serial_hello").prop('checked', true);
+            }
+            else{
+                $("#serial_hello").prop('checked', false);
+            }
+            //start checked if value 1
+            if(data.result.serial_start == 1){
+                $("#serial_start").prop('checked', true);
+            }
+            else {
+                $("#serial_start").prop('checked', false);
+            }
+            //course right false 0, left true 1
+            if(data.result.serial_course == 0){
+                $("#serial_course_r").prop('checked', true);
+            }
 
-             $.getJSON($SCRIPT_ROOT + "/get_serialvalues", null, function (data) {
-                 //hello checked if value 1
-                 if(data.result.serial_hello == 1){
-                     $("#serial_hello").prop('checked', true);
-                 }
-                 //start checked if value 1
-                 if(data.result.serial_start == 1){
-                     $("#serial_start").prop('checked', true);
-                 }
-                 //course right false 0, left true 1
-                 if(data.result.serial_course == 0){
-                     $("#serial_course_r").prop('checked', true);
-                 }
-                 if(data.result.serial_course == 1){
-                     $("#serial_course_l").prop('checked', true);
-                 }
+            if(data.result.serial_course == 1){
+                $("#serial_course_l").prop('checked', true);
+            }
 
-                 $("#serial_letter_i").val(data.result.serial_letter);
-                 $("#serial_parcours").val(data.result.serial_parcstate);
-                 $('#serial_errors').append(data.result.serial_errstate);
-                 $("#serial_tof_l_i").val(data.result.serial_tof_l_i);
-                 $("#serial_tof_r_i").val(data.result.serial_tof_r_i);
-                 $("#serial_tof_f_i").val(data.result.serial_tof_f_i);
-                 $("#serial_gyroskop_i").val(data.result.serial_gyroskop_i);
-                 $("#serial_gyro_n").val(data.result.serial_gyro_n);
-                 $("#serial_gyro_g").val(data.result.serial_gyro_g);
-                 $("#serial_raupe_l_i").val(data.result.serial_raupe_l_i);
-                 $("#serial_raupe_r_i").val(data.result.serial_raupe_r_i);
-                 $("#serial_servo_i").val(data.result.serial_servo_i);
-             });
+            $("#serial_letter_i").val(data.result.serial_letter);
+            $("#serial_parcours").val(data.result.serial_parcstate);
 
+            if (!(errorstate_before.toString() == data.result.serial_errstate.toString())){
+                errorstate_before = data.result.serial_errstate;
+                $('#serial_errors').append(data.result.serial_errstate);
+            }
+
+            $("#serial_tof_l_i").val(data.result.serial_tof_l_i);
+            $("#serial_tof_r_i").val(data.result.serial_tof_r_i);
+            $("#serial_tof_f_i").val(data.result.serial_tof_f_i);
+            $("#serial_gyroskop_i").val(data.result.serial_gyroskop_i);
+            $("#serial_gyro_n").val(data.result.serial_gyro_n);
+            $("#serial_gyro_g").val(data.result.serial_gyro_g);
+            $("#serial_raupe_l_i").val(data.result.serial_raupe_l_i);
+            $("#serial_raupe_r_i").val(data.result.serial_raupe_r_i);
+            $("#serial_servo_i").val(data.result.serial_servo_i);
+        });
      }
 
 
@@ -801,12 +815,15 @@
     });
 
     //Function when steering tab is activated
+    var intervallID = null;
+
     $("#tabs").tabs({
         activate: function(event, ui) {
-            clearInterval();
+            clearInterval(intervallID);
+            //If tab Steuerung
             if (ui.newPanel[0].id == "tabs-5") {
-                updateDebugVals();
-                setInterval(updateDebugVals(), 3000);
+                //Run function updateDebugVals ever x milliseconds
+                intervallID = setInterval(updateDebugVals, 1000);
             }
         }
     });
