@@ -22,7 +22,7 @@
         <li><a href="#tabs-2">Video</a></li>
         <li><a href="#tabs-3">Stream</a></li>-->
         <li><a href="#tabs-4" id="LiveView">LiveView</a></li>
-        <li><a href="#tabs-5" id="Steuerung">Steuerung</a></li>
+        <li><a href="#tabs-5" id="Control">Control</a></li>
         <li><a href="#tabs-6" id="Config">Config</a></li>
     </ul>
     <!--<div id="tabs-1">
@@ -125,8 +125,8 @@
                                 </tr>
                                 <tr>
                                     <td>Letter:</td>
-                                    <td>Soll:<input class="spinner" name="serial_letter_s" id="serial_letter_s"
-                                                    value="{{ 0 }}"> <br/>&nbsp;&nbsp;&nbsp;Ist:<input class="spinner"
+                                    <td>Soll:<input type="text" name="serial_letter_s" id="serial_letter_s"
+                                                    value="{{ 0 }}"> <br/>&nbsp;&nbsp;Ist:<input type="text"
                                                                                                        name="serial_letter_i"
                                                                                                        id="serial_letter_i"
                                                                                                        value="{{ 0 }}">
@@ -134,7 +134,7 @@
                                 </tr>
                                 <tr>
                                     <td>Parcours state:</td>
-                                    <td><input class="spinner" name="serial_parcours" id="serial_parcours" value="{{ 0 }}"></td>
+                                    <td><input type="text" name="serial_parcours" id="serial_parcours" value="{{ 0 }}"></td>
                                 </tr>
                                 <tr>
                                     <td>Errors:</td>
@@ -146,27 +146,21 @@
                             <h3>Distance sensors</h3>
                             <table>
                                 <tr>
+                                    <td> ToF distance (mm)</td>
+                                    <td>Soll:<input type="text" name="serial_tof_l_s" id="serial_tof_l_s" value="{{ 0 }}"></td>
+                                </tr>
+                                <tr>
                                     <td>ToF distance left (mm):</td>
-                                    <td>Soll:<input class="spinner" name="serial_tof_l_s" id="serial_tof_l_s"
-                                                    value="{{ 0 }}"> <br/>&nbsp;&nbsp;&nbsp;Ist: <input class="spinner"
-                                                                                                        name="serial_tof_l_i"
-                                                                                                        id="serial_tof_l_i"
-                                                                                                        value="{{ 0 }}">
-                                    </td>
+                                    <td>&nbsp;Ist: <input type="text" name="serial_tof_l_i" id="serial_tof_l_i" value="{{ 0 }}"></td>
                                 </tr>
                                 <tr>
                                     <td>ToF distance right (mm):</td>
-                                    <td>Soll:<input class="spinner" name="serial_tof_r_s" id="serial_tof_r_s"
-                                                    value="{{ 0 }}"> <br/>&nbsp;&nbsp;&nbsp;Ist: <input class="spinner"
-                                                                                                        name="serial_tof_r_i"
-                                                                                                        id="serial_tof_r_i"
-                                                                                                        value="{{ 0 }}">
-                                    </td>
+                                    <td>&nbsp;Ist: <input type="text" name="serial_tof_r_i" id="serial_tof_r_i" value="{{ 0 }}"></td>
                                 </tr>
                                 <tr>
                                     <td>ToF distance front (mm):</td>
-                                    <td>Soll:<input class="spinner" name="serial_tof_f_s" id="serial_tof_f_s"
-                                                    value="{{ 0 }}"> <br/>&nbsp;&nbsp;&nbsp;Ist: <input class="spinner"
+                                    <td>Soll:<input type="text" name="serial_tof_f_s" id="serial_tof_f_s"
+                                                    value="{{ 0 }}"> <br/>&nbsp;Ist: <input type="text"
                                                                                                         name="serial_tof_f_i"
                                                                                                         id="serial_tof_f_i"
                                                                                                         value="{{ 0 }}">
@@ -177,8 +171,8 @@
                             <table>
                                 <tr>
                                     <td>Gyroskop - PWM level (%)</td>
-                                    <td>Soll: <input class="spinner" name="serial_gyroskop_s" id="serial_gyroskop_s"
-                                                     value="{{ 0 }}"> <br/>&nbsp;&nbsp;&nbsp;Ist: <input class="spinner"
+                                    <td>Soll: <input type="text" name="serial_gyroskop_s" id="serial_gyroskop_s"
+                                                     value="{{ 0 }}"> <br/>&nbsp;&nbsp;Ist: <input type="text"
                                                                                                          name="serial_gyroskop_i"
                                                                                                          id="serial_gyroskop_i"
                                                                                                          value="{{ 0 }}">
@@ -186,12 +180,12 @@
                                 </tr>
                                 <tr>
                                     <td>Gyro - NICK (°)</td>
-                                    <td>Ist:<input class="spinner" name="serial_gyro_n" id="serial_gyro_n"
+                                    <td>&nbsp;&nbsp;&nbsp;Ist:<input type="text" name="serial_gyro_n" id="serial_gyro_n"
                                                    value="{{ 0 }}"></td>
                                 </tr>
                                 <tr>
                                     <td>Gyro - GEAR (°)</td>
-                                    <td>Ist:<input class="spinner" name="serial_gyro_g" id="serial_gyro_g"
+                                    <td>&nbsp;&nbsp;&nbsp;Ist:<input type="text" name="serial_gyro_g" id="serial_gyro_g"
                                                    value="{{ 0 }}"></td>
                                 </tr>
                             </table>
@@ -200,30 +194,24 @@
                             <h3>Engines</h3>
                             <table>
                                 <tr>
+                                    <td> Speed (%):</td>
+                                    <td>Soll:<input type="text" name="serial_raupe_l_s" id="serial_raupe_l_s" value="{{ 0 }}"></td>
+                                </tr>
+                                <tr>
                                     <td>Speed Left Track (%):</td>
-                                    <td>Soll:<input class="spinner" name="serial_raupe_l_s" id="serial_raupe_l_s"
-                                                    value="{{ 0 }}"> <br/>&nbsp;&nbsp;&nbsp;Ist: <input class="spinner"
-                                                                                                        name="serial_raupe_l_i"
-                                                                                                        id="serial_raupe_l_i"
-                                                                                                        value="{{ 0 }}">
-                                    </td>
+                                    <td>&nbsp;&nbsp;Ist: <input type="text" name="serial_raupe_l_i" id="serial_raupe_l_i" value="{{ 0 }}"></td>
                                 </tr>
                                 <tr>
                                     <td>Speed Right Track (%):</td>
-                                    <td>Soll:<input class="spinner" name="serial_raupe_r_s" id="serial_raupe_r_s"
-                                                    value="{{ 0 }}"> <br/>&nbsp;&nbsp;&nbsp;Ist: <input class="spinner"
-                                                                                                        name="serial_raupe_r_i"
-                                                                                                        id="serial_raupe_r_i"
-                                                                                                        value="{{ 0 }}">
-                                    </td>
+                                    <td>&nbsp;&nbsp;Ist: <input type="text" name="serial_raupe_r_i" id="serial_raupe_r_i" value="{{ 0 }}"></td>
                                 </tr>
                             </table>
                             <h3>Servo</h3>
                             <table>
                                 <tr>
                                     <td>Angle servo:</td>
-                                    <td>Soll:<input class="spinner" name="serial_servo_s" id="serial_servo_s"
-                                                    value="{{ 0 }}"> <br/>&nbsp;&nbsp;&nbsp;Ist: <input class="spinner"
+                                    <td>Soll:<input type="text" name="serial_servo_s" id="serial_servo_s"
+                                                    value="{{ 0 }}"> <br/>&nbsp;Ist: <input type="text"
                                                                                                         name="serial_servo_i"
                                                                                                         id="serial_servo_i"
                                                                                                         value="{{ 0 }}">
@@ -620,16 +608,6 @@
 <script>
     // Initialize jQuery UI controls
     $(".spinner").spinner();
-    $("#serial_letter_i").spinner('option', 'disabled', true);
-    $("#serial_tof_l_i").spinner('option', 'disabled', true);
-    $("#serial_tof_r_i").spinner('option', 'disabled', true);
-    $("#serial_tof_f_i").spinner('option', 'disabled', true);
-    $("#serial_raupe_l_i").spinner('option', 'disabled', true);
-    $("#serial_raupe_r_i").spinner('option', 'disabled', true);
-    $("#serial_gyro_n").spinner('option', 'disabled', true);
-    $("#serial_gyro_g").spinner('option', 'disabled', true);
-    $("#serial_gyroskop_i").spinner('option', 'disabled', true);
-    $("#serial_servo_i").spinner('option', 'disabled', true);
     $("#letter_tolerance_i_gap").spinner('option', 'step', '0.1');
     $("#letter_tolerance_v_gap").spinner('option', 'step', '0.1');
     $("#letter_min_amount_processed_letters").spinner('option', 'step', '1');
@@ -822,11 +800,17 @@
             clearInterval(intervallID);
             //If tab Steuerung
             if (ui.newPanel[0].id == "tabs-5") {
-                //Run function updateDebugVals ever x milliseconds
+                //Run function updateDebugVals ever x milliseconds for IST-Werte
                 intervallID = setInterval(updateDebugVals, 1000);
             }
         }
     });
+
+    //TODO: Try on focus lost event for SOLL-Werte
+    $("#serial_letter_s".focusout(function(){
+        alert("hello");
+        
+    }));
 
     // Variable to hold request
     var request;
