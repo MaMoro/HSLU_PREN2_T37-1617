@@ -46,6 +46,12 @@ class CommunicationValues(object):
             self.op_gyroskop_s = 0
             self.op_servo_s = 0
             self.op_servo_i = 0
+            self.op_kpG = 0
+            self.op_kiG = 0
+            self.op_kdG = 0
+            self.op_kpT = 0
+            self.op_kiT = 0
+            self.op_kdT = 0
             self.op_letter = None
             self.op_parcstate = None
             self.op_errstate = "None"
@@ -102,6 +108,25 @@ class CommunicationValues(object):
 
         def get_letter(self):
             return self.op_letter
+
+        def get_kpG(self):
+            return self.op_kpG
+
+        def get_kiG(self):
+            return self.op_kiG
+
+        def get_kdG(self):
+            return self.op_kdG
+
+        def get_kpT(self):
+            return self.op_kpT
+
+        def get_kiT(self):
+            return self.op_kiT
+
+        def get_kdT(self):
+            return self.op_kdT
+
 
         def get_parcstate(self):
             return self.op_parcstate
@@ -219,6 +244,7 @@ class CommunicationValues(object):
                     self.op_servo_i = value
                 elif operation == "letter":
                     self.op_letter = value
+
                 elif operation == "parcstate":
                     self.op_parcstate = value
                 elif operation == "errstate":
