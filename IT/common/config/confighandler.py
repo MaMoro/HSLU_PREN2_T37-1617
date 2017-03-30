@@ -553,6 +553,21 @@ def set_camera_awb(val):
     __persistchanges('camera', 'awb', val)
 
 
+def get_camera_contrast():
+    return __loadconfig().getint('camera', 'contrast')
+
+
+def set_camera_contrast(val):
+    __persistchanges('camera', 'contrast', val)
+
+
+def get_camera_brightness():
+    return __loadconfig().getint('camera', 'brightness')
+
+
+def set_camera_brightness(val):
+    __persistchanges('camera', 'brightness', val)
+
 # End Section "Camera" #
 
 # Start Section "Files" #
@@ -714,3 +729,55 @@ def set_letter_min_amount_processed_letters(val):
     __persistchanges('letter', 'min_amount_processed_letters', val)
 
 # End Section "Letter" #
+
+# Start Section "Controls" #
+
+
+def get_controls_engine_speed():
+    return __loadconfig().getint('controls', 'engine_speed')
+
+
+def set_controls_engine_speed(val):
+    __persistchanges('controls', 'engine_speed')
+
+
+def get_controls_tof_side():
+    return __loadconfig().getint('controls', 'tof_side')
+
+
+def set_controls_tof_side(val):
+    __persistchanges('controls', 'tof_side')
+
+
+def get_controls_tof_front():
+    return __loadconfig().getint('controls', 'tof_front')
+
+
+def set_controls_tof_front(val):
+    __persistchanges('controls', 'tof_front')
+
+
+def get_controls_gyro_p():
+    return __loadconfig().getint('controls', 'gyro_p')
+
+
+def set_controls_gyro_p(val):
+    __persistchanges('controls', 'gyro_p', val)
+
+
+def get_controls_gyro_i():
+    return __loadconfig().getint('controls', 'gyro_i')
+
+
+def set_controls_gyro_i(val):
+    __persistchanges('controls', 'gyro_i', val)
+
+
+def get_controls_gyro_d():
+    return __loadconfig().getint('controls', 'gyro_d')
+
+
+def set_controls_gyro_d(val):
+    __persistchanges('controls', 'gyro_d', val)
+
+# End Section "Controls" #
