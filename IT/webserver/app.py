@@ -92,6 +92,12 @@ def get_serialvalues():
     serial_gyro_g = communicationvalues.get_gyro_g()
     serial_gyroskop_i = communicationvalues.get_gyroskop()
     serial_servo_i = communicationvalues.get_servo()
+    serial_gyrop_i = communicationvalues.get_kpG()
+    serial_gyroi_i = communicationvalues.get_kiG()
+    serial_gyrod_i = communicationvalues.get_kdG()
+    serial_tofp_i = communicationvalues.get_kpT()
+    serial_tofi_i = communicationvalues.get_kiT()
+    serial_tofd_i = communicationvalues.get_kdT()
     serial_letter = communicationvalues.get_letter()
     serial_parcstate = communicationvalues.get_parcstate()
     serial_errstate = communicationvalues.get_error()
@@ -100,6 +106,8 @@ def get_serialvalues():
                                serial_tof_l_i=serial_tof_l_i, serial_tof_r_i=serial_tof_r_i, serial_tof_f_i=serial_tof_f_i,
                                serial_raupe_l_i=serial_raupe_l_i, serial_raupe_r_i=serial_raupe_r_i, serial_gyro_n=serial_gyro_n,
                                serial_gyro_g=serial_gyro_g, serial_gyroskop_i=serial_gyroskop_i, serial_servo_i=serial_servo_i,
+                               serial_gyrop_i=serial_gyrop_i, serial_gyroi_i=serial_gyroi_i, serial_gyrod_i=serial_gyrod_i,
+                               serial_tofp_i=serial_tofp_i, serial_tofi_i=serial_tofi_i, serial_tofd_i=serial_tofd_i,
                                serial_letter=serial_letter, serial_parcstate=serial_parcstate, serial_errstate=serial_errstate))
 
 #TODO: Function for serial communication values - setter / SOLL Werte schreiben
