@@ -109,6 +109,8 @@ class CommunicationValues(object):
         def get_letter(self):
             return self.op_letter
 
+        # PiD Werte
+        # k Konstante, p Proportional, i Integral, d Differenzial, G Gyro, T ToF
         def get_kpG(self):
             return self.op_kpG
 
@@ -126,7 +128,6 @@ class CommunicationValues(object):
 
         def get_kdT(self):
             return self.op_kdT
-
 
         def get_parcstate(self):
             return self.op_parcstate
@@ -184,6 +185,7 @@ class CommunicationValues(object):
             if self.op_tof_l_s != value:
                 self.__serialcomm.send("tof_l_s", value)
 
+        #Depricated, we only send left
         def send_tof_right(self, value):
             if self.op_tof_r_s != value:
                 self.__serialcomm.send("tof_r_s", value)
@@ -196,6 +198,7 @@ class CommunicationValues(object):
             if self.op_raupe_l_s != value:
                 self.__serialcomm.send("raupe_l_s", value)
 
+        #Depricated, we only send left
         def send_raupe_right(self, value):
             if self.op_raupe_r_s != value:
                 self.__serialcomm.send("raupe_r_s", value)
@@ -207,6 +210,24 @@ class CommunicationValues(object):
         def send_servo(self, value):
             if self.op_servo_s != value:
                 self.__serialcomm.send("servo_s", value)
+
+        def send_kpG(self):
+            return ("TODO");
+
+        def send_kiG(self):
+            return ("TODO");
+
+        def send_kdG(self):
+            return ("TODO");
+
+        def send_kpT(self):
+            return ("TODO");
+
+        def send_kiT(self):
+            return ("TODO");
+
+        def send_kdT(self):
+            return ("TODO");
 
         def send_error(self, value):
             if self.op_errstate != value:
