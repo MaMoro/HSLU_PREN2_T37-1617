@@ -103,16 +103,36 @@ def get_serialvalues():
                                serial_letter=serial_letter, serial_parcstate=serial_parcstate, serial_errstate=serial_errstate))
 
 #TODO: Function for serial communication values - setter / SOLL Werte schreiben
-#@app.route('/set_serialvalues', methods=['POST'])
-#def set_serialvalues():
-#Values for POST
-    #serial_tof_l_s = 0
-    #serial_tof_r_s = 0
-    #serial_tof_f_s = 0
-    #serial_raupe_l_s = 0
-    #serial_raupe_r_s = 0
-    #serial_gyroskop_s = 0
-    #serial_servo_s = 0
+@app.route('/set_serialvalues', methods=['POST'])
+def set_serialvalues():
+    global communicationvalues
+    communicationvalues = CommunicationValues()
+
+    #Herausfinden welcher Wert geändert wurde, nur diesen senden  ?
+
+    #right false 0, left true 1
+    #serial_course = communicationvalues.send_course(wert);
+
+    #serial_letter_s = communicationvalues.send_letter(wert);
+
+    #serial_tof_l_s = communicationvalues.send_tof_left(wert);
+    # serial_tof_r_s not set, only left - Freedom sets left == right
+    #serial_tof_f_s = communicationvalues.send_tof_front(wert);
+
+    #serial_raupe_l_s = communicationvalues.send_raupe_left(wert);
+    #serial_raupe_r_s not set, only left - Freedom sets left == right
+
+    #serial_gyroskop_s = communicationvalues.send_gyroskop(wert);
+
+    #serial_servo_s = communicationvalues.send_servo(wert);
+
+    #serial_gyrop_s = communicationvalues.send_kpG(wert);
+    #serial_gyroi_s = communicationvalues.send_kiG(wert);
+    #serial_gyrod_s = communicationvalues.send_kdG(wert);
+    #serial_tofp_s = communicationvalues.send_kpT(wert);
+    #serial_tofi_s = communicationvalues.send_kiT(wert);
+    #serial_tofd_s = communicationvalues.send_kdT(wert);
+
 
 # Start TrafficLightDetection on images - http://localhost:5000/start_images
 @app.route('/start_images', methods=['POST'])
