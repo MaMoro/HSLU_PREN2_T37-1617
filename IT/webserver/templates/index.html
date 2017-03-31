@@ -846,24 +846,29 @@
         }
     });
 
-    //TODO: continuuuu nerding around hihi
+    //Function to send POST when class setterValues lose focus
     $(".setterValues").focusout(function(){
 
         var changedValues={
 	       ChangedProperty: this.id,
-           NewValue: $("#"+this.id).val() //how wtf!
+           NewValue: $("#"+this.id).val()
         }
 
-        //$.ajax({
-	    //    type:"POST",
-        //    url: $SCRIPT_ROOT + "/set_serialvalues",
-        //    data:JSON.stringify(changedValues),
-        //    contentType:"application/json;charset=utf-8",
-        //    dataType:"json",
-        //    success:function(data){
+        //alert(changedValues.ChangedProperty +"="+ changedValues.NewValue);
 
-	    //    }
-        //});
+        $.ajax({
+	        type:"POST",
+            url: $SCRIPT_ROOT + "/set_serialvalues",
+            data:JSON.stringify(changedValues),
+            contentType:"application/json;charset=utf-8",
+            dataType:"json",
+            success: function(response) {
+                console.log(response);
+            },
+            error: function(error) {
+                alert(error.responseText);
+            }
+        });
         
     });
 
