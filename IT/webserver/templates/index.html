@@ -218,6 +218,30 @@
                                     </td>
                                 </tr>
                             </table>
+                            <h3>PID Werte</h3>
+                            <table>
+                                <tr>
+                                    <td>
+                                    <h4>Gyro</h4>
+                                    P Soll:<input type="text" name="serial_gyrop_s" id="serial_gyrop_s" value="{{ 0 }}"> <br/>
+                                    &nbsp;&nbsp;I Soll:<input type="text" name="serial_gyroi_s" id="serial_gyroi_s" value="{{ 0 }}"> <br/>
+                                    D Soll:<input type="text" name="serial_gyrod_s" id="serial_gyrod_s" value="{{ 0 }}"> <br/>
+                                    &nbsp;&nbsp;P Ist:<input type="text" name="serial_gyrop_i" id="serial_gyrop_i" value="{{ 0 }}"> <br/>
+                                    &nbsp;&nbsp;&nbsp;I Ist:<input type="text" name="serial_gyroi_i" id="serial_gyroi_i" value="{{ 0 }}"> <br/>
+                                    D Soll:<input type="text" name="serial_gyrod_i" id="serial_gyrod_i" value="{{ 0 }}"> <br/>
+                                    </td>
+
+                                    <td>
+                                    <h4>ToF</h4>
+                                    P Soll:<input type="text" name="serial_tofp_s" id="serial_tofp_s" value="{{ 0 }}"> <br/>
+                                    &nbsp;&nbsp;I Soll:<input type="text" name="serial_tofi_s" id="serial_tofi_s" value="{{ 0 }}"> <br/>
+                                    D Soll:<input type="text" name="serial_tofd_s" id="serial_tofd_s" value="{{ 0 }}"> <br/>
+                                    &nbsp;&nbsp;P Ist:<input type="text" name="serial_tofp_i" id="serial_tofp_i" value="{{ 0 }}"> <br/>
+                                    &nbsp;&nbsp;&nbsp;I Ist:<input type="text" name="serial_tofi_i" id="serial_tofi_i" value="{{ 0 }}"> <br/>
+                                    D Soll:<input type="text" name="serial_tofd_i" id="serial_tofd_i" value="{{ 0 }}"> <br/>
+                                    </td>
+                                </tr>
+                            </table>
                         </td>
                     </tr>
                 </table>
@@ -608,6 +632,26 @@
 <script>
     // Initialize jQuery UI controls
     $(".spinner").spinner();
+    $("#serial_hello").prop('disabled', true);
+    $("#serial_start").prop('disabled', true);
+    $("#serial_letter_i").prop('disabled', true);
+    $("#serial_parcours").prop('disabled', true);
+    $("#serial_tof_l_i").prop('disabled', true);
+    $("#serial_tof_r_i").prop('disabled', true);
+    $("#serial_tof_f_i").prop('disabled', true);
+    $("#serial_raupe_l_i").prop('disabled', true);
+    $("#serial_raupe_r_i").prop('disabled', true);
+    $("#serial_gyro_n").prop('disabled', true);
+    $("#serial_gyro_g").prop('disabled', true);
+    $("#serial_gyroskop_i").prop('disabled', true);
+    $("#serial_servo_i").prop('disabled', true);
+    $("#serial_gyrop_i").prop('disabled', true);
+    $("#serial_gyroi_i").prop('disabled', true);
+    $("#serial_gyrod_i").prop('disabled', true);
+    $("#serial_tofp_i").prop('disabled', true);
+    $("#serial_tofi_i").prop('disabled', true);
+    $("#serial_tofd_i").prop('disabled', true);
+
     $("#letter_tolerance_i_gap").spinner('option', 'step', '0.1');
     $("#letter_tolerance_v_gap").spinner('option', 'step', '0.1');
     $("#letter_min_amount_processed_letters").spinner('option', 'step', '1');
@@ -807,10 +851,10 @@
     });
 
     //TODO: Try on focus lost event for SOLL-Werte
-    $("#serial_letter_s".focusout(function(){
+    $("#serial_letter_s").focusout(function(){
         alert("hello");
         
-    }));
+    });
 
     // Variable to hold request
     var request;
