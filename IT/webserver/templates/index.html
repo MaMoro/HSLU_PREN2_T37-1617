@@ -120,12 +120,12 @@
                                 </tr>
                                 <tr>
                                     <td>Course Selection:</td>
-                                    <td><input type="radio" name="serial_course" id="serial_course_l" value="{{ 0 }}">Left</td>
-                                    <td><input type="radio" name="serial_course" id="serial_course_r" value="{{ 0 }}">Right</td>
+                                    <td><input class="setterValues" type="radio" name="serial_course" id="serial_course_l" value="{{ 0 }}">Left</td>
+                                    <td><input class="setterValues" type="radio" name="serial_course" id="serial_course_r" value="{{ 0 }}">Right</td>
                                 </tr>
                                 <tr>
                                     <td>Letter:</td>
-                                    <td>Soll:<input type="text" name="serial_letter_s" id="serial_letter_s"
+                                    <td>Soll:<input class="setterValues" type="text" name="serial_letter_s" id="serial_letter_s"
                                                     value="{{ 0 }}"> <br/>&nbsp;&nbsp;Ist:<input type="text"
                                                                                                        name="serial_letter_i"
                                                                                                        id="serial_letter_i"
@@ -147,7 +147,7 @@
                             <table>
                                 <tr>
                                     <td> ToF distance (mm)</td>
-                                    <td>Soll:<input type="text" name="serial_tof_l_s" id="serial_tof_l_s" value="{{ 0 }}"></td>
+                                    <td>Soll:<input class="setterValues" type="text" name="serial_tof_l_s" id="serial_tof_l_s" value="{{ 0 }}"></td>
                                 </tr>
                                 <tr>
                                     <td>ToF distance left (mm):</td>
@@ -159,7 +159,7 @@
                                 </tr>
                                 <tr>
                                     <td>ToF distance front (mm):</td>
-                                    <td>Soll:<input type="text" name="serial_tof_f_s" id="serial_tof_f_s"
+                                    <td>Soll:<input class="setterValues" type="text" name="serial_tof_f_s" id="serial_tof_f_s"
                                                     value="{{ 0 }}"> <br/>&nbsp;Ist: <input type="text"
                                                                                                         name="serial_tof_f_i"
                                                                                                         id="serial_tof_f_i"
@@ -171,7 +171,7 @@
                             <table>
                                 <tr>
                                     <td>Gyroskop - PWM level (%)</td>
-                                    <td>Soll: <input type="text" name="serial_gyroskop_s" id="serial_gyroskop_s"
+                                    <td>Soll: <input class="setterValues" type="text" name="serial_gyroskop_s" id="serial_gyroskop_s"
                                                      value="{{ 0 }}"> <br/>&nbsp;&nbsp;Ist: <input type="text"
                                                                                                          name="serial_gyroskop_i"
                                                                                                          id="serial_gyroskop_i"
@@ -195,7 +195,7 @@
                             <table>
                                 <tr>
                                     <td> Speed (%):</td>
-                                    <td>Soll:<input type="text" name="serial_raupe_l_s" id="serial_raupe_l_s" value="{{ 0 }}"></td>
+                                    <td>Soll:<input class="setterValues" type="text" name="serial_raupe_l_s" id="serial_raupe_l_s" value="{{ 0 }}"></td>
                                 </tr>
                                 <tr>
                                     <td>Speed Left Track (%):</td>
@@ -210,7 +210,7 @@
                             <table>
                                 <tr>
                                     <td>Angle servo:</td>
-                                    <td>Soll:<input type="text" name="serial_servo_s" id="serial_servo_s"
+                                    <td>Soll:<input class="setterValues" type="text" name="serial_servo_s" id="serial_servo_s"
                                                     value="{{ 0 }}"> <br/>&nbsp;Ist: <input type="text"
                                                                                                         name="serial_servo_i"
                                                                                                         id="serial_servo_i"
@@ -223,22 +223,16 @@
                                 <tr>
                                     <td>
                                     <h4>Gyro</h4>
-                                    P Soll:<input type="text" name="serial_gyrop_s" id="serial_gyrop_s" value="{{ 0 }}"> <br/>
-                                    &nbsp;&nbsp;I Soll:<input type="text" name="serial_gyroi_s" id="serial_gyroi_s" value="{{ 0 }}"> <br/>
-                                    D Soll:<input type="text" name="serial_gyrod_s" id="serial_gyrod_s" value="{{ 0 }}"> <br/>
-                                    &nbsp;&nbsp;P Ist:<input type="text" name="serial_gyrop_i" id="serial_gyrop_i" value="{{ 0 }}"> <br/>
-                                    &nbsp;&nbsp;&nbsp;I Ist:<input type="text" name="serial_gyroi_i" id="serial_gyroi_i" value="{{ 0 }}"> <br/>
-                                    D Soll:<input type="text" name="serial_gyrod_i" id="serial_gyrod_i" value="{{ 0 }}"> <br/>
+                                    P:<input class="setterValues" type="text" name="serial_gyrop_s" id="serial_gyrop_s" value="{{ 0 }}"> <br/>
+                                    &nbsp;&nbsp;I:<input class="setterValues" type="text" name="serial_gyroi_s" id="serial_gyroi_s" value="{{ 0 }}"> <br/>
+                                    D:<input class="setterValues" type="text" name="serial_gyrod_s" id="serial_gyrod_s" value="{{ 0 }}"> <br/>
                                     </td>
 
                                     <td>
                                     <h4>ToF</h4>
-                                    P Soll:<input type="text" name="serial_tofp_s" id="serial_tofp_s" value="{{ 0 }}"> <br/>
-                                    &nbsp;&nbsp;I Soll:<input type="text" name="serial_tofi_s" id="serial_tofi_s" value="{{ 0 }}"> <br/>
-                                    D Soll:<input type="text" name="serial_tofd_s" id="serial_tofd_s" value="{{ 0 }}"> <br/>
-                                    &nbsp;&nbsp;P Ist:<input type="text" name="serial_tofp_i" id="serial_tofp_i" value="{{ 0 }}"> <br/>
-                                    &nbsp;&nbsp;&nbsp;I Ist:<input type="text" name="serial_tofi_i" id="serial_tofi_i" value="{{ 0 }}"> <br/>
-                                    D Soll:<input type="text" name="serial_tofd_i" id="serial_tofd_i" value="{{ 0 }}"> <br/>
+                                    P:<input class="setterValues" type="text" name="serial_tofp_s" id="serial_tofp_s" value="{{ 0 }}"> <br/>
+                                    &nbsp;&nbsp;I:<input class="setterValues" type="text" name="serial_tofi_s" id="serial_tofi_s" value="{{ 0 }}"> <br/>
+                                    D:<input class="setterValues" type="text" name="serial_tofd_s" id="serial_tofd_s" value="{{ 0 }}"> <br/>
                                     </td>
                                 </tr>
                             </table>
@@ -645,12 +639,6 @@
     $("#serial_gyro_g").prop('disabled', true);
     $("#serial_gyroskop_i").prop('disabled', true);
     $("#serial_servo_i").prop('disabled', true);
-    $("#serial_gyrop_i").prop('disabled', true);
-    $("#serial_gyroi_i").prop('disabled', true);
-    $("#serial_gyrod_i").prop('disabled', true);
-    $("#serial_tofp_i").prop('disabled', true);
-    $("#serial_tofi_i").prop('disabled', true);
-    $("#serial_tofd_i").prop('disabled', true);
 
     $("#letter_tolerance_i_gap").spinner('option', 'step', '0.1');
     $("#letter_tolerance_v_gap").spinner('option', 'step', '0.1');
@@ -806,6 +794,14 @@
             $("#serial_raupe_l_i").val(data.result.serial_raupe_l_i);
             $("#serial_raupe_r_i").val(data.result.serial_raupe_r_i);
             $("#serial_servo_i").val(data.result.serial_servo_i);
+
+            $("#serial_gyrop_s").val(data.result.serial_gyrop_i);
+            $("#serial_gyroi_s").val(data.result.serial_gyroi_i);
+            $("#serial_gyrod_s").val(data.result.serial_gyrod_i);
+            $("#serial_tofp_s").val(data.result.serial_tofp_i);
+            $("#serial_tofi_s").val(data.result.serial_tofi_i);
+            $("#serial_tofd_s").val(data.result.serial_tofd_i);
+
         });
      }
 
@@ -850,9 +846,24 @@
         }
     });
 
-    //TODO: Try on focus lost event for SOLL-Werte
-    $("#serial_letter_s").focusout(function(){
-        alert("hello");
+    //TODO: continuuuu nerding around hihi
+    $(".setterValues").focusout(function(){
+
+        var changedValues={
+	       ChangedProperty: this.id,
+           NewValue: $("#"+this.id).val() //how wtf!
+        }
+
+        //$.ajax({
+	    //    type:"POST",
+        //    url: $SCRIPT_ROOT + "/set_serialvalues",
+        //    data:JSON.stringify(changedValues),
+        //    contentType:"application/json;charset=utf-8",
+        //    dataType:"json",
+        //    success:function(data){
+
+	    //    }
+        //});
         
     });
 
