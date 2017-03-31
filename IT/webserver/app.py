@@ -110,36 +110,44 @@ def get_serialvalues():
                                serial_tofp_i=serial_tofp_i, serial_tofi_i=serial_tofi_i, serial_tofd_i=serial_tofd_i,
                                serial_letter=serial_letter, serial_parcstate=serial_parcstate, serial_errstate=serial_errstate))
 
-#TODO: Function for serial communication values - setter / SOLL Werte schreiben
 @app.route('/set_serialvalues', methods=['POST'])
 def set_serialvalues():
+
     global communicationvalues
     communicationvalues = CommunicationValues()
 
-    #Herausfinden welcher Wert geändert wurde, nur diesen senden  ?
+    changedProperty = request.json['ChangedProperty']
+    newValue = request.json['NewValue']
 
-    #right false 0, left true 1
-    #serial_course = communicationvalues.send_course(wert);
+    if changedProperty == "serial_course_l":
+        communicationvalues.send_course(1)
+    elif changedProperty == "serial_course_r":
+        communicationvalues.send_course(0)
+    elif changedProperty == "serial_letter_s":
+        communicationvalues.send_letter(newValue)
+    elif changedProperty == "serial_tof_l_s":
+        communicationvalues.send_tof_left(newValue)
+    elif changedProperty == "serial_raupe_l_s":
+        communicationvalues.send_raupe_left(newValue)
+    elif changedProperty == "serial_gyroskop_s":
+        communicationvalues.send_gyroskop(newValue)
+    elif changedProperty == "serial_servo_s":
+        communicationvalues.send_servo(newValue)
+    elif changedProperty == "serial_gyrop_s":
+        communicationvalues.send_kpG(newValue)
+    elif changedProperty == "serial_gyroi_s":
+        communicationvalues.send_kiG(newValue)
+    elif changedProperty == "serial_gyrod_s":
+        communicationvalues.send_kdG(newValue)
+    elif changedProperty == "serial_tofp_s":
+        communicationvalues.send_kpT(newValue)
+    elif changedProperty == "serial_tofi_s":
+        communicationvalues.send_kiT(newValue)
+    elif changedProperty == "serial_tofd_s":
+        communicationvalues.send_kdT(newValue);
 
-    #serial_letter_s = communicationvalues.send_letter(wert);
+    return jsonify(request.json['ChangedProperty'])
 
-    #serial_tof_l_s = communicationvalues.send_tof_left(wert);
-    # serial_tof_r_s not set, only left - Freedom sets left == right
-    #serial_tof_f_s = communicationvalues.send_tof_front(wert);
-
-    #serial_raupe_l_s = communicationvalues.send_raupe_left(wert);
-    #serial_raupe_r_s not set, only left - Freedom sets left == right
-
-    #serial_gyroskop_s = communicationvalues.send_gyroskop(wert);
-
-    #serial_servo_s = communicationvalues.send_servo(wert);
-
-    #serial_gyrop_s = communicationvalues.send_kpG(wert);
-    #serial_gyroi_s = communicationvalues.send_kiG(wert);
-    #serial_gyrod_s = communicationvalues.send_kdG(wert);
-    #serial_tofp_s = communicationvalues.send_kpT(wert);
-    #serial_tofi_s = communicationvalues.send_kiT(wert);
-    #serial_tofd_s = communicationvalues.send_kdT(wert);
 
 
 # Start TrafficLightDetection on images - http://localhost:5000/start_images
