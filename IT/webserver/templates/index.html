@@ -18,74 +18,11 @@
 <h1>Control-Interface : Autonomes Fahrzeug - PREN 2 - Team 37</h1>
 <div id="tabs">
     <ul>
-        <!-- <li><a href="#tabs-1">Images</a></li>
-        <li><a href="#tabs-2">Video</a></li>
-        <li><a href="#tabs-3">Stream</a></li>-->
-        <li><a href="#tabs-4" id="LiveView">LiveView</a></li>
-        <li><a href="#tabs-5" id="Control">Control</a></li>
-        <li><a href="#tabs-6" id="Config">Config</a></li>
+        <li><a href="#tabs-1" id="LiveView">LiveView</a></li>
+        <li><a href="#tabs-2" id="Control">Control</a></li>
+        <li><a href="#tabs-3" id="Config">Config</a></li>
     </ul>
-    <!--<div id="tabs-1">
-        <img height="480" width="640" src="{{ url_for('img_feed') }}" onerror="this.style.display='none';"></br>
-        <table>
-            <tr>
-                <form id="images_start_form" action="/start_images" method="post">
-                    <td>
-                        <button type="submit" value="Start">Start</button>
-                    </td>
-                    <td><input type="checkbox" name="preview" value="img"> Show preview</td>
-                </form>
-            </tr>
-            <tr>
-                <form id="images_stop_form" action="/stop_images" method="post">
-                    <td>
-                        <button type="submit" value="Stop">Stop</button>
-                    </td>
-                </form>
-            </tr>
-        </table>
-    </div>
-    <div id="tabs-2">
-        <img height="480" width="640" src="{{ url_for('video_feed') }}" onerror="this.style.display='none';"></br>
-        <table>
-            <tr>
-                <form id="video_start_form" action="/start_video" method="post">
-                    <td>
-                        <button type="submit" value="Start">Start</button>
-                    </td>
-                    <td><input type="checkbox" name="preview" value="video"> Show preview</td>
-                </form>
-            </tr>
-            <tr>
-                <form id="video_stop_form" action="/stop_video" method="post">
-                    <td>
-                        <button type="submit" value="Stop">Stop</button>
-                    </td>
-                </form>
-            </tr>
-        </table>
-    </div>
-    <div id="tabs-3">
-        <img height="480" width="640" src="{{ url_for('stream_feed') }}" onerror="this.style.display='none';"></br>
-        <table>
-            <tr>
-                <form id="stream_start_form" action="/start_stream" method="post">
-                    <td>
-                        <button type="submit" value="Start">Start</button>
-                    </td>
-                    <td><input type="checkbox" name="preview" value="stream"> Show preview</td>
-                </form>
-            </tr>
-            <tr>
-                <form id="stream_stop_form" action="/stop_stream" method="post">
-                    <td>
-                        <button type="submit" value="Stop">Stop</button>
-                    </td>
-                </form>
-            </tr>
-        </table>
-    </div>-->
-    <div id="tabs-4">
+    <div id="tabs-1">
         <img height="480" width="640" src="{{ url_for('pi_feed') }}" onerror="this.style.display='none';"></br>
         <table>
             <tr>
@@ -102,7 +39,7 @@
             </tr>
         </table>
     </div>
-    <div id="tabs-5">
+    <div id="tabs-2">
         <form id="steering_form">
             <div>
                 <table>
@@ -159,8 +96,7 @@
                                 </tr>
                                 <tr>
                                     <td>ToF distance front (mm):</td>
-                                    <td>Soll:<input class="setterValues" type="text" name="serial_tof_f_s" id="serial_tof_f_s"
-                                                    value="{{ 0 }}"> <br/>&nbsp;Ist: <input type="text"
+                                    <td>Soll:<input class="setterValues" type="text" name="serial_tof_f_s" id="serial_tof_f_s" value="{{ 0 }}"> <br/>&nbsp;Ist: <input type="text"
                                                                                                         name="serial_tof_f_i"
                                                                                                         id="serial_tof_f_i"
                                                                                                         value="{{ 0 }}">
@@ -223,16 +159,16 @@
                                 <tr>
                                     <td>
                                     <h4>Gyro</h4>
-                                    P:<input class="setterValues" type="text" name="serial_gyrop_s" id="serial_gyrop_s" value="{{ 0 }}"> <br/>
-                                    &nbsp;&nbsp;I:<input class="setterValues" type="text" name="serial_gyroi_s" id="serial_gyroi_s" value="{{ 0 }}"> <br/>
-                                    D:<input class="setterValues" type="text" name="serial_gyrod_s" id="serial_gyrod_s" value="{{ 0 }}"> <br/>
+                                    P:<input class="setterValues" type="text" name="serial_gyrop" id="serial_gyrop" value="{{ 0 }}"> <br/>
+                                    &nbsp;&nbsp;I:<input class="setterValues" type="text" name="serial_gyroi" id="serial_gyroi" value="{{ 0 }}"> <br/>
+                                    D:<input class="setterValues" type="text" name="serial_gyrod" id="serial_gyrod" value="{{ 0 }}"> <br/>
                                     </td>
 
                                     <td>
                                     <h4>ToF</h4>
-                                    P:<input class="setterValues" type="text" name="serial_tofp_s" id="serial_tofp_s" value="{{ 0 }}"> <br/>
-                                    &nbsp;&nbsp;I:<input class="setterValues" type="text" name="serial_tofi_s" id="serial_tofi_s" value="{{ 0 }}"> <br/>
-                                    D:<input class="setterValues" type="text" name="serial_tofd_s" id="serial_tofd_s" value="{{ 0 }}"> <br/>
+                                    P:<input class="setterValues" type="text" name="serial_tofp" id="serial_tofp" value="{{ 0 }}"> <br/>
+                                    &nbsp;&nbsp;I:<input class="setterValues" type="text" name="serial_tofi" id="serial_tofi" value="{{ 0 }}"> <br/>
+                                    D:<input class="setterValues" type="text" name="serial_tofd" id="serial_tofd" value="{{ 0 }}"> <br/>
                                     </td>
                                 </tr>
                             </table>
@@ -242,7 +178,7 @@
             </div>
         </form>
     </div>
-    <div id="tabs-6">
+    <div id="tabs-3">
         <form id="save_form">
             <div id="accordion">
                 <h3>General - Settings</h3>
@@ -568,55 +504,48 @@
                         </tr>
                     </table>
                 </div>
-                <h3>ET - Gyroskop</h3>
-                <div>
-                    <table>
-                        <tr>
-                            <td>Power level PWM:</td>
-                            <td><input class="spinner" name="#" value="{{ 0 }}"></td>
-                        </tr>
-                    </table>
-                </div>
-                <h3>ET - Engines</h3>
-                <div>
-                    <table>
-                        <tr>
-                            <td>Speed Left Engine (cm/s):</td>
-                            <td><input class="spinner" name="#" value="{{ 0 }}"></td>
-                        </tr>
-                        <tr>
-                            <td>Speed Right Engine (cm/s):</td>
-                            <td><input class="spinner" name="#" value="{{ 0 }}"></td>
-                        </tr>
-                    </table>
-                </div>
                 <h3>ET - Distance sensors</h3>
                 <div>
                     <table>
                         <tr>
-                            <td>ToF distance left (mm):</td>
-                            <td><input class="spinner" name="#" value="{{ 0 }}"></td>
-                        </tr>
-                        <tr>
-                            <td>ToF distance right (mm):</td>
-                            <td><input class="spinner" name="#" value="{{ 0 }}"></td>
+                            <td>ToF distance side (mm):</td>
+                            <td><input class="spinner" name="controls_tof_side" value="{{ controls_tof_side }}"></td>
                         </tr>
                         <tr>
                             <td>ToF distance front (mm):</td>
-                            <td><input class="spinner" name="#" value="{{ 0 }}"></td>
+                            <td><input class="spinner" name="controls_tof_front" value="{{ controls_tof_front }}"></td>
                         </tr>
                     </table>
                 </div>
-                <h3>ET - Servo</h3>
+                <h3>ET - PID</h3>
                 <div>
                     <table>
                         <tr>
-                            <td>Angle servo:</td>
-                            <td><input class="spinner" name="#" value="{{ 0 }}"></td>
+                            <td>Gyro P:</td>
+                            <td><input class="spinner" name="controls_gyro_p" value="{{ controls_gyro_p }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Gyro I:</td>
+                            <td><input class="spinner" name="controls_gyro_i" value="{{ controls_gyro_i }}"></td>
+                        </tr>
+                        <tr>
+                            <td>Gyro D:</td>
+                            <td><input class="spinner" name="controls_gyro_d" value="{{ controls_gyro_d }}"></td>
+                        </tr>
+                        <tr>
+                            <td>ToF P:</td>
+                            <td><input class="spinner" name="controls_tof_p" value="{{ controls_tof_p }}"></td>
+                        </tr>
+                        <tr>
+                            <td>ToF I:</td>
+                            <td><input class="spinner" name="controls_tof_i" value="{{ controls_tof_i }}"></td>
+                        </tr>
+                        <tr>
+                            <td>ToF D:</td>
+                            <td><input class="spinner" name="controls_tof_d" value="{{ controls_tof_d }}"></td>
                         </tr>
                     </table>
                 </div>
-
             </div>
             <br>
             <button type="submit" id="save" value="save">Save</button>
@@ -795,12 +724,12 @@
             $("#serial_raupe_r_i").val(data.result.serial_raupe_r_i);
             $("#serial_servo_i").val(data.result.serial_servo_i);
 
-            $("#serial_gyrop_s").val(data.result.serial_gyrop_i);
-            $("#serial_gyroi_s").val(data.result.serial_gyroi_i);
-            $("#serial_gyrod_s").val(data.result.serial_gyrod_i);
-            $("#serial_tofp_s").val(data.result.serial_tofp_i);
-            $("#serial_tofi_s").val(data.result.serial_tofi_i);
-            $("#serial_tofd_s").val(data.result.serial_tofd_i);
+            $("#serial_gyrop").val(data.result.serial_gyrop);
+            $("#serial_gyroi").val(data.result.serial_gyroi);
+            $("#serial_gyrod").val(data.result.serial_gyrod);
+            $("#serial_tofp").val(data.result.serial_tofp);
+            $("#serial_tofi").val(data.result.serial_tofi);
+            $("#serial_tofd").val(data.result.serial_tofd);
 
         });
      }
@@ -839,9 +768,9 @@
         activate: function(event, ui) {
             clearInterval(intervallID);
             //If tab Steuerung
-            if (ui.newPanel[0].id == "tabs-5") {
+            if (ui.newPanel[0].id == "tabs-2") {
                 //Run function updateDebugVals ever x milliseconds for IST-Werte
-                intervallID = setInterval(updateDebugVals, 1000);
+                intervallID = setInterval(updateDebugVals, 2000);
             }
         }
     });
@@ -912,6 +841,14 @@
         var color_yellow = $("#color_yellow").val();
         var color_gray = $("#color_gray").val();
         var color_orange = $("#color_orange").val();
+        var controls_tof_side = $("#controls_tof_side").val();
+        var controls_tof_front = $("#controls_tof_front").val();
+        var controls_gyro_p = $("#controls_gyro_p").val();
+        var controls_gyro_i = $("#controls_gyro_i").val();
+        var controls_gyro_d = $("#controls_gyro_d").val();
+        var controls_tof_p = $("#controls_tof_p").val();
+        var controls_tof_i = $("#controls_tof_i").val();
+        var controls_tof_d = $("#controls_tof_d").val();
 
         // Set html control values to Config.ini format for sending them with serialize
         $("#mask_trafficlight_red_low_l").val(js_hsv2py_hsv(mask_trafficlight_red_low_l));
@@ -1008,6 +945,14 @@
         $("#color_yellow").val(color_yellow);
         $("#color_gray").val(color_gray);
         $("#color_orange").val(color_orange);
+        $("#controls_tof_side").val(controls_tof_side);
+        $("#controls_tof_front").val(controls_tof_front);
+        $("#controls_gyro_p").val(controls_gyro_p);
+        $("#controls_gyro_i").val(controls_gyro_i);
+        $("#controls_gyro_d").val(controls_gyro_d);
+        $("#controls_tof_p").val(controls_tof_p);
+        $("#controls_tof_i").val(controls_tof_i);
+        $("#controls_tof_d").val(controls_tof_d);
     });
 </script>
 </body>
