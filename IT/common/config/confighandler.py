@@ -733,20 +733,12 @@ def set_letter_min_amount_processed_letters(val):
 # Start Section "Controls" #
 
 
-def get_controls_engine_speed():
-    return __loadconfig().getint('controls', 'engine_speed')
-
-
-def set_controls_engine_speed(val):
-    __persistchanges('controls', 'engine_speed')
-
-
 def get_controls_tof_side():
     return __loadconfig().getint('controls', 'tof_side')
 
 
 def set_controls_tof_side(val):
-    __persistchanges('controls', 'tof_side')
+    __persistchanges('controls', 'tof_side', val)
 
 
 def get_controls_tof_front():
@@ -754,7 +746,7 @@ def get_controls_tof_front():
 
 
 def set_controls_tof_front(val):
-    __persistchanges('controls', 'tof_front')
+    __persistchanges('controls', 'tof_front', val)
 
 
 def get_controls_gyro_p():
