@@ -207,7 +207,7 @@ class CommunicationValues(object):
                 self.__serialcomm.send("raupe_r_s", value)
 
         def send_gyroskop(self, value):
-            if self.op_gyroskop_s_s != value:
+            if self.op_gyroskop_s != value:
                 self.__serialcomm.send("gyroskop_s", value)
 
         def send_servo(self, value):
@@ -216,26 +216,32 @@ class CommunicationValues(object):
 
         def send_kpG(self, value):
             if self.op_kpG != value:
+                self.op_kpG = value
                 self.__serialcomm.send("kpG", value)
 
         def send_kiG(self, value):
             if self.op_kiG != value:
+                self.op_kiG = value
                 self.__serialcomm.send("kiG", value)
 
         def send_kdG(self, value):
             if self.op_kdG != value:
+                self.op_kdG = value
                 self.__serialcomm.send("kdG", value)
 
         def send_kpT(self, value):
             if self.op_kpT != value:
+                self.op_kpT = value
                 self.__serialcomm.send("kpT", value)
 
         def send_kiT(self, value):
             if self.op_kiT != value:
+                self.op_kiT = value
                 self.__serialcomm.send("kiT", value)
 
         def send_kdT(self, value):
             if self.op_kdT != value:
+                self.op_kdT = value
                 self.__serialcomm.send("kdT", value)
 
         def send_error(self, value):
@@ -274,7 +280,6 @@ class CommunicationValues(object):
                     self.op_servo_i = value
                 elif operation == "letter":
                     self.op_letter = value
-
                 elif operation == "parcstate":
                     self.op_parcstate = value
                 elif operation == "errstate":
