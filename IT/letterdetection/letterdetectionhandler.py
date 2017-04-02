@@ -98,14 +98,14 @@ class LetterDetectionHandler(object):
             num_units = 4
             processingqueue = multiprocessing.JoinableQueue()
             resultqueue = multiprocessing.Queue()
-            processingunits = [ImageProcessing(processingqueue, resultqueue) for i in range(num_units)]
 
+            processingunits = [ImageProcessing(processingqueue, resultqueue) for i in range(num_units)]
             for w in processingunits:
                 w.start()
                 time.sleep(1)
             self.__log.info("Image-Processing-Units created, ready to process...")
             imgcount = 0
-            pistream = CameraHandler().start()
+            pistream = CameraHandler()
             self.__log.info("Ready! Start capturing")
 
             while True:
@@ -136,9 +136,9 @@ class LetterDetectionHandler(object):
             allnumbers = []
             while resultqueue.qsize() != 0:
                 allnumbers.append(resultqueue.get())
-                numbertodisplay = ImageAnalysis.most_voted_number(allnumbers)
-                LEDStripHandler.display_letter_on_LEDs(numbertodisplay)
-                CommunicationValues().send_letter(numbertodisplay)
+            numbertodisplay = ImageAnalysis.most_voted_number(allnumbers)
+            LEDStripHandler.display_letter_on_LEDs(numbertodisplay)
+            CommunicationValues().send_letter(numbertodisplay)
 
         def get_frame(self):
             return self.frame  # return the frame most recently read
