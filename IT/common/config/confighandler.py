@@ -780,4 +780,27 @@ def get_controls_gyro_d():
 def set_controls_gyro_d(val):
     __persistchanges('controls', 'gyro_d', val)
 
+
+def get_controls_tof_p():
+    return __loadconfig().getint('controls', 'tof_p')
+
+
+def set_controls_tof_p(val):
+    __persistchanges('controls', 'tof_p', val)
+
+
+def get_controls_tof_i():
+    return __loadconfig().getint('controls', 'tof_i')
+
+
+def set_controls_tof_i(val):
+    __persistchanges('controls', 'tof_i', val)
+
+
+def get_controls_tof_d():
+    return __loadconfig().getint('controls', 'tof_d')
+
+
+def set_controls_tof_d(val):
+    __persistchanges('controls', 'tof_d', val)
 # End Section "Controls" #
