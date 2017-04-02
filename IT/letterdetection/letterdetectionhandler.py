@@ -150,11 +150,11 @@ class LetterDetectionHandler(object):
             LetterDetectionHandler.instance = LetterDetectionHandler.__LetterDetectionHandler()
         return LetterDetectionHandler.instance
 
-        def __getattr__(self, name):
-            return getattr(self.instance, name)
+    def __getattr__(self, name):
+        return getattr(self.instance, name)
 
-        def __setattr__(self, name):
-            return setattr(self.instance, name)
+    def __setattr__(self, name):
+        return setattr(self.instance, name)
 
 if __name__ == '__main__':
     LetterDetectionHandler()
