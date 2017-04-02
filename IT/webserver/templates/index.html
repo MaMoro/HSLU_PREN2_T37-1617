@@ -84,7 +84,7 @@
                             <table>
                                 <tr>
                                     <td> ToF distance (mm)</td>
-                                    <td>Soll:<input class="setterValues" type="text" name="serial_tof_l_s" id="serial_tof_l_s" value="{{ 0 }}"></td>
+                                    <td>Soll:<input class="setterValues" type="text" name="serial_tof_l_s" id="serial_tof_l_s" value="{{ controls_tof_side }}"></td>
                                 </tr>
                                 <tr>
                                     <td>ToF distance left (mm):</td>
@@ -96,7 +96,7 @@
                                 </tr>
                                 <tr>
                                     <td>ToF distance front (mm):</td>
-                                    <td>Soll:<input class="setterValues" type="text" name="serial_tof_f_s" id="serial_tof_f_s" value="{{ 0 }}"> <br/>&nbsp;Ist: <input type="text"
+                                    <td>Soll:<input class="setterValues" type="text" name="serial_tof_f_s" id="serial_tof_f_s" value="{{ controls_tof_front }}"> <br/>&nbsp;Ist: <input type="text"
                                                                                                         name="serial_tof_f_i"
                                                                                                         id="serial_tof_f_i"
                                                                                                         value="{{ 0 }}">
@@ -159,16 +159,16 @@
                                 <tr>
                                     <td>
                                     <h4>Gyro</h4>
-                                    P:<input class="setterValues" type="text" name="serial_gyrop" id="serial_gyrop" value="{{ 0 }}"> <br/>
-                                    &nbsp;&nbsp;I:<input class="setterValues" type="text" name="serial_gyroi" id="serial_gyroi" value="{{ 0 }}"> <br/>
-                                    D:<input class="setterValues" type="text" name="serial_gyrod" id="serial_gyrod" value="{{ 0 }}"> <br/>
+                                    P:<input class="setterValues" type="text" name="serial_gyro_p" id="serial_gyro_p" value="{{ controls_gyro_p }}"> <br/>
+                                    &nbsp;&nbsp;I:<input class="setterValues" type="text" name="serial_gyro_i" id="serial_gyro_i" value="{{ controls_gyro_i }}"> <br/>
+                                    D:<input class="setterValues" type="text" name="serial_gyro_d" id="serial_gyro_d" value="{{ controls_gyro_d }}"> <br/>
                                     </td>
 
                                     <td>
                                     <h4>ToF</h4>
-                                    P:<input class="setterValues" type="text" name="serial_tofp" id="serial_tofp" value="{{ 0 }}"> <br/>
-                                    &nbsp;&nbsp;I:<input class="setterValues" type="text" name="serial_tofi" id="serial_tofi" value="{{ 0 }}"> <br/>
-                                    D:<input class="setterValues" type="text" name="serial_tofd" id="serial_tofd" value="{{ 0 }}"> <br/>
+                                    P:<input class="setterValues" type="text" name="serial_tof_p" id="serial_tof_p" value="{{ controls_tof_p }}"> <br/>
+                                    &nbsp;&nbsp;I:<input class="setterValues" type="text" name="serial_tof_i" id="serial_tof_i" value="{{ controls_tof_i }}"> <br/>
+                                    D:<input class="setterValues" type="text" name="serial_tof_d" id="serial_tof_d" value="{{ controls_tof_d }}"> <br/>
                                     </td>
                                 </tr>
                             </table>
