@@ -56,13 +56,14 @@ class CommunicationValues(object):
             self.op_parcstate = None
             self.op_errstate = "None"
             self.timeout = 0.3
+            self.retrycounter = 20
             self.__serialcomm = SerialCommunicationHandler().start()
             time.sleep(1)
 
         def get_hello_blocking(self):
             hellocounter = 0
             while self.op_hello is None:
-                if hellocounter < 20:
+                if hellocounter < self.retrycounter:
                     time.sleep(self.timeout)
                     hellocounter += 1
                 else:
@@ -139,8 +140,7 @@ class CommunicationValues(object):
             self.__serialcomm.send("hello", 1)
             hellocounter = 0
             while self.op_hello is None:
-                time.sleep(0.05)
-                if hellocounter < 20:
+                if hellocounter < self.retrycounter:
                     time.sleep(self.timeout)
                     self.__serialcomm.send("hello", 1)
                     hellocounter += 1
@@ -152,34 +152,37 @@ class CommunicationValues(object):
             self.__serialcomm.send("start", 1)
             startcounter = 0
             while self.op_start is None:
-                if startcounter < 20:
+                if startcounter < self.retrycounter:
                     time.sleep(self.timeout)
                     self.__serialcomm.send("start", 1)
                     startcounter += 1
                 else:
                     self.__log.error("start signal not acknowledged")
+                    break
 
         def send_course(self, course):
             self.__serialcomm.send("course", course)
             coursecounter = 0
             while self.op_course is None:
-                if coursecounter < 20:
+                if coursecounter < self.retrycounter:
                     time.sleep(self.timeout)
                     self.__serialcomm.send("course", course)
                     coursecounter += 1
                 else:
                     self.__log.error("course selection not acknowledged")
+                    break
 
         def send_letter(self, detectedletter):
             self.__serialcomm.send("letter", detectedletter)
             lettercounter = 0
             while self.op_letter is None:
-                if lettercounter < 20:
+                if lettercounter < self.retrycounter:
                     time.sleep(self.timeout)
                     self.__serialcomm.send("letter", detectedletter)
                     lettercounter += 1
                 else:
                     self.__log.error("letter not acknowledged")
+                    break
 
         def send_tof_left(self, value):
             if self.op_tof_l_s != value:
@@ -211,23 +214,29 @@ class CommunicationValues(object):
             if self.op_servo_s != value:
                 self.__serialcomm.send("servo_s", value)
 
-        def send_kpG(self):
-            return ("TODO");
+        def send_kpG(self, value):
+            if self.op_kpG != value:
+                self.__serialcomm.send("kpG", value)
 
-        def send_kiG(self):
-            return ("TODO");
+        def send_kiG(self, value):
+            if self.op_kiG != value:
+                self.__serialcomm.send("kiG", value)
 
-        def send_kdG(self):
-            return ("TODO");
+        def send_kdG(self, value):
+            if self.op_kdG != value:
+                self.__serialcomm.send("kdG", value)
 
-        def send_kpT(self):
-            return ("TODO");
+        def send_kpT(self, value):
+            if self.op_kpT != value:
+                self.__serialcomm.send("kpT", value)
 
-        def send_kiT(self):
-            return ("TODO");
+        def send_kiT(self, value):
+            if self.op_kiT != value:
+                self.__serialcomm.send("kiT", value)
 
-        def send_kdT(self):
-            return ("TODO");
+        def send_kdT(self, value):
+            if self.op_kdT != value:
+                self.__serialcomm.send("kdT", value)
 
         def send_error(self, value):
             if self.op_errstate != value:
