@@ -186,61 +186,129 @@ class CommunicationValues(object):
 
         def send_tof_left(self, value):
             if self.op_tof_l_s != value:
+                value = int(value)
+                if value < 0:
+                    value = 0
+                elif value > 600:
+                    value = 600
                 self.__serialcomm.send("tof_l_s", value)
 
         #Depricated, we only send left
         def send_tof_right(self, value):
             if self.op_tof_r_s != value:
+                value = int(value)
+                if value < 0:
+                    value = 0
+                elif value > 600:
+                    value = 600
                 self.__serialcomm.send("tof_r_s", value)
 
         def send_tof_front(self, value):
             if self.op_tof_f_s != value:
+                value = int(value)
+                if value < 0:
+                    value = 0
+                elif value > 600:
+                    value = 600
                 self.__serialcomm.send("tof_f_s", value)
 
         def send_raupe_left(self, value):
             if self.op_raupe_l_s != value:
+                value = int(value)
+                if value < -100:
+                    value = -100
+                elif value > 100:
+                    value = 100
+                value = int(value / 100 * 127)
                 self.__serialcomm.send("raupe_l_s", value)
 
         #Depricated, we only send left
         def send_raupe_right(self, value):
             if self.op_raupe_r_s != value:
+                value = int(value)
+                if value < -100:
+                    value = -100
+                elif value > 100:
+                    value = 100
+                value = int(value / 100 * 127)
                 self.__serialcomm.send("raupe_r_s", value)
 
         def send_gyroskop(self, value):
             if self.op_gyroskop_s != value:
+                value = int(value)
+                if value < 0:
+                    value = 0
+                elif value > 100:
+                    value = 100
+                value = int(value / 100 * 127)
                 self.__serialcomm.send("gyroskop_s", value)
 
         def send_servo(self, value):
             if self.op_servo_s != value:
+                value = int(value)
+                if value < 0:
+                    value = 0
+                elif value > 180:
+                    value = 180
                 self.__serialcomm.send("servo_s", value)
 
         def send_kpG(self, value):
             if self.op_kpG != value:
+                value = int(value)
+                if value < 0:
+                    value = 0
+                elif value > 255:
+                    value = 255
                 self.op_kpG = value
                 self.__serialcomm.send("kpG", value)
 
         def send_kiG(self, value):
             if self.op_kiG != value:
+                value = int(value)
+                if value < 0:
+                    value = 0
+                elif value > 255:
+                    value = 255
                 self.op_kiG = value
                 self.__serialcomm.send("kiG", value)
 
         def send_kdG(self, value):
             if self.op_kdG != value:
+                value = int(value)
+                if value < 0:
+                    value = 0
+                elif value > 255:
+                    value = 255
                 self.op_kdG = value
                 self.__serialcomm.send("kdG", value)
 
         def send_kpT(self, value):
             if self.op_kpT != value:
+                value = int(value)
+                if value < 0:
+                    value = 0
+                elif value > 255:
+                    value = 255
                 self.op_kpT = value
                 self.__serialcomm.send("kpT", value)
 
         def send_kiT(self, value):
             if self.op_kiT != value:
+                value = int(value)
+                if value < 0:
+                    value = 0
+                elif value > 255:
+                    value = 255
                 self.op_kiT = value
                 self.__serialcomm.send("kiT", value)
 
         def send_kdT(self, value):
             if self.op_kdT != value:
+                value = int(value)
+                if value < 0:
+                    value = 0
+                elif value > 255:
+                    value = 255
                 self.op_kdT = value
                 self.__serialcomm.send("kdT", value)
 
@@ -267,14 +335,17 @@ class CommunicationValues(object):
                 elif operation == "tof_f_i":
                     self.op_tof_f_i = value
                 elif operation == "raupe_l_i":
+                    value = int(value / 127 * 100)
                     self.op_raupe_l_i = value
                 elif operation == "raupe_r_i":
+                    value = int(value / 127 * 100)
                     self.op_raupe_r_i = value
                 elif operation == "gyro_n":
                     self.op_gyro_n = value
                 elif operation == "gyro_g":
                     self.op_gyro_g = value
                 elif operation == "gyroskop_i":
+                    value = int(value / 127 * 100)
                     self.op_gyroskop_i = value
                 elif operation == "servo_i":
                     self.op_servo_i = value
