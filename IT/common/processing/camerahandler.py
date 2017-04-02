@@ -55,7 +55,7 @@ class CameraHandler(object):
             self.stream = self.camera.capture_continuous(self.rawcapture, format="bgr", use_video_port=True)
             time.sleep(0.1)
             self.__log.info("PiCamera initialization finished")
-            self.stopped = True
+            self.start()
 
         def calibratePiCamera(self):
             try:
@@ -69,13 +69,13 @@ class CameraHandler(object):
                 pass
 
         def get_pi_camerainstance(self):
-            if self.stopped:
-                self.calibratePiCamera()
+            while self.stopped:
+                time.sleep(1)
             return self.camera
 
         def get_pi_rgbarray(self):
-            if self.stopped:
-                self.calibratePiCamera()
+            while self.stopped:
+                time.sleep(1)
             return self.rawcapture
 
         def start(self):
@@ -105,6 +105,7 @@ class CameraHandler(object):
         def read(self):
             if self.stopped:
                 self.calibratePiCamera()
+                time.sleep(2)
             return self.frame  # return the frame most recently read
 
         def stop(self):
