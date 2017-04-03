@@ -11,8 +11,8 @@
 # =======================================================================
 
 #!/bin/bash
-FILEPATH=/home/pi/PREN
+FILEPATH=/home/pi/Desktop
 # !!!!!!!!!!!!!!! start this script with sudo !!!!!!!!!!!!!!!
 
 sleep 3  # wait 3s to let RPi finish the start up procedure
-python3 $FILEPATH/Desktop/main.py > $FILEPATH/logging/run.log 2>&1 &
+python3 $FILEPATH/PREN/main.py > $FILEPATH/logging/run.log 2>&1 &
