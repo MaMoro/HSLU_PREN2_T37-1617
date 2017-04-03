@@ -188,7 +188,7 @@ class TrafficLightDetection(object):
             self.__log.info('Red detected!')
             cv2.putText(self.image_original, '{:%H:%M:%S.%f} - Red detected!'.format(datetime.datetime.now()), (self.textspace, self.textspace), font, 0.7, self.color_green, 1, cv2.LINE_AA)
 
-    def get_green_counter(self):
+    def get_color_state(self):
         if self.green_hit_counter < 10:
             return "red"
         else:
