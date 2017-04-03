@@ -13,17 +13,16 @@
 
 # Import the modules needed to run the script.
 import logging
-import cv2
 import common.config.confighandler as cfg
 
 from logging.config import fileConfig
 from flask import Flask, render_template, request, Response, jsonify
 from common.communication.communicationvalues import CommunicationValues
-from trafficlight.trafficlightdetection_pi import TrafficLightDetectionPi
-from letterdetection.letterdetectionhandler import LetterDetectionHandler
-
+from webserver.imagewebhandler import ImageWebHandler
 
 # Initialize Logger
+
+
 fileConfig(cfg.get_logging_config_fullpath())
 __log = logging.getLogger()
 
@@ -32,7 +31,7 @@ app = Flask(__name__)
 
 # Set initialize values
 pi_running = False
-pi_thread = None
+image_handler = None
 communicationvalues = None
 
 
@@ -41,10 +40,10 @@ communicationvalues = None
 def index():
     """Streaming home page."""
     global pi_running
-    global pi_thread
+    global image_handler
     global communicationvalues
     pi_running = False
-    pi_thread = None
+    image_handler = None
     communicationvalues = None
     return __call_render_template()
 
@@ -63,10 +62,10 @@ def start_pi():
 @app.route('/stop_pi', methods=['POST'])
 def stop_pi():
     global pi_running
-    global pi_thread
+    global image_handler
     pi_running = False
-    if pi_thread is not None:
-        pi_thread.stop()
+    if image_handler is not None:
+        image_handler.stop()
 
     return __call_render_template()
 
@@ -75,11 +74,10 @@ def stop_pi():
 @app.route('/pi_feed')
 def pi_feed():
     """Pi streaming route. Put this in the src attribute of an img tag."""
-    global pi_thread
+    global image_handler
     if pi_running:
-        # pi_thread = CameraHandler().start()
-        pi_thread = LetterDetectionHandler()
-        return Response(gen_pi(pi_thread), mimetype='multipart/x-mixed-replace; boundary=frame')
+        image_handler = ImageWebHandler()
+        return Response(gen_pi(image_handler), mimetype='multipart/x-mixed-replace; boundary=frame')
     else:
         return Response()
 
@@ -242,17 +240,10 @@ def set_serialvalues():
 
 
 # Get frame and return jpeg-frame string from raspberry pi
-def gen_pi(camera):
+def gen_pi(imagehandler):
     global pi_running
     while True:
-        frame = camera.get_frame()
-        if frame is not None:
-            _, jpeg = cv2.imencode('.png', frame)
-            frame = jpeg.tobytes()
-        else:
-            jpeg = cv2.imread(cfg.get_proj_rootdir() + '/medias/images/keepcalm.png')
-            _, jpeg = cv2.imencode('.png', jpeg)
-            frame = jpeg.tobytes()
+        frame = imagehandler.get_frame()
         if pi_running and frame is not None:
             yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
         else:
