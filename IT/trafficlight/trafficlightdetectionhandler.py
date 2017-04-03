@@ -19,7 +19,7 @@ import common.config.confighandler as cfg
 
 from logging.config import fileConfig
 from common.logging.fpshelper import FPSHelper
-from common.processing.imageprocessor import ImageConverter
+from common.processing.imageconverter import ImageConverter
 
 
 class TrafficLightDetection(object):

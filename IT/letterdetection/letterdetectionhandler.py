@@ -22,9 +22,10 @@ import time
 from logging.config import fileConfig
 from threading import Thread
 from common.logging.fpshelper import FPSHelper
-from common.processing.imageprocessor import ImageConverter, ImageAnalysis
-from common.processing.camerahandler import CameraHandler
+from common.processing.imageanalysis import ImageAnalysis
+from common.processing.imageconverter import ImageConverter
 from common.processing.imagequeueing import ImageProcessing, ImageNumber
+from common.processing.camerahandler import CameraHandler
 from common.communication.communicationvalues import CommunicationValues
 from letterdisplay.ledstriphandler import LEDStripHandler
 

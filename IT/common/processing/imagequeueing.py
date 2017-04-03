@@ -16,7 +16,8 @@ import logging
 import common.config.confighandler as cfg
 
 from logging.config import fileConfig
-from common.processing.imageprocessor import ImageConverter, ImageAnalysis
+from common.processing.imageanalysis import ImageAnalysis
+from common.processing.imageconverter import ImageConverter
 
 
 class ImageProcessing(multiprocessing.Process):
