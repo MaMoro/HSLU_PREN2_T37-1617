@@ -11,7 +11,6 @@
 # =======================================================================
 
 # Import the modules needed to run the script.
-import cv2
 import time
 import logging
 import common.config.confighandler as cfg
@@ -30,7 +29,6 @@ class TrafficLightDetectionPi(object):
         self.__log.setLevel(cfg.get_settings_loglevel())
         self.stopped = True
         self.frame = None
-        self.detectionres = None
         self.trafficstatus = "red"
         self.pistream = CameraHandler().start()
         self.start()
@@ -43,13 +41,6 @@ class TrafficLightDetectionPi(object):
             t.start()
             time.sleep(0.5)
 
-    # Get a frame
-    def get_frame(self):
-        if self.stopped:
-            self.start()
-
-        return self.frame
-
     def getstatus(self):
         return self.trafficstatus
 
@@ -60,8 +51,10 @@ class TrafficLightDetectionPi(object):
         while not self.stopped:
             img = self.pistream.read()
             tld = TrafficLightDetection()
-            self.detectionres = tld.detect_trafficlight(img)
-            self.updatestatus(tld.get_green_counter())
+            self.frame = tld.detect_trafficlight(img)
+            self.imagewebhandler.set_frame(self.frame)
+
+            self.updatestatus(tld.get_color_state())
 
     def stop(self):
         self.stopped = True
