@@ -21,8 +21,6 @@ from common.communication.communicationvalues import CommunicationValues
 from webserver.imagewebhandler import ImageWebHandler
 
 # Initialize Logger
-
-
 fileConfig(cfg.get_logging_config_fullpath())
 __log = logging.getLogger()
 
@@ -51,10 +49,8 @@ def index():
 # Start TrafficLightDetection on raspberry pi - http://localhost:5000/start_pi
 @app.route('/start_pi', methods=['POST'])
 def start_pi():
-    value = request.form.getlist('preview')
     global pi_running
     pi_running = True
-
     return __call_render_template()
 
 
@@ -62,11 +58,7 @@ def start_pi():
 @app.route('/stop_pi', methods=['POST'])
 def stop_pi():
     global pi_running
-    global image_handler
     pi_running = False
-    if image_handler is not None:
-        image_handler.stop()
-
     return __call_render_template()
 
 
@@ -74,6 +66,7 @@ def stop_pi():
 @app.route('/pi_feed')
 def pi_feed():
     """Pi streaming route. Put this in the src attribute of an img tag."""
+    global pi_running
     global image_handler
     if pi_running:
         image_handler = ImageWebHandler()
