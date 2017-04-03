@@ -1,9 +1,9 @@
-
 from unittest import TestCase
 import common.config.confighandler as cfg
 import cv2
 import numpy as np
 from common.processing.imageprocessor import ImageConverter
+
 
 class TestImageConverter(TestCase):
 

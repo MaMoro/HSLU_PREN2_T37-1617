@@ -1,6 +1,7 @@
 from unittest import TestCase
 from common.processing.imageprocessor import ImageAnalysis
 
+
 class TestImageAnalysis(TestCase):
 
     def test_enumerate_number_withlines_none(self):
