@@ -568,6 +568,20 @@ def get_camera_brightness():
 def set_camera_brightness(val):
     __persistchanges('camera', 'brightness', val)
 
+def get_camera_brightness_trafficred():
+    return __loadconfig().getint('camera', 'brightness_trafficred')
+
+
+def set_camera_brightness_trafficred(val):
+    __persistchanges('camera', 'brightness_trafficred', val)
+
+def get_camera_brightness_trafficgreen():
+    return __loadconfig().getint('camera', 'brightness_trafficgreen')
+
+
+def set_camera_brightness_trafficgreen(val):
+    __persistchanges('camera', 'brightness_trafficgreen', val)
+
 # End Section "Camera" #
 
 # Start Section "Files" #
