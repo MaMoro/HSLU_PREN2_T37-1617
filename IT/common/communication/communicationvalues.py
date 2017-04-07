@@ -22,7 +22,7 @@ from logging.config import fileConfig
 from common.communication.serialcommunicationhandler import SerialCommunicationHandler
 
 
-class CommunicationValues(object):
+class CommunicationValues:
     class __CommunicationValues:
         def __init__(self):
             fileConfig(cfg.get_logging_config_fullpath())
@@ -55,10 +55,11 @@ class CommunicationValues(object):
             self.op_letter = None
             self.op_parcstate = None
             self.op_errstate = "None"
+            self.__serialcomm = None
             self.timeout = 0.3
             self.retrycounter = 20
-            self.__serialcomm = SerialCommunicationHandler().start()
             time.sleep(1)
+            self.__start()
 
         def get_hello_blocking(self):
             hellocounter = 0
@@ -359,7 +360,8 @@ class CommunicationValues(object):
                 else:
                     self.__log.warning("got unknown operation: " + str(operation) + " with val: " + str(value))
 
-        def start(self):
+        def __start(self):
+            self.__serialcomm = SerialCommunicationHandler().start()
             thread = Thread(target=self.__handleoperations, args=())
             thread.daemon = True
             thread.start()
@@ -368,7 +370,7 @@ class CommunicationValues(object):
     instance = None
 
     def __new__(cls, *args, **kwargs):
-        if not CommunicationValues.instance:
+        if CommunicationValues.instance is None:
             CommunicationValues.instance = CommunicationValues.__CommunicationValues()
         return CommunicationValues.instance
 
