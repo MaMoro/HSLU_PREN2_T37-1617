@@ -44,11 +44,11 @@ class RunPiHandler(object):
         self.runparcours()
 
     def runparcours(self):
-        self.__log.info("Starting webserver...")
+        # self.__log.info("Starting webserver...")
         # Init Webserver
-        subprocess.Popen([sys.executable, '/home/pi/Desktop/PREN/webserver/app.py'], env=os.environ.copy())
-        time.sleep(15)
-        self.__log.info("Startup webserver finished!")
+        # subprocess.Popen([sys.executable, '/home/pi/Desktop/PREN/webserver/app.py'], env=os.environ.copy())
+        # time.sleep(15)
+        #self.__log.info("Startup webserver finished!")
 
         # Wait for parcour setting (left/right)
         self.__log.info("Await course selection...")
@@ -59,7 +59,7 @@ class RunPiHandler(object):
 
         # Init communication between raspi and freedom
         self.__log.info("Setup serial communication with FreedomBoard...")
-        self.serialcomm = CommunicationValues()
+        self.serialcomm = CommunicationValues().start()
         self.serialcomm.send_hello()
         hellostate = self.serialcomm.get_hello_blocking()  # await hello response or timeout...
         if hellostate == '1':
