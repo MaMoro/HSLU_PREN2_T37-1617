@@ -154,7 +154,8 @@ def save():
 def get_serialvalues():
     # Function for serial communication values - getter / IST Werte holen
     global communicationvalues
-    communicationvalues = CommunicationValues()
+    if communicationvalues is None:
+        communicationvalues = CommunicationValues()
     serial_hello = communicationvalues.get_hello()
     serial_start = communicationvalues.get_start()
     serial_course = communicationvalues.get_course()
@@ -193,11 +194,15 @@ def get_serialvalues():
 def set_serialvalues():
 
     global communicationvalues
-    communicationvalues = CommunicationValues()
+    if communicationvalues is None:
+        communicationvalues = CommunicationValues()
 
     changedProperty = request.json['ChangedProperty']
     newValue = request.json['NewValue']
 
+    # TODO: buttons for send hello and start
+    # communicationvalues.send_hello()
+    # communicationvalues.send_start()
     if changedProperty == "serial_course_l":
         communicationvalues.send_course(1)
     elif changedProperty == "serial_course_r":
