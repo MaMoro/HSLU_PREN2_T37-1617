@@ -16,10 +16,11 @@ from common.communication.communicationvalues import CommunicationValues
 
 
 def main():
-    comm = CommunicationValues().start()
+    comm = CommunicationValues()
     print("run")
     comm.send_hello()
     comm.send_course(1)
+
     comm.send_start()
     # time.sleep(2)
     # comm.send_letter(2)
@@ -37,7 +38,7 @@ def main():
     #    print(comm.get_error())
     #    count -= 1
 
-    time.sleep(120)
+    time.sleep(9000)
 
 
 
