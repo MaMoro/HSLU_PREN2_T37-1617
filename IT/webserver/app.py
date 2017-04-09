@@ -243,9 +243,9 @@ def gen_pi(imagehandler):
     while True:
         frame = imagehandler.get_frame()
         if pi_running and frame is not None:
-            yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+            yield (b'--frame\r\n'b'Content-Type: image/png\r\n\r\n' + frame + b'\r\n')
         else:
-            yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + b'\r\n')
+            yield (b'--frame\r\n'b'Content-Type: image/png\r\n\r\n' + b'\r\n')
 
 
 # Caller with settings to render template
