@@ -336,17 +336,17 @@ class CommunicationValues:
                 elif operation == "tof_f_i":
                     self.op_tof_f_i = value
                 elif operation == "raupe_l_i":
-                    value = int(value / 127 * 100)
+                    value = int(int(value) / 127 * 100)
                     self.op_raupe_l_i = value
                 elif operation == "raupe_r_i":
-                    value = int(value / 127 * 100)
+                    value = int(int(value) / 127 * 100)
                     self.op_raupe_r_i = value
                 elif operation == "gyro_n":
                     self.op_gyro_n = value
                 elif operation == "gyro_g":
                     self.op_gyro_g = value
                 elif operation == "gyroskop_i":
-                    value = int(value / 127 * 100)
+                    value = int(int(value) / 127 * 100)
                     self.op_gyroskop_i = value
                 elif operation == "servo_i":
                     self.op_servo_i = value
