@@ -50,15 +50,17 @@
                                 <tr>
                                     <td>Serial Communication established:</td>
                                     <td><input type="checkbox" name="serial_hello" id="serial_hello" value="{{ 0 }}"></td>
+                                    <td><input class="setterValues" type="checkbox" name="serial_sendhello" id="serial_sendhello" value="{{0}}">Send Hello</td>
+                                </tr>
+                                 <tr>
+                                    <td>Course Selection:</td>
+                                    <td><input class="setterValues" type="radio" name="serial_course" id="serial_course_l" value="{{ 0 }}">Left</td>
+                                    <td><input class="setterValues" type="radio" name="serial_course" id="serial_course_r" value="{{ 0 }}">Right</td>
                                 </tr>
                                 <tr>
                                     <td>Start Command set:</td>
                                     <td><input type="checkbox" name="serial_start" id="serial_start" value="{{ 0 }}"></td>
-                                </tr>
-                                <tr>
-                                    <td>Course Selection:</td>
-                                    <td><input class="setterValues" type="radio" name="serial_course" id="serial_course_l" value="{{ 0 }}">Left</td>
-                                    <td><input class="setterValues" type="radio" name="serial_course" id="serial_course_r" value="{{ 0 }}">Right</td>
+                                    <td><input class="setterValues" type="checkbox" name="serial_sendstart" id="serial_sendstart" value="{{0}}">Send Start</td>
                                 </tr>
                                 <tr>
                                     <td>Letter:</td>

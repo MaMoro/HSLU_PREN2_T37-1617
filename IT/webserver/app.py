@@ -200,10 +200,11 @@ def set_serialvalues():
     changedProperty = request.json['ChangedProperty']
     newValue = request.json['NewValue']
 
-    # TODO: buttons for send hello and start
-    # communicationvalues.send_hello()
-    # communicationvalues.send_start()
-    if changedProperty == "serial_course_l":
+    if changedProperty == "serial_sendhello":
+        communicationvalues.send_hello()
+    elif changedProperty == "serial_sendstart":
+        communicationvalues.send_start()
+    elif changedProperty == "serial_course_l":
         communicationvalues.send_course(1)
     elif changedProperty == "serial_course_r":
         communicationvalues.send_course(0)
