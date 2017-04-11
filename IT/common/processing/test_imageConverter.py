@@ -14,8 +14,12 @@ class TestImageConverter(TestCase):
     img_letter_IV_near = cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/letter_IV_near.jpg')
     img_letter_IV_top = cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/letter_IV_top.jpg')
     img_trafficlight_red = cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/trafficlight_red.png')
+    img_trafficlight_red_30 = cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/trafficlight_red_30.png')
+    img_trafficlight_red_40 = cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/trafficlight_red_40.png')
     img_trafficlight_red_person = cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/trafficlight_red_person.png')
     img_trafficlight_green = cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/trafficlight_green.png')
+    img_trafficlight_green_40 = cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/trafficlight_green_40.png')
+    img_trafficlight_green_50 = cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/trafficlight_green_50.png')
     img_trafficlight_green_person = cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/trafficlight_green_person.png')
 
     #read gray images from media
@@ -79,11 +83,9 @@ class TestImageConverter(TestCase):
         #cv2.imwrite(cfg.get_proj_rootdir() + "/medias/images/Unittest/letter_IV_near_redfull.png", ImageConverter.mask_color_red_fullhsv(self.img_letter_IV_near))
         #cv2.imwrite(cfg.get_proj_rootdir() + "/medias/images/Unittest/letter_IV_top_redfull.png", ImageConverter.mask_color_red_fullhsv(self.img_letter_IV_top))
 
-        #cv2.imwrite(cfg.get_proj_rootdir() + "/medias/images/Unittest/trafficlight_red_redtraffic.png", ImageConverter.mask_color_red_traffic(self.img_trafficlight_red))
-        #cv2.imwrite(cfg.get_proj_rootdir() + "/medias/images/Unittest/trafficlight_red_person_redtraffic.png", ImageConverter.mask_color_red_traffic(self.img_trafficlight_red_person))
+        #cv2.imwrite(cfg.get_proj_rootdir() + "/medias/images/Unittest/trafficlight_red_30_redtraffic.png", ImageConverter.mask_color_red_traffic(self.img_trafficlight_red_30))
 
-        #cv2.imwrite(cfg.get_proj_rootdir() + "/medias/images/Unittest/trafficlight_green_greentraffic.png", ImageConverter.mask_color_green(self.img_trafficlight_green))
-        #cv2.imwrite(cfg.get_proj_rootdir() + "/medias/images/Unittest/trafficlight_green_person_greentraffic.png.png", ImageConverter.mask_color_green(self.img_trafficlight_green_person))
+        #cv2.imwrite(cfg.get_proj_rootdir() + "/medias/images/Unittest/trafficlight_green_40_greentraffic.png", ImageConverter.mask_color_green(self.img_trafficlight_green_40))
 
     def test_convertbgr2gray(self):
         self.assertEqual(np.array_equal(self.img_letter_II_angle_bgr2gray, ImageConverter.convertbgr2gray(self.img_letter_II_angle)), True)
