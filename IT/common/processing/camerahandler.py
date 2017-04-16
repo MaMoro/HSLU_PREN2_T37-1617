@@ -34,7 +34,7 @@ class CameraHandler(object):
             self.frame = None
             self.stopped = True
             self.brightness = 50
-            self.awb = 'sunlight'
+            self.awb = 'fixed'
 
             self.__initpicamera()
 
