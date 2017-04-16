@@ -21,6 +21,10 @@ from logging.config import fileConfig
 from common.logging.fpshelper import FPSHelper
 from common.processing.imageconverter import ImageConverter
 
+redpixelx = 0
+redpixely = 0
+redfound = False
+
 
 class TrafficLightDetection(object):
 
@@ -50,9 +54,6 @@ class TrafficLightDetection(object):
 
     # Initialize the class
     def __init__(self):
-        self.redpixelx = 0
-        self.redpixely = 0
-        self.redfound = False
         self.croppointx = 0
         self.croppointy = 0
         self.cropnewpointy = 0
@@ -65,7 +66,7 @@ class TrafficLightDetection(object):
         self.red_color = 0
         self.greenpixel_count = 0
         self.redpixel_count = 0
-        self.green_hit_counter = 0
+        self.green_hit = False
         self.FPS = None
         fileConfig(cfg.get_logging_config_fullpath())
         self.__log = logging.getLogger()
@@ -81,14 +82,17 @@ class TrafficLightDetection(object):
         self.get_brightest_greenpixel()
         self.detect_brighter_color()
 
-        return self.image_original
+        return self.frame
 
     # Crop the image
     def crop_image(self):
+        global redfound
+        global redpixelx
+        global redpixely
         # Crop the image after first red pixel in range found
-        if self.redfound and self.redpixelx != 0 and self.redpixely != 0:
-            self.croppointx = self.redpixelx - 25
-            self.croppointy = self.redpixely - 25
+        if redfound and redpixelx != 0 and redpixely != 0:
+            self.croppointx = redpixelx - 25
+            self.croppointy = redpixely - 25
             cropnewpointx = self.croppointx + self.cropwidth + 25
             cropnewpointy = self.croppointy + self.cropheight + 25
             self.__log.debug("Croppoint %d|%d Croppoint2 %d|%d" % (self.croppointx, self.croppointy, cropnewpointx, cropnewpointy))
@@ -98,6 +102,9 @@ class TrafficLightDetection(object):
 
     # Get the brightest red pixel on frame
     def get_brightest_redpixel(self):
+        global redfound
+        global redpixelx
+        global redpixely
         # --- Get red pixels ---
         red_image = self.frame
         red_image_output = ImageConverter.mask_color_red_traffic(red_image)
@@ -114,16 +121,19 @@ class TrafficLightDetection(object):
             (minVal, maxVal, minLoc, self.maxLoc) = cv2.minMaxLoc(red_image_gray)  # get position of pixel with max grey value
 
             # Draw a circle around the detected red pixel
-            if self.redfound and self.redpixelx != 0 and self.redpixely != 0:  # if first red pixel is found, draw on cropped image
-                cv2.circle(self.image_original, (self.croppointx + self.maxLoc[0], self.croppointy + self.maxLoc[1]), 5, (0, 0, 255), 2)
+            if redfound and redpixelx != 0 and redpixely != 0:  # if first red pixel is found, draw on cropped image
+                cv2.circle(self.frame, self.maxLoc, 5, (0, 0, 255), 2)
             else:
                 cv2.circle(self.image_original, self.maxLoc, 5, (0, 0, 255), 2)  # draw on original image
-                self.red_color = np.uint8([[red_image_gray[self.maxLoc[1], self.maxLoc[0]]]])  # get value of brightest gray pixel
+            self.red_color = np.uint8([[red_image_gray[self.maxLoc[1], self.maxLoc[0]]]])  # get value of brightest gray pixel
         else:  # if no red pixels are left after apply red color mask, set value to 0
             self.red_color = 0
 
     # Get the brightest green pixel on frame
     def get_brightest_greenpixel(self):
+        global redfound
+        global redpixelx
+        global redpixely
         # --- Get green pixels ---
         green_image = self.frame
         green_image_output = ImageConverter.mask_color_green(green_image)
@@ -139,37 +149,44 @@ class TrafficLightDetection(object):
             (minVal, maxVal, minLoc, self.maxLoc) = cv2.minMaxLoc(green_image_gray)  # get position of pixel with max grey value
 
             # Draw a circle around the detected green pixel
-            if self.redfound and self.redpixelx != 0 and self.redpixely != 0:  # if first red pixel is found, draw on cropped image
-                cv2.circle(self.image_original, (self.croppointx + self.maxLoc[0], self.croppointy + self.maxLoc[1]), 5, (0, 255, 0), 2)
+            if redfound and redpixelx != 0 and redpixely != 0:  # if first red pixel is found, draw on cropped image
+                cv2.circle(self.frame, self.maxLoc, 5, (0, 255, 0), 2)
             else:
                 cv2.circle(self.image_original, self.maxLoc, 5, (0, 255, 0), 2)  # draw on original image
-                self.green_color = np.uint8([[green_image_gray[self.maxLoc[1], self.maxLoc[0]]]])  # get value of brightest gray pixel
+            self.green_color = np.uint8([[green_image_gray[self.maxLoc[1], self.maxLoc[0]]]])  # get value of brightest gray pixel
         else:  # if no green pixels are left after apply green color mask, set value to 0
             self.green_color = 0
 
     # Find out which pixel is brighter (red or green)
     def detect_brighter_color(self):
+        global redfound
+        global redpixelx
+        global redpixely
         font = cfg.get_opencv_font()
 
         # Add border to frame
         self.image_original = cv2.copyMakeBorder(self.image_original, self.bordersize_top, self.bordersize_bottom, self.bordersize_left, self.bordersize_right, cv2.BORDER_CONSTANT, 0)
+        self.frame = cv2.copyMakeBorder(self.frame, self.bordersize_top, self.bordersize_bottom, self.bordersize_left, self.bordersize_right, cv2.BORDER_CONSTANT, 0)
 
         # Debug
         if self.debug:
             # Debug green and red pixel count
             self.__log.debug("red count: " + str(self.redpixel_count) + " | green count: " + str(self.greenpixel_count))
             cv2.putText(self.image_original, "red count: " + str(self.redpixel_count) + " | green count: " + str(self.greenpixel_count), (self.textspace, (2 * self.textspace)), font, 0.7, self.color_green, 1, cv2.LINE_AA)
+            cv2.putText(self.frame, "red count: " + str(self.redpixel_count) + " | green count: " + str(self.greenpixel_count), (self.textspace, (2 * self.textspace)), font, 0.3, self.color_green, 1, cv2.LINE_AA)
             # Debug grey pixel values (of original green and red pixel)
             self.__log.debug("red color: " + str(self.red_color) + " | green color: " + str(self.green_color))
             cv2.putText(self.image_original, "red color: " + str(self.red_color) + " | green color: " + str(self.green_color), (self.textspace, (3 * self.textspace)), font, 0.7, self.color_green, 1, cv2.LINE_AA)
         # Red detected
         if self.red_color > self.green_color:
-            if not self.redfound:
-                self.redfound = True
-                self.redpixelx = self.maxLoc[0]
-                self.redpixely = self.maxLoc[1]
-                self.__log.info('Red detected!')
+            if not redfound:
+                redfound = True
+                redpixelx = self.maxLoc[0]
+                redpixely = self.maxLoc[1]
+            self.__log.info('Red detected!')
             cv2.putText(self.image_original, '{:%H:%M:%S.%f} - Red detected!'.format(datetime.datetime.now()), (self.textspace, self.textspace), font, 0.7, self.color_green, 1, cv2.LINE_AA)
+            cv2.putText(self.frame, '{:%H:%M:%S.%f} - Red detected!'.format(datetime.datetime.now()),
+                        (self.textspace, self.textspace), font, 0.3, self.color_green, 1, cv2.LINE_AA)
             if self.output_red:
                 if self.output_bgwhite:
                     self.red_image_bgr[np.where((self.red_image_bgr == [0, 0, 0]).all(axis=2))] = [255, 255, 255]
@@ -177,19 +194,20 @@ class TrafficLightDetection(object):
         # Green detected
         elif self.red_color < self.green_color:
             self.__log.info('Green detected!')
-            self.green_hit_counter += 1
+            self.green_hit = True
             cv2.putText(self.image_original, '{:%H:%M:%S.%f} - Green detected!'.format(datetime.datetime.now()), (self.textspace, self.textspace), font, 0.7, self.color_green, 1, cv2.LINE_AA)
+            cv2.putText(self.frame, '{:%H:%M:%S.%f} - Green detected!'.format(datetime.datetime.now()),
+                        (self.textspace, self.textspace), font, 0.3, self.color_green, 1, cv2.LINE_AA)
             if self.output_green:
                 if self.output_bgwhite:
                     self.green_image_bgr[np.where((self.green_image_bgr == [0, 0, 0]).all(axis=2))] = [255, 255, 255]
                 cv2.imwrite("green.png", self.green_image_bgr)
         # Default: Red detected
         else:
-            self.__log.info('Red detected!')
-            cv2.putText(self.image_original, '{:%H:%M:%S.%f} - Red detected!'.format(datetime.datetime.now()), (self.textspace, self.textspace), font, 0.7, self.color_green, 1, cv2.LINE_AA)
+            self.__log.info('Red detected (nothing)!')
+            cv2.putText(self.image_original, '{:%H:%M:%S.%f} - Red detected (nothing)!'.format(datetime.datetime.now()), (self.textspace, self.textspace), font, 0.7, self.color_green, 1, cv2.LINE_AA)
+            cv2.putText(self.frame, '{:%H:%M:%S.%f} - Red detected (nothing)!'.format(datetime.datetime.now()),
+                        (self.textspace, self.textspace), font, 0.3, self.color_green, 1, cv2.LINE_AA)
 
     def get_color_state(self):
-        if self.green_hit_counter < 10:
-            return "red"
-        else:
-            return "green"
+        return self.green_hit

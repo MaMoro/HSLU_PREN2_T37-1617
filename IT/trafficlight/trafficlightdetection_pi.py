@@ -13,6 +13,8 @@
 # Import the modules needed to run the script.
 import time
 import logging
+import cv2
+
 import common.config.confighandler as cfg
 
 from trafficlight.trafficlightdetectionhandler import TrafficLightDetection
@@ -29,7 +31,7 @@ class TrafficLightDetectionPi(object):
         self.__log.setLevel(cfg.get_settings_loglevel())
         self.stopped = True
         self.frame = None
-        self.trafficstatus = "red"
+        self.greencount = 0
         self.pistream = CameraHandler().start()
         self.start()
 
@@ -40,12 +42,19 @@ class TrafficLightDetectionPi(object):
             self.stopped = False
             t.start()
             time.sleep(0.5)
+            return self
 
     def getstatus(self):
-        return self.trafficstatus
+        if self.greencount < 10:
+            return "red"
+        else:
+            return "green"
 
     def updatestatus(self, status):
-        self.trafficstatus = status
+        if status:
+            self.greencount += 1
+        else:
+            self.greencount = 0
 
     def update(self):
         while not self.stopped:
@@ -53,11 +62,21 @@ class TrafficLightDetectionPi(object):
             tld = TrafficLightDetection()
             self.frame = tld.detect_trafficlight(img)
             self.updatestatus(tld.get_color_state())
+            cv2.imshow("trafficlight", self.frame)
+
+            key = cv2.waitKey(1) & 0xFF
+            if key == ord("q"):
+                self.__log.info("Finished capturing")
+                break
 
     def stop(self):
         self.stopped = True
         CameraHandler().stop()
 
 if __name__ == '__main__':
-    TrafficLightDetectionPi()
+    t = TrafficLightDetectionPi()
+    while t.getstatus() == "red":
+        time.sleep(0.3)
+    print("yeey greeen")
+    t.stop()
     time.sleep(999)
