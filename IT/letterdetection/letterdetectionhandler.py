@@ -29,8 +29,6 @@ from common.processing.camerahandler import CameraHandler
 from common.communication.communicationvalues import CommunicationValues
 from letterdisplay.ledstriphandler import LEDStripHandler
 
-from webserver.imagewebhandler import ImageWebHandler
-
 
 class LetterDetectionHandler(object):
     class __LetterDetectionHandler:
@@ -42,7 +40,6 @@ class LetterDetectionHandler(object):
             self.__log.info("Letterdetection started")
             self.FPS = FPSHelper()
             self.frame = None
-            self.imagewebhandler = ImageWebHandler()
             self.stopped = True
             self.font = cfg.get_opencv_font()
             self.min_amount_processed_letters = cfg.get_letter_min_amount_processed_letters()
@@ -114,7 +111,6 @@ class LetterDetectionHandler(object):
 
             while True:
                 self.frame = pistream.read()
-                self.imagewebhandler.set_frame(self.frame)
                 redmask = ImageConverter.mask_color_red_fullhsv(self.frame)
                 imgmarked, edges = ImageAnalysis.get_ordered_corners_drawed(redmask, self.frame)
                 if edges != 0:
