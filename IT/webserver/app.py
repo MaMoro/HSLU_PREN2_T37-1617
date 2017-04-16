@@ -13,11 +13,14 @@
 
 # Import the modules needed to run the script.
 import logging
+import cv2
+
 import common.config.confighandler as cfg
 
 from logging.config import fileConfig
 from flask import Flask, render_template, request, Response, jsonify
 from common.communication.communicationvalues import CommunicationValues
+from common.processing.camerahandler import CameraHandler
 from webserver.imagewebhandler import ImageWebHandler
 
 # Initialize Logger
@@ -50,6 +53,9 @@ def index():
 @app.route('/start_pi', methods=['POST'])
 def start_pi():
     global pi_running
+    global image_handler
+    image_handler = CameraHandler()
+    image_handler.start()
     pi_running = True
     return __call_render_template()
 
@@ -58,6 +64,8 @@ def start_pi():
 @app.route('/stop_pi', methods=['POST'])
 def stop_pi():
     global pi_running
+    global image_handler
+    image_handler.stop()
     pi_running = False
     return __call_render_template()
 
@@ -67,10 +75,8 @@ def stop_pi():
 def pi_feed():
     """Pi streaming route. Put this in the src attribute of an img tag."""
     global pi_running
-    global image_handler
     if pi_running:
-        image_handler = ImageWebHandler()
-        return Response(gen_pi(image_handler), mimetype='multipart/x-mixed-replace; boundary=frame')
+        return Response(gen_pi(), mimetype='multipart/x-mixed-replace; boundary=frame')
     else:
         return Response()
 
@@ -239,10 +245,13 @@ def set_serialvalues():
 
 
 # Get frame and return jpeg-frame string from raspberry pi
-def gen_pi(imagehandler):
+def gen_pi():
     global pi_running
+    global image_handler
     while True:
-        frame = imagehandler.get_frame()
+        frame = image_handler.read()
+        _, imagepng = cv2.imencode('.png', frame)
+        frame = imagepng.tobytes()
         if pi_running and frame is not None:
             yield (b'--frame\r\n'b'Content-Type: image/png\r\n\r\n' + frame + b'\r\n')
         else:
