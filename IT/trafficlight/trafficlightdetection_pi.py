@@ -15,7 +15,7 @@ import time
 import logging
 import common.config.confighandler as cfg
 
-from .trafficlightdetectionhandler import TrafficLightDetection
+from trafficlight.trafficlightdetectionhandler import TrafficLightDetection
 from logging.config import fileConfig
 from common.processing.camerahandler import CameraHandler
 from threading import Thread
@@ -52,10 +52,12 @@ class TrafficLightDetectionPi(object):
             img = self.pistream.read()
             tld = TrafficLightDetection()
             self.frame = tld.detect_trafficlight(img)
-            self.imagewebhandler.set_frame(self.frame)
-
             self.updatestatus(tld.get_color_state())
 
     def stop(self):
         self.stopped = True
         CameraHandler().stop()
+
+if __name__ == '__main__':
+    TrafficLightDetectionPi()
+    time.sleep(999)
