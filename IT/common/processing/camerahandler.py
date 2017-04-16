@@ -75,6 +75,18 @@ class CameraHandler(object):
             except:
                 pass
 
+        def calibratePiCamera4Letter(self):
+            try:
+                self.__log.info("Recalibrate PiCamera setting")
+                self.stop()
+                time.sleep(1)
+                self.awb = "fixed"
+                self.camera = PiCamera()
+                self.__initpicamera()
+                self.start()
+            except:
+                pass
+
         def get_pi_camerainstance(self):
             while self.stopped:
                 time.sleep(1)
