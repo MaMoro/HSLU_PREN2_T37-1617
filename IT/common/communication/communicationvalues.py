@@ -328,7 +328,7 @@ class CommunicationValues:
                     if value == '1':
                         self.op_start = 1
                 elif operation == "course":
-                    self.op_course = '1'
+                    self.op_course = str(value)
                 elif operation == "tof_l_i":
                     self.op_tof_l_i = value
                 elif operation == "tof_r_i":
