@@ -682,8 +682,10 @@
 
     // Function to Update all Debug values
      var errorstate_before = "Null";
+     var intervalCount = 0;
 
      function updateDebugVals(){
+         intervalCount += 1;
         $.getJSON($SCRIPT_ROOT + "/get_serialvalues", null, function (data) {
             //hello checked if value 1
             if(data.result.serial_hello == 1){
@@ -726,12 +728,18 @@
             $("#serial_raupe_r_i").val(data.result.serial_raupe_r_i);
             $("#serial_servo_i").val(data.result.serial_servo_i);
 
-            $("#serial_gyrop").val(data.result.serial_gyrop);
-            $("#serial_gyroi").val(data.result.serial_gyroi);
-            $("#serial_gyrod").val(data.result.serial_gyrod);
-            $("#serial_tofp").val(data.result.serial_tofp);
-            $("#serial_tofi").val(data.result.serial_tofi);
-            $("#serial_tofd").val(data.result.serial_tofd);
+            //Only Update Intervall on every third intervall call (If intervall 1s, PID every 3s)
+            if(intervalCount >=3){
+                intervalCount = 0;
+
+                $("#serial_gyrop").val(data.result.serial_gyrop);
+                $("#serial_gyroi").val(data.result.serial_gyroi);
+                $("#serial_gyrod").val(data.result.serial_gyrod);
+                $("#serial_tofp").val(data.result.serial_tofp);
+                $("#serial_tofi").val(data.result.serial_tofi);
+                $("#serial_tofd").val(data.result.serial_tofd);
+            }
+
 
         });
      }
@@ -772,7 +780,7 @@
             //If tab Steuerung
             if (ui.newPanel[0].id == "tabs-2") {
                 //Run function updateDebugVals ever x milliseconds for IST-Werte
-                intervallID = setInterval(updateDebugVals, 2000);
+                intervallID = setInterval(updateDebugVals, 1000);
             }
         }
     });
