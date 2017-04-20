@@ -54,8 +54,12 @@
                                 </tr>
                                  <tr>
                                     <td>Course Selection:</td>
-                                    <td><input class="setterValues" type="radio" name="serial_course" id="serial_course_l" value="{{ 0 }}">Left</td>
-                                    <td><input class="setterValues" type="radio" name="serial_course" id="serial_course_r" value="{{ 0 }}">Right</td>
+                                     <td><input class="setterValues" type="radio" name="serial_course"
+                                                id="serial_course_l" value="1">Left
+                                     </td>
+                                     <td><input class="setterValues" type="radio" name="serial_course"
+                                                id="serial_course_r" value="0">Right
+                                     </td>
                                 </tr>
                                 <tr>
                                     <td>Start Command set:</td>
@@ -702,13 +706,7 @@
                 $("#serial_start").prop('checked', false);
             }
             //course right false 0, left true 1
-            if(data.result.serial_course == 0){
-                $("#serial_course_r").prop('checked', true);
-            }
-
-            if(data.result.serial_course == 1){
-                $("#serial_course_l").prop('checked', true);
-            }
+            $('#serial_course').val(data.result.serial_course);
 
             $("#serial_letter_i").val(data.result.serial_letter);
             $("#serial_parcours").val(data.result.serial_parcstate);
