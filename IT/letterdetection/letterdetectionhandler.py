@@ -159,3 +159,4 @@ class LetterDetectionHandler(object):
 
 if __name__ == '__main__':
     LetterDetectionHandler()
+    time.sleep(999)
