@@ -14,12 +14,12 @@
 
 # import the necessary packages
 import logging
-import logging.config
 import cv2
 import math
 import common.config.confighandler as cfg
 import numpy as np
 
+from logging.config import fileConfig
 from collections import Counter
 from common.logging.fpshelper import FPSHelper
 from common.processing.imageconverter import ImageConverter
@@ -28,7 +28,7 @@ from skimage.morphology import skeletonize
 
 class ImageAnalysis(object):
     # Configure logging component
-    logging.config.fileConfig(cfg.get_logging_config_fullpath())
+    fileConfig(cfg.get_logging_config_fullpath())
     __log = logging.getLogger()
     __log.setLevel(cfg.get_settings_loglevel())
 
