@@ -145,11 +145,15 @@ class TestImageConverter(TestCase):
         self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/letter_IV_near_redfull.png'), ImageConverter.mask_color_red_fullhsv(self.img_letter_IV_near)), True)
         self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/letter_IV_top_redfull.png'), ImageConverter.mask_color_red_fullhsv(self.img_letter_IV_top)), True)
 
-    def test_mask_color_red_traffic(self):
+    def test_mask_color_red_fullhsv_traffic(self):
         #ACHTUNG: Rotwerte stimmen zur Zeit nicht!
         #TODO Overwrite Unittest result Images to compare to after recalibrating red-range
-        self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/trafficlight_red_redtraffic.png'), ImageConverter.mask_color_red_traffic(self.img_trafficlight_red)), True)
-        self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/trafficlight_red_person_redtraffic.png'), ImageConverter.mask_color_red_traffic(self.img_trafficlight_red_person)), True)
+        self.assertEqual(np.array_equal(
+            cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/trafficlight_red_redtraffic.png'),
+            ImageConverter.mask_color_red_fullhsv_traffic(self.img_trafficlight_red)), True)
+        self.assertEqual(np.array_equal(
+            cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/trafficlight_red_person_redtraffic.png'),
+            ImageConverter.mask_color_red_fullhsv_traffic(self.img_trafficlight_red_person)), True)
 
     def test_mask_color_green_traffic(self):
         self.assertEqual(np.array_equal(
