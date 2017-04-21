@@ -2,7 +2,7 @@ from unittest import TestCase
 import common.config.confighandler as cfg
 import cv2
 import numpy as np
-from common.processing.imageprocessor import ImageConverter
+from common.processing.imageconverter import ImageConverter
 
 
 class TestImageConverter(TestCase):
@@ -131,14 +131,6 @@ class TestImageConverter(TestCase):
         self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/letter_IV_near_bw.png', 0), ImageConverter.convert2blackwhite(self.img_letter_IV_near)), True)
         self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/letter_IV_top_bw.png', 0), ImageConverter.convert2blackwhite(self.img_letter_IV_top)), True)
 
-    def test_mask_color_red(self):
-        #Depricated
-        self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/letter_II_angle_red.png'), ImageConverter.mask_color_red(self.img_letter_II_angle)), True)
-        self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/letter_II_normal_red.png'), ImageConverter.mask_color_red(self.img_letter_II_normal)), True)
-        self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/letter_III_normal_red.png'), ImageConverter.mask_color_red(self.img_letter_III_normal)), True)
-        self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/letter_IV_near_red.png'), ImageConverter.mask_color_red(self.img_letter_IV_near)), True)
-        self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/letter_IV_top_red.png'), ImageConverter.mask_color_red(self.img_letter_IV_top)), True)
-
     def test_mask_color_red_fullhsv(self):
         #Bar detection
         self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/letter_II_angle_redfull.png'), ImageConverter.mask_color_red_fullhsv(self.img_letter_II_angle)), True)
@@ -147,38 +139,17 @@ class TestImageConverter(TestCase):
         self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/letter_IV_near_redfull.png'), ImageConverter.mask_color_red_fullhsv(self.img_letter_IV_near)), True)
         self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/letter_IV_top_redfull.png'), ImageConverter.mask_color_red_fullhsv(self.img_letter_IV_top)), True)
 
-    def test_mask_color_red_traffic(self):
-
-        #cv2.imwrite(cfg.get_proj_rootdir() + "/medias/images/Unittest/trafficlight_red_redtraffic.png", ImageConverter.mask_color_red_traffic(self.img_trafficlight_red))
-        #cv2.imwrite(cfg.get_proj_rootdir() + "/medias/images/Unittest/trafficlight_red_top_redtraffic.png", ImageConverter.mask_color_red_traffic(self.img_trafficlight_red_top))
-        #cv2.imwrite(cfg.get_proj_rootdir() + "/medias/images/Unittest/trafficlight_red_side_redtraffic.png", ImageConverter.mask_color_red_traffic(self.img_trafficlight_red_side))
-
     def test_mask_color_red_fullhsv_traffic(self):
-        #ACHTUNG: Rotwerte stimmen zur Zeit nicht!
-        #TODO Overwrite Unittest result Images to compare to after recalibrating red-range
-        #self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/trafficlight_red_redtraffic.png'), ImageConverter.mask_color_red_traffic(self.img_trafficlight_red)), True)
-        self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/trafficlight_red_person_redtraffic.png'), ImageConverter.mask_color_red_traffic(self.img_trafficlight_red_person)), True)
-        self.assertEqual(np.array_equal(
-            cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/trafficlight_red_redtraffic.png'),
-            ImageConverter.mask_color_red_fullhsv_traffic(self.img_trafficlight_red)), True)
-        self.assertEqual(np.array_equal(
-            cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/trafficlight_red_person_redtraffic.png'),
-            ImageConverter.mask_color_red_fullhsv_traffic(self.img_trafficlight_red_person)), True)
+        self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/trafficlight_red_redtraffic.png'), ImageConverter.mask_color_red_fullhsv_traffic(self.img_trafficlight_red)), True)
+        self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/trafficlight_red_top_redtraffic.png'), ImageConverter.mask_color_red_fullhsv_traffic(self.img_trafficlight_red_top)), True)
+        self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/trafficlight_red_side_redtraffic.png'), ImageConverter.mask_color_red_fullhsv_traffic(self.img_trafficlight_red_side)), True)
+
 
     def test_mask_color_green_traffic(self):
-        #cv2.imwrite(cfg.get_proj_rootdir() + "/medias/images/Unittest/trafficlight_green_greentraffic.png", ImageConverter.mask_color_green(self.img_trafficlight_green))
-        #cv2.imwrite(cfg.get_proj_rootdir() + "/medias/images/Unittest/trafficlight_green_top_greentraffic.png", ImageConverter.mask_color_green(self.img_trafficlight_green_top))
-        #cv2.imwrite(cfg.get_proj_rootdir() + "/medias/images/Unittest/trafficlight_green_side_greentraffic.png", ImageConverter.mask_color_green(self.img_trafficlight_green_side))
+        self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/trafficlight_green_greentraffic.png'), ImageConverter.mask_color_green_traffic(self.img_trafficlight_green)), True)
+        self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/trafficlight_green_top_greentraffic.png'), ImageConverter.mask_color_green_traffic(self.img_trafficlight_green_top)), True)
+        self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/trafficlight_green_side_greentraffic.png'), ImageConverter.mask_color_green_traffic(self.img_trafficlight_green_side)), True)
 
-
-        self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/trafficlight_green_greentraffic.png'), ImageConverter.mask_color_green(self.img_trafficlight_green)), True)
-        #self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/trafficlight_green_person_greentraffic.png'), ImageConverter.mask_color_green(self.img_trafficlight_green_person)), True)
-        self.assertEqual(np.array_equal(
-            cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/trafficlight_green_greentraffic.png'),
-            ImageConverter.mask_color_green_traffic(self.img_trafficlight_green)), True)
-        self.assertEqual(np.array_equal(
-            cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/trafficlight_green_person_greentraffic.png'),
-            ImageConverter.mask_color_green_traffic(self.img_trafficlight_green_person)), True)
 
     def test_transform_perspectiveview2topdownview(self):
         #TODO Prio B
