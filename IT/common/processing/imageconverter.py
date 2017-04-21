@@ -14,6 +14,7 @@
 
 # import the necessary packages
 import logging
+from logging.config import fileConfig
 
 import cv2
 import numpy as np
@@ -23,7 +24,7 @@ from skimage.morphology import skeletonize
 
 class ImageConverter(object):
     # Configure logging component
-    logging.config.fileConfig(cfg.get_logging_config_fullpath())
+    fileConfig(cfg.get_logging_config_fullpath())
     __log = logging.getLogger()
     __log.setLevel(cfg.get_settings_loglevel())
 

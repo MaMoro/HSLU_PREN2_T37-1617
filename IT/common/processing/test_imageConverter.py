@@ -2,7 +2,7 @@ from unittest import TestCase
 import common.config.confighandler as cfg
 import cv2
 import numpy as np
-from common.processing.imageprocessor import ImageConverter
+from common.processing.imageconverter import ImageConverter
 
 
 class TestImageConverter(TestCase):
@@ -152,8 +152,12 @@ class TestImageConverter(TestCase):
         self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/trafficlight_red_person_redtraffic.png'), ImageConverter.mask_color_red_traffic(self.img_trafficlight_red_person)), True)
 
     def test_mask_color_green_traffic(self):
-        self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/trafficlight_green_greentraffic.png'), ImageConverter.mask_color_green(self.img_trafficlight_green)), True)
-        self.assertEqual(np.array_equal(cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/trafficlight_green_person_greentraffic.png'), ImageConverter.mask_color_green(self.img_trafficlight_green_person)), True)
+        self.assertEqual(np.array_equal(
+            cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/trafficlight_green_greentraffic.png'),
+            ImageConverter.mask_color_green_traffic(self.img_trafficlight_green)), True)
+        self.assertEqual(np.array_equal(
+            cv2.imread(cfg.get_proj_rootdir() + '/medias/images/Unittest/trafficlight_green_person_greentraffic.png'),
+            ImageConverter.mask_color_green_traffic(self.img_trafficlight_green_person)), True)
 
     def test_transform_perspectiveview2topdownview(self):
         #TODO Prio B
