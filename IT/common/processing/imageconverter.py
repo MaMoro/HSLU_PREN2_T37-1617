@@ -28,18 +28,14 @@ class ImageConverter(object):
     __log.setLevel(cfg.get_settings_loglevel())
 
     # Letter values
-    lower_red = np.array(cfg.get_maskletter_red_shift_l_splited())
-    upper_red = np.array(cfg.get_maskletter_red_shift_h_splited())
     lower_red_full = np.array(cfg.get_maskletter_red_low_full_splited())
     upper_red_full = np.array(cfg.get_maskletter_red_high_full_splited())
 
     # Trafficlight values
-    lower_green = np.array(cfg.get_masktrafficlight_green_l_splited())
-    upper_green = np.array(cfg.get_masktrafficlight_green_h_splited())
-    lower_red_traffic0 = np.array(cfg.get_masktrafficlight_red_low_l_splited())
-    upper_red_traffic0 = np.array(cfg.get_masktrafficlight_red_low_h_splited())
-    lower_red_traffic1 = np.array(cfg.get_masktrafficlight_red_high_l_splited())
-    upper_red_traffic1 = np.array(cfg.get_masktrafficlight_red_high_h_splited())
+    lower_green_traffic = np.array(cfg.get_masktrafficlight_green_l_splited())
+    upper_green_traffic = np.array(cfg.get_masktrafficlight_green_h_splited())
+    lower_red_full_traffic = np.array(cfg.get_masktrafficlight_red_low_full_splited())
+    upper_red_full_traffic = np.array(cfg.get_masktrafficlight_red_high_full_splited())
 
     color_black_low = np.array(cfg.get_color_black_low_splited())
     color_black_high = np.array(cfg.get_color_black_high_splited())
@@ -106,23 +102,6 @@ class ImageConverter(object):
         return img_gray
 
     @staticmethod
-    def mask_color_red(img):
-        """
-        This function extracts only red color parts of the provided image with Hue-Range shifted method
-        :param img: image to extract red color parts
-        :return: image (mask) with only red color parts, all other pixels are black (zero)
-        """
-        img_hsv = ImageConverter.convertbgr2hsv(img)  # convert image to HSV
-        img_hsv[..., 0] = (img_hsv[
-                               ..., 0] + cfg.get_filter_hsv_shift()) % 180  # shift Hue Channel to remove issue on transition from value 180 to 0
-
-        mask = cv2.inRange(img_hsv, ImageConverter.lower_red,
-                           ImageConverter.upper_red)  # create overlay mask for all none matching bits to zero (black)
-        output_img = cv2.bitwise_and(img, img, mask=mask)  # apply mask on image
-
-        return output_img
-
-    @staticmethod
     def mask_color_red_fullhsv(img):
         """
         This function extracts only red color parts of the provided image with Full-HSV color space
@@ -138,24 +117,22 @@ class ImageConverter(object):
         return output_img
 
     @staticmethod
-    def mask_color_red_traffic(img):
+    def mask_color_red_fullhsv_traffic(img):
         """
-        This function extracts red green color parts of the provided image for trafficlight detection
+        This function extracts only red color parts of the provided image with Full-HSV color space
         :param img: image to extract red color parts
         :return: image (mask) with only red color parts, all other pixels are black (zero)
         """
-        img_hsv = ImageConverter.convertbgr2hsv(img)
+        img_hsv = ImageConverter.convertbgr2hsvfull(img)  # convert image to HSV
 
-        red_image_mask0 = cv2.inRange(img_hsv, ImageConverter.lower_red_traffic0, ImageConverter.upper_red_traffic0)
-        red_image_mask1 = cv2.inRange(img_hsv, ImageConverter.lower_red_traffic1, ImageConverter.upper_red_traffic1)
-
-        mask = red_image_mask0 + red_image_mask1  # join my masks
-        output_img = cv2.bitwise_and(img_hsv, img_hsv, mask=mask)  # apply mask
+        mask = cv2.inRange(img_hsv, ImageConverter.lower_red_full_traffic,
+                           ImageConverter.upper_red_full_traffic)  # create overlay mask for all none matching bits to zero (black)
+        output_img = cv2.bitwise_and(img, img, mask=mask)  # apply mask on image
 
         return output_img
 
     @staticmethod
-    def mask_color_green(img):
+    def mask_color_green_traffic(img):
         """
         This function extracts only green color parts of the provided image
         :param img: image to extract green color parts
@@ -163,8 +140,8 @@ class ImageConverter(object):
         """
         img_hsv = ImageConverter.convertbgr2hsv(img)  # convert image to HSV
 
-        mask = cv2.inRange(img_hsv, ImageConverter.lower_green,
-                           ImageConverter.upper_green)  # create overlay mask for all none matching bits to zero (black)
+        mask = cv2.inRange(img_hsv, ImageConverter.lower_green_traffic,
+                           ImageConverter.upper_green_traffic)  # create overlay mask for all none matching bits to zero (black)
         output_img = cv2.bitwise_and(img, img, mask=mask)  # apply mask on image
 
         return output_img

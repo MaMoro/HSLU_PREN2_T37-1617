@@ -56,7 +56,7 @@ class CameraHandler(object):
                 self.camera.awb_mode = 'off'
                 self.camera.awb_gains = gain
             else:
-                self.camera.brightness = 30
+                self.camera.brightness = 25
                 self.camera.awb_mode = 'sunlight'
             self.rawcapture = PiRGBArray(self.camera, size=self.camera.resolution)
             self.stream = self.camera.capture_continuous(self.rawcapture, format="bgr", use_video_port=True)

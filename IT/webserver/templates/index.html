@@ -282,25 +282,16 @@
                 <div>
                     <table>
                         <tr>
-                            <td>Low red mask minimal value:</td>
-                            <td><input type="text" id="mask_trafficlight_red_low_l" class="colorhsv"
-                                       name="mask_trafficlight_red_low_l" value="{{ mask_trafficlight_red_low_l }}">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Low red mask maximal value:</td>
-                            <td><input type="text" id="mask_trafficlight_red_low_h" class="colorhsv"
-                                       name="mask_trafficlight_red_low_h" value="{{ mask_trafficlight_red_low_h }}"></td>
-                        </tr>
-                        <tr>
                             <td>High red mask minimal value:</td>
-                            <td><input type="text" id="mask_trafficlight_red_high_l" class="colorhsv"
-                                       name="mask_trafficlight_red_high_l" value="{{ mask_trafficlight_red_high_l }}"></td>
+                            <td><input type="text" id="mask_trafficlight_red_low_full" class="colorhsv"
+                                       name="mask_trafficlight_red_low_full"
+                                       value="{{ mask_trafficlight_red_low_full }}"></td>
                         </tr>
                         <tr>
                             <td>High red mask maximal value:</td>
-                            <td><input type="text" id="mask_trafficlight_red_high_h" class="colorhsv"
-                                       name="mask_trafficlight_red_high_h" value="{{ mask_trafficlight_red_high_h }}"></td>
+                            <td><input type="text" id="mask_trafficlight_red_high_full" class="colorhsv"
+                                       name="mask_trafficlight_red_high_full"
+                                       value="{{ mask_trafficlight_red_high_full }}"></td>
                         </tr>
                         <tr>
                             <td>Green mask minimal value:</td>
@@ -330,37 +321,6 @@
                 <h3>IT - LetterDetection - Color HSV mask values</h3>
                 <div>
                     <table>
-                        <tr>
-                            <td>Low red mask minimal value:</td>
-                            <td><input type="text" id="mask_letter_red_low_l" class="colorhsv" name="mask_letter_red_low_l"
-                                       value="{{ mask_letter_red_low_l }}">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Low red mask maximal value:</td>
-                            <td><input type="text" id="mask_letter_red_low_h" class="colorhsv" name="mask_letter_red_low_h"
-                                       value="{{ mask_letter_red_low_h }}"></td>
-                        </tr>
-                        <tr>
-                            <td>High red mask minimal value:</td>
-                            <td><input type="text" id="mask_letter_red_high_l" class="colorhsv" name="mask_letter_red_high_l"
-                                       value="{{ mask_letter_red_high_l }}"></td>
-                        </tr>
-                        <tr>
-                            <td>High red mask maximal value:</td>
-                            <td><input type="text" id="mask_letter_red_high_h" class="colorhsv" name="mask_letter_red_high_h"
-                                       value="{{ mask_letter_red_high_h }}"></td>
-                        </tr>
-                        <tr>
-                            <td>Red mask shift minimal value:</td>
-                            <td><input type="text" id="mask_letter_red_shift_l" class="colorhsv" name="mask_letter_red_shift_l"
-                                       value="{{ mask_letter_red_shift_l }}"></td>
-                        </tr>
-                        <tr>
-                            <td>Red mask shift maximal value:</td>
-                            <td><input type="text" id="mask_letter_red_shift_h" class="colorhsv" name="mask_letter_red_shift_h"
-                                       value="{{ mask_letter_red_shift_h }}"></td>
-                        </tr>
                         <tr>
                             <td>Red low full value:</td>
                             <td><input type="text" id="mask_letter_red_low_full" class="colorhsv" name="mask_letter_red_low_full"
@@ -585,18 +545,10 @@
     $(".spinner").spinner('option', 'max', '1000');
     $(".colorhsv").spectrum({preferredFormat: "hsv", showInput: true});
     $(".colorbgr").spectrum({preferredFormat: "rgb", showInput: true});
-    $("#mask_trafficlight_red_low_l").spectrum("set", py_hsv2js_hsv([{{mask_trafficlight_red_low_l}}]));
-    $("#mask_trafficlight_red_low_h").spectrum("set", py_hsv2js_hsv([{{mask_trafficlight_red_low_h}}]));
-    $("#mask_trafficlight_red_high_l").spectrum("set", py_hsv2js_hsv([{{mask_trafficlight_red_high_l}}]));
-    $("#mask_trafficlight_red_high_h").spectrum("set", py_hsv2js_hsv([{{mask_trafficlight_red_high_h}}]));
+    $("#mask_trafficlight_red_low_full").spectrum("set", py_hsv2js_hsv([{{mask_trafficlight_red_low_full}}]));
+    $("#mask_trafficlight_red_high_full").spectrum("set", py_hsv2js_hsv([{{mask_trafficlight_red_high_full}}]));
     $("#mask_trafficlight_green_l").spectrum("set", py_hsv2js_hsv([{{mask_trafficlight_green_l}}]));
     $("#mask_trafficlight_green_h").spectrum("set", py_hsv2js_hsv([{{mask_trafficlight_green_h}}]));
-    $("#mask_letter_red_low_l").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_low_l}}]));
-    $("#mask_letter_red_low_h").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_low_h}}]));
-    $("#mask_letter_red_high_l").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_high_l}}]));
-    $("#mask_letter_red_high_h").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_high_h}}]));
-    $("#mask_letter_red_shift_l").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_shift_l}}]));
-    $("#mask_letter_red_shift_h").spectrum("set", py_hsv2js_hsv([{{mask_letter_red_shift_h}}]));
     $("#mask_letter_red_low_full").spectrum("set", py_hsv2js_hsvfull([{{mask_letter_red_low_full}}]));
     $("#mask_letter_red_high_full").spectrum("set", py_hsv2js_hsvfull([{{mask_letter_red_high_full}}]));
     $("#color_black").spectrum("set", bgr2rgb([{{color_black}}]));
@@ -823,18 +775,10 @@
         }
 
         // Get all values from the html controls
-        var mask_trafficlight_red_low_l = $("#mask_trafficlight_red_low_l").val();
-        var mask_trafficlight_red_low_h = $("#mask_trafficlight_red_low_h").val();
-        var mask_trafficlight_red_high_l = $("#mask_trafficlight_red_high_l").val();
-        var mask_trafficlight_red_high_h = $("#mask_trafficlight_red_high_h").val();
+        var mask_trafficlight_red_low_full = $("#mask_trafficlight_red_low_full").val();
+        var mask_trafficlight_red_high_full = $("#mask_trafficlight_red_high_full").val();
         var mask_trafficlight_green_l = $("#mask_trafficlight_green_l").val();
         var mask_trafficlight_green_h = $("#mask_trafficlight_green_h").val();
-        var mask_letter_red_low_l = $("#mask_letter_red_low_l").val();
-        var mask_letter_red_low_h = $("#mask_letter_red_low_h").val();
-        var mask_letter_red_high_l = $("#mask_letter_red_high_l").val();
-        var mask_letter_red_high_h = $("#mask_letter_red_high_h").val();
-        var mask_letter_red_shift_l = $("#mask_letter_red_shift_l").val();
-        var mask_letter_red_shift_h = $("#mask_letter_red_shift_h").val();
         var mask_letter_red_low_full = $("#mask_letter_red_low_full").val();
         var mask_letter_red_high_full = $("#mask_letter_red_high_full").val();
         var color_black = $("#color_black").val();
@@ -859,18 +803,10 @@
         var controls_tof_d = $("#controls_tof_d").val();
 
         // Set html control values to Config.ini format for sending them with serialize
-        $("#mask_trafficlight_red_low_l").val(js_hsv2py_hsv(mask_trafficlight_red_low_l));
-        $("#mask_trafficlight_red_low_h").val(js_hsv2py_hsv(mask_trafficlight_red_low_h));
-        $("#mask_trafficlight_red_high_l").val(js_hsv2py_hsv(mask_trafficlight_red_high_l));
-        $("#mask_trafficlight_red_high_h").val(js_hsv2py_hsv(mask_trafficlight_red_high_h));
+        $("#mask_trafficlight_red_low_full").val(js_hsv2py_hsv(mask_trafficlight_red_low_full));
+        $("#mask_trafficlight_red_high_full").val(js_hsv2py_hsv(mask_trafficlight_red_high_full));
         $("#mask_trafficlight_green_l").val(js_hsv2py_hsv(mask_trafficlight_green_l));
         $("#mask_trafficlight_green_h").val(js_hsv2py_hsv(mask_trafficlight_green_h));
-        $("#mask_letter_red_low_l").val(js_hsv2py_hsv(mask_letter_red_low_l));
-        $("#mask_letter_red_low_h").val(js_hsv2py_hsv(mask_letter_red_low_h));
-        $("#mask_letter_red_high_l").val(js_hsv2py_hsv(mask_letter_red_high_l));
-        $("#mask_letter_red_high_h").val(js_hsv2py_hsv(mask_letter_red_high_h));
-        $("#mask_letter_red_shift_l").val(js_hsv2py_hsv(mask_letter_red_shift_l));
-        $("#mask_letter_red_shift_h").val(js_hsv2py_hsv(mask_letter_red_shift_h));
         $("#mask_letter_red_low_full").val(js_hsv2py_hsvfull(mask_letter_red_low_full));
         $("#mask_letter_red_high_full").val(js_hsv2py_hsvfull(mask_letter_red_high_full));
         $("#color_black").val(rgb2bgr(color_black));
@@ -927,18 +863,10 @@
         });
 
         // Set html control values to jQuery Spectrum understandable format after sending them with serialize
-        $("#mask_trafficlight_red_low_l").val(mask_trafficlight_red_low_l);
-        $("#mask_trafficlight_red_low_h").val(mask_trafficlight_red_low_h);
-        $("#mask_trafficlight_red_high_l").val(mask_trafficlight_red_high_l);
-        $("#mask_trafficlight_red_high_h").val(mask_trafficlight_red_high_h);
+        $("#mask_trafficlight_red_low_full").val(mask_trafficlight_red_low_full);
+        $("#mask_trafficlight_red_high_full").val(mask_trafficlight_red_high_full);
         $("#mask_trafficlight_green_l").val(mask_trafficlight_green_l);
         $("#mask_trafficlight_green_h").val(mask_trafficlight_green_h);
-        $("#mask_letter_red_low_l").val(mask_letter_red_low_l);
-        $("#mask_letter_red_low_h").val(mask_letter_red_low_h);
-        $("#mask_letter_red_high_l").val(mask_letter_red_high_l);
-        $("#mask_letter_red_high_h").val(mask_letter_red_high_h);
-        $("#mask_letter_red_shift_l").val(mask_letter_red_shift_l);
-        $("#mask_letter_red_shift_h").val(mask_letter_red_shift_h);
         $("#mask_letter_red_low_full").val(mask_letter_red_low_full);
         $("#mask_letter_red_high_full").val(mask_letter_red_high_full);
         $("#color_black").val(color_black);

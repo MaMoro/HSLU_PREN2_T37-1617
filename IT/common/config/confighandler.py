@@ -272,54 +272,6 @@ def set_color_orange(val):
 
 # Start Section "Masktrafficlight" #
 
-def get_masktrafficlight_red_low_l():
-    return __loadconfig().get('mask_trafficlight', 'red_low_l')
-
-
-def get_masktrafficlight_red_low_l_splited():
-    return np.array([int(c) for c in get_masktrafficlight_red_low_l().split(',')])
-
-
-def set_masktrafficlight_red_low_l(val):
-    __persistchanges('mask_trafficlight', 'red_low_l', val)
-
-
-def get_masktrafficlight_red_low_h():
-    return __loadconfig().get('mask_trafficlight', 'red_low_h')
-
-
-def get_masktrafficlight_red_low_h_splited():
-    return np.array([int(c) for c in get_masktrafficlight_red_low_h().split(',')])
-
-
-def set_masktrafficlight_red_low_h(val):
-    __persistchanges('mask_trafficlight', 'red_low_h', val)
-
-
-def get_masktrafficlight_red_high_l():
-    return __loadconfig().get('mask_trafficlight', 'red_high_l')
-
-
-def get_masktrafficlight_red_high_l_splited():
-    return np.array([int(c) for c in get_masktrafficlight_red_high_l().split(',')])
-
-
-def set_masktrafficlight_red_high_l(val):
-    __persistchanges('mask_trafficlight', 'red_high_l', val)
-
-
-def get_masktrafficlight_red_high_h():
-    return __loadconfig().get('mask_trafficlight', 'red_high_h')
-
-
-def get_masktrafficlight_red_high_h_splited():
-    return np.array([int(c) for c in get_masktrafficlight_red_high_h().split(',')])
-
-
-def set_masktrafficlight_red_high_h(val):
-    __persistchanges('mask_trafficlight', 'red_high_h', val)
-
-
 def get_masktrafficlight_green_l():
     return __loadconfig().get('mask_trafficlight', 'green_l')
 
@@ -344,66 +296,33 @@ def set_masktrafficlight_green_h(val):
     __persistchanges('mask_trafficlight', 'green_h', val)
 
 
+def get_masktrafficlight_red_low_full():
+    return __loadconfig().get('mask_trafficlight', 'red_low_full')
+
+
+def get_masktrafficlight_red_low_full_splited():
+    return np.array([int(c) for c in get_masktrafficlight_red_low_full().split(',')])
+
+
+def set_masktrafficlight_red_low_full(val):
+    __persistchanges('mask_trafficlight', 'red_low_full', val)
+
+
+def get_masktrafficlight_red_high_full():
+    return __loadconfig().get('mask_trafficlight', 'red_high_full')
+
+
+def get_masktrafficlight_red_high_full_splited():
+    return np.array([int(c) for c in get_masktrafficlight_red_high_full().split(',')])
+
+
+def set_masktrafficlight_red_high_full(val):
+    __persistchanges('mask_trafficlight', 'red_high_full', val)
+
+
 # End Section "Masktrafficlight" #
 
 # Start Section "Maskletter" #
-
-
-def get_maskletter_red_low_l():
-    return __loadconfig().get('mask_letter', 'red_low_l')
-
-
-def set_maskletter_red_low_l(val):
-    __persistchanges('mask_letter', 'red_low_l', val)
-
-
-def get_maskletter_red_low_h():
-    return __loadconfig().get('mask_letter', 'red_low_h')
-
-
-def set_maskletter_red_low_h(val):
-    __persistchanges('mask_letter', 'red_low_h', val)
-
-
-def get_maskletter_red_high_l():
-    return __loadconfig().get('mask_letter', 'red_high_l')
-
-
-def set_maskletter_red_high_l(val):
-    __persistchanges('mask_letter', 'red_high_l', val)
-
-
-def get_maskletter_red_high_h():
-    return __loadconfig().get('mask_letter', 'red_high_h')
-
-
-def set_maskletter_red_high_h(val):
-    __persistchanges('mask_letter', 'red_high_h', val)
-
-
-def get_maskletter_red_shift_l():
-    return __loadconfig().get('mask_letter', 'red_shift_l')
-
-
-def get_maskletter_red_shift_l_splited():
-    return np.array([int(c) for c in get_maskletter_red_shift_l().split(',')])
-
-
-def set_maskletter_red_shift_l(val):
-    __persistchanges('mask_letter', 'red_shift_l', val)
-
-
-def get_maskletter_red_shift_h():
-    return __loadconfig().get('mask_letter', 'red_shift_h')
-
-
-def get_maskletter_red_shift_h_splited():
-    return np.array([int(c) for c in get_maskletter_red_shift_h().split(',')])
-
-
-def set_maskletter_red_shift_h(val):
-    __persistchanges('mask_letter', 'red_shift_h', val)
-
 
 def get_maskletter_red_low_full():
     return __loadconfig().get('mask_letter', 'red_low_full')

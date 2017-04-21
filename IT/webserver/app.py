@@ -90,18 +90,10 @@ def save():
     cfg.set_settings_copyright(request.form['settings_copyright'])
     cfg.set_settings_loglevel(request.form['settings_loglevel'])
     cfg.set_settings_debug(request.form.getlist('settings_debug'))
-    cfg.set_masktrafficlight_red_low_l(request.form['mask_trafficlight_red_low_l'])
-    cfg.set_masktrafficlight_red_low_h(request.form['mask_trafficlight_red_low_h'])
-    cfg.set_masktrafficlight_red_high_l(request.form['mask_trafficlight_red_high_l'])
-    cfg.set_masktrafficlight_red_high_h(request.form['mask_trafficlight_red_high_h'])
+    cfg.set_masktrafficlight_red_low_full(request.form['mask_trafficlight_red_low_full'])
+    cfg.set_masktrafficlight_red_high_full(request.form['mask_trafficlight_red_high_full'])
     cfg.set_masktrafficlight_green_l(request.form['mask_trafficlight_green_l'])
     cfg.set_masktrafficlight_green_h(request.form['mask_trafficlight_green_h'])
-    cfg.set_maskletter_red_low_l(request.form['mask_letter_red_low_l'])
-    cfg.set_maskletter_red_low_h(request.form['mask_letter_red_low_h'])
-    cfg.set_maskletter_red_high_l(request.form['mask_letter_red_high_l'])
-    cfg.set_maskletter_red_high_h(request.form['mask_letter_red_high_h'])
-    cfg.set_maskletter_red_shift_l(request.form['mask_letter_red_shift_l'])
-    cfg.set_maskletter_red_shift_h(request.form['mask_letter_red_shift_h'])
     cfg.set_maskletter_red_low_full(request.form['mask_letter_red_low_full'])
     cfg.set_maskletter_red_high_full(request.form['mask_letter_red_high_full'])
     cfg.set_maskletter_min_maskarea_size(request.form['mask_letter_min_maskarea_size'])
@@ -266,18 +258,10 @@ def __call_render_template():
                            settings_copyright=cfg.get_settings_copyright(),
                            settings_loglevel=cfg.get_settings_loglevel(),
                            settings_debug=cfg.get_settings_debug_checkbox(),
-                           mask_trafficlight_red_low_l=cfg.get_masktrafficlight_red_low_l(),
-                           mask_trafficlight_red_low_h=cfg.get_masktrafficlight_red_low_h(),
-                           mask_trafficlight_red_high_l=cfg.get_masktrafficlight_red_high_l(),
-                           mask_trafficlight_red_high_h=cfg.get_masktrafficlight_red_high_h(),
+                           mask_trafficlight_red_low_full=cfg.get_masktrafficlight_red_low_full(),
+                           mask_trafficlight_red_high_full=cfg.get_masktrafficlight_red_high_full(),
                            mask_trafficlight_green_l=cfg.get_masktrafficlight_green_l(),
                            mask_trafficlight_green_h=cfg.get_masktrafficlight_green_h(),
-                           mask_letter_red_low_l=cfg.get_maskletter_red_low_l(),
-                           mask_letter_red_low_h=cfg.get_maskletter_red_low_h(),
-                           mask_letter_red_high_l=cfg.get_maskletter_red_high_l(),
-                           mask_letter_red_high_h=cfg.get_maskletter_red_high_h(),
-                           mask_letter_red_shift_l=cfg.get_maskletter_red_shift_l(),
-                           mask_letter_red_shift_h=cfg.get_maskletter_red_shift_h(),
                            mask_letter_red_low_full=cfg.get_maskletter_red_low_full(),
                            mask_letter_red_high_full=cfg.get_maskletter_red_high_full(),
                            mask_letter_min_maskarea_size=cfg.get_maskletter_min_maskarea_size(),

@@ -136,7 +136,7 @@ class TrafficLightDetection(object):
         global redpixely
         # --- Get green pixels ---
         green_image = self.frame
-        green_image_output = ImageConverter.mask_color_green(green_image)
+        green_image_output = ImageConverter.mask_color_green_traffic(green_image)
         self.green_image_bgr = ImageConverter.converthsv2bgr(green_image_output)
 
         # --- Count the green pixels ---
