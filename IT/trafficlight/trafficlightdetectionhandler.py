@@ -45,12 +45,6 @@ class TrafficLightDetection(object):
     textspace = cfg.get_imagetext_textspace()  # space between text lines on image
 
     # Load Masks from Config.ini
-    lower_red0 = cfg.get_masktrafficlight_red_low_l_splited()
-    upper_red0 = cfg.get_masktrafficlight_red_low_h_splited()
-    lower_red1 = cfg.get_masktrafficlight_red_high_l_splited()
-    upper_red1 = cfg.get_masktrafficlight_red_high_h_splited()
-    lower_green = cfg.get_masktrafficlight_green_l_splited()
-    upper_green = cfg.get_masktrafficlight_green_h_splited()
 
     # Initialize the class
     def __init__(self):
@@ -107,11 +101,12 @@ class TrafficLightDetection(object):
         global redpixely
         # --- Get red pixels ---
         red_image = self.frame
-        red_image_output = ImageConverter.mask_color_red_traffic(red_image)
-        self.red_image_bgr = ImageConverter.converthsv2bgr(red_image_output)
+        red_image_output = ImageConverter.mask_color_red_fullhsv_traffic(red_image)
+        self.red_image_bgr = ImageConverter.converthsvfull2bgr(red_image_output)
 
         # --- Count the red pixels ---
         red_image_gray = ImageConverter.convertbgr2gray(self.red_image_bgr)
+        red_image_gray = ImageConverter.convertbgr2gray(red_image_output)
         self.redpixel_count = cv2.countNonZero(red_image_gray)
 
         # Check if any red pixels are left after apply red color mask
@@ -137,11 +132,14 @@ class TrafficLightDetection(object):
         # --- Get green pixels ---
         green_image = self.frame
         green_image_output = ImageConverter.mask_color_green_traffic(green_image)
+        # cv2.imshow("green", green_image_output)
         self.green_image_bgr = ImageConverter.converthsv2bgr(green_image_output)
 
         # --- Count the green pixels ---
         green_image_gray = ImageConverter.convertbgr2gray(self.green_image_bgr)
+        green_image_gray = ImageConverter.convertbgr2gray(green_image_output)
         self.greenpixel_count = cv2.countNonZero(green_image_gray)
+        print(self.greenpixel_count)
 
         if self.greenpixel_count > 0:
             # --- Find brightest spot ---
