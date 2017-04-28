@@ -89,6 +89,10 @@ class ImageConverter(object):
         return cv2.cvtColor(image, cv2.COLOR_HSV2BGR)
 
     @staticmethod
+    def converthsvfull2bgr(image):
+        return cv2.cvtColor(image, cv2.COLOR_HSV2BGR_FULL)
+
+    @staticmethod
     def convert2blackwhite(image):
         """
         Converts any image to black&white
@@ -143,6 +147,7 @@ class ImageConverter(object):
 
         mask = cv2.inRange(img_hsv, ImageConverter.lower_green_traffic,
                            ImageConverter.upper_green_traffic)  # create overlay mask for all none matching bits to zero (black)
+        # mask = cv2.inRange(img_hsv, np.array(cfg.get_masktrafficlight_green_l_splited()), np.array(cfg.get_masktrafficlight_green_h_splited()))
         output_img = cv2.bitwise_and(img, img, mask=mask)  # apply mask on image
 
         return output_img
