@@ -21,6 +21,7 @@ from logging.config import fileConfig
 class LEDStripHandler:
 
     __gpio_init = False
+    __powerledpwm = None
     __letterledpins = [11, 12, 13, 15, 16]
     __powerledpin = 18
     fileConfig(cfg.get_logging_config_fullpath())
@@ -47,7 +48,9 @@ class LEDStripHandler:
     def start_powerled():
         if not LEDStripHandler.__gpio_init:
             LEDStripHandler.__setupGPIOPins()
-        GPIO.output(LEDStripHandler.__powerledpin, GPIO.HIGH)
+        # GPIO.output(LEDStripHandler.__powerledpin, GPIO.HIGH)
+        LEDStripHandler.__powerledpwm = GPIO.PWM(LEDStripHandler.__powerledpin, 100)
+        LEDStripHandler.__powerledpwm.start(5)  # only x% power
         time.sleep(0.1)
         LEDStripHandler.__log.info("PowerLED turned on!")
 
@@ -55,7 +58,8 @@ class LEDStripHandler:
     def stop_powerled():
         if not LEDStripHandler.__gpio_init:
             LEDStripHandler.__setupGPIOPins()
-        GPIO.output(LEDStripHandler.__powerledpin, GPIO.LOW)
+        # GPIO.output(LEDStripHandler.__powerledpin, GPIO.LOW)
+        LEDStripHandler.__powerledpwm.stop()
         time.sleep(0.1)
         LEDStripHandler.__log.info("PowerLED turned off!")
 
