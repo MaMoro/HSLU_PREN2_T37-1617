@@ -101,9 +101,25 @@ class ImageConverter(object):
         """
         mask = cv2.inRange(image, ImageConverter.color_black_low,
                            ImageConverter.color_black_high)  # create overlay mask for all none matching bits to zero
+        # mask = cv2.inRange(image, np.array(cfg.get_color_black_low_splited()), np.array(cfg.get_color_black_high_splited()))
         output_img = cv2.bitwise_and(image, image, mask=mask)  # apply mask on image
         img_gray = ImageConverter.convertbgr2gray(output_img)  # convert image to grayscale
         img_gray[img_gray > 0] = 1  # set all non black pixels to white for BW-image
+        return img_gray
+
+    @staticmethod
+    def convert2blackwhite_full(image):
+        """
+        Converts any image to black&white
+        :param image: image to be converted to black&white
+        :return: black&white image (pixelvalues: 0 = black, 1 = white)
+        """
+        mask = cv2.inRange(image, ImageConverter.color_black_low,
+                           ImageConverter.color_black_high)  # create overlay mask for all none matching bits to zero
+        # mask = cv2.inRange(image, np.array(cfg.get_color_black_low_splited()), np.array(cfg.get_color_black_high_splited()))
+        output_img = cv2.bitwise_and(image, image, mask=mask)  # apply mask on image
+        img_gray = ImageConverter.convertbgr2gray(output_img)  # convert image to grayscale
+        img_gray[img_gray > 0] = 255  # set all non black pixels to white for BW-image
         return img_gray
 
     @staticmethod
@@ -117,6 +133,7 @@ class ImageConverter(object):
 
         mask = cv2.inRange(img_hsv, ImageConverter.lower_red_full,
                            ImageConverter.upper_red_full)  # create overlay mask for all none matching bits to zero (black)
+        #mask = cv2.inRange(img_hsv, np.array(cfg.get_maskletter_red_low_full_splited()), np.array(cfg.get_maskletter_red_high_full_splited()))
         output_img = cv2.bitwise_and(img, img, mask=mask)  # apply mask on image
 
         return output_img
@@ -214,9 +231,9 @@ class ImageConverter(object):
         img_cropped = roi[pos_y:pos_y + height, pos_x:pos_x + width]
 
         # resize to original size
-        if 0 < img_cropped.shape[1] < 150:
-            r = 150 / img_cropped.shape[1]
-            dim = (150, int(img_cropped.shape[0] * r))
+        if 0 < img_cropped.shape[1] < 50:
+            r = 50 / img_cropped.shape[1]
+            dim = (50, int(img_cropped.shape[0] * r))
             img_cropped = cv2.resize(img_cropped, dim, interpolation=cv2.INTER_AREA)
         return img_cropped
 

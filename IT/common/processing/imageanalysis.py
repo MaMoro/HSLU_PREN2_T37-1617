@@ -23,7 +23,6 @@ from logging.config import fileConfig
 from collections import Counter
 from common.logging.fpshelper import FPSHelper
 from common.processing.imageconverter import ImageConverter
-from skimage.morphology import skeletonize
 
 
 class ImageAnalysis(object):
@@ -83,13 +82,8 @@ class ImageAnalysis(object):
         # all edges (top left, bottom left, top right, bottom right)
         edges = []
         left_mask_area_processed = False
+        left_line_angle = None
         for c in cnts:
-
-            # TODO: based on angle the solution can be made more robust as the angles need to be approx the same...
-            # cv2.drawContours(img, [c], -1, (0, 255, 0), 1)
-            # elipse = cv2.fitEllipse(c)
-            # print("\nWinkel: " + str(elipse[2]))
-
             # TODO: risk of cut red line, need to guarantee that both red blocks are fully visible
             # e.g. ignore red color on image boarder
 
@@ -101,9 +95,16 @@ class ImageAnalysis(object):
             if not left_mask_area_processed:
                 pt_top = tuple(np.int0(box[1]))  # top right position
                 pt_bottom = tuple(np.int0(box[2]))  # bottom right position
+                left_line_angle = ImageAnalysis.__anglewithtwopoints(pt_top, pt_bottom)
+                ImageAnalysis.__log.debug("Winkel left: " + str(left_line_angle))
+
             else:
                 pt_top = tuple(np.int0(box[0]))  # top left position
                 pt_bottom = tuple(np.int0(box[3]))  # bottom right position
+                right_line_angle = ImageAnalysis.__anglewithtwopoints(pt_top, pt_bottom)
+                ImageAnalysis.__log.debug("Winkel right: " + str(right_line_angle))
+                if not (math.fabs(right_line_angle - left_line_angle) < 10):
+                    break
 
             # only allow rectangles with minimal area size
             dist = math.sqrt((abs(pt_top[0] - pt_bottom[0])) ** 2 + (abs(pt_top[1] - pt_bottom[1])) ** 2)
@@ -142,13 +143,8 @@ class ImageAnalysis(object):
         # all edges (top left, bottom left, top right, bottom right)
         edges = []
         left_mask_area_processed = False
+        left_line_angle = None
         for c in cnts:
-
-            # TODO: based on angle the solution can be made more robust as the angles need to be approx the same...
-            # cv2.drawContours(img, [c], -1, (0, 255, 0), 1)
-            # elipse = cv2.fitEllipse(c)
-            # print("\nWinkel: " + str(elipse[2]))
-
             # TODO: risk of cut red line, need to guarantee that both red blocks are fully visible
             # e.g. ignore red color on image boarder
 
@@ -161,9 +157,15 @@ class ImageAnalysis(object):
             if not left_mask_area_processed:
                 pt_top = tuple(np.int0(box[1]))  # top right position
                 pt_bottom = tuple(np.int0(box[2]))  # bottom right position
+                left_line_angle = ImageAnalysis.__anglewithtwopoints(pt_top, pt_bottom)
+                ImageAnalysis.__log.debug("Winkel left: " + str(left_line_angle))
             else:
                 pt_top = tuple(np.int0(box[0]))  # top left position
                 pt_bottom = tuple(np.int0(box[3]))  # bottom right position
+                right_line_angle = ImageAnalysis.__anglewithtwopoints(pt_top, pt_bottom)
+                ImageAnalysis.__log.debug("Winkel right: " + str(right_line_angle))
+                if not (math.fabs(right_line_angle - left_line_angle) < 10):
+                    break
 
             # only allow rectangles with minimal area size
             dist = math.sqrt((abs(pt_top[0] - pt_bottom[0])) ** 2 + (abs(pt_top[1] - pt_bottom[1])) ** 2)
@@ -188,21 +190,21 @@ class ImageAnalysis(object):
         """
         Determines the number of an image with roman letter on it (only I, II, III, IV, V) and draws line on image
         :param roi: cropped image with only the letters on it
-        :return: image with all detected lines for the number
+        :return: image with all detected lines for the number 
         """
-        FPS = FPSHelper()
+        # FPS = FPSHelper()
         number = 0
         img_bw = ImageConverter.convert2blackwhite(roi)
 
         # edge detection
-        FPS.start()
+        #FPS.start()
         edges = ImageConverter.thinningblackwhiteimage(img_bw)
         img_gray_mark = ImageConverter.convertgray2bgr(edges)
         lines = cv2.HoughLines(edges, 1, np.pi / 180, 15, np.array([]), 0, 0)
-        FPS.stop()
-        ImageAnalysis.__log.info("processing time HoughLines & thinning: " + str(FPS.elapsedtime_ms()) + " ms")
+        # FPS.stop()
+        #ImageAnalysis.__log.info("processing time HoughLines & thinning: " + str(FPS.elapsedtime_ms()) + " ms")
 
-        FPS.start()
+        #FPS.start()
         # if lines found, enumerate number based on its angle
         if lines is not None:
             line, _, _ = lines.shape
@@ -255,30 +257,30 @@ class ImageAnalysis(object):
                     continue
                 else:
                     ImageAnalysis.__log.debug("line with deg: " + str(deg) + "out of allowed range")
-            FPS.stop()
-            ImageAnalysis.__log.info("processing time evaluate all lines: " + str(FPS.elapsedtime_ms()) + " ms")
+            # FPS.stop()
+            #ImageAnalysis.__log.info("processing time evaluate all lines: " + str(FPS.elapsedtime_ms()) + " ms")
 
             # eliminate redundant detected I
-            FPS.start()
+            #FPS.start()
             nonredundant_i = ImageAnalysis.__eliminate_redundant_i(all_i)
             nonredundant_v_left = ImageAnalysis.__eliminate_redundant_v(all_v_left)
             nonredundant_v_right = ImageAnalysis.__eliminate_redundant_v(all_v_right)
-            FPS.stop()
-            ImageAnalysis.__log.info("processing time remove redundances: " + str(FPS.elapsedtime_ms()) + " ms")
+            # FPS.stop()
+            #ImageAnalysis.__log.info("processing time remove redundances: " + str(FPS.elapsedtime_ms()) + " ms")
 
-            FPS.start()
+            #FPS.start()
             roi_height = roi.shape[0]
             nonintersected_i = ImageAnalysis.__eliminate_intersectioned_i_with_v(nonredundant_v_left,
                                                                                  nonredundant_v_right,
                                                                                  nonredundant_i.copy(), roi_height)
-            FPS.stop()
-            ImageAnalysis.__log.info("processing time intersection: " + str(FPS.elapsedtime_ms()) + " ms")
+            # FPS.stop()
+            #ImageAnalysis.__log.info("processing time intersection: " + str(FPS.elapsedtime_ms()) + " ms")
 
             # enumerate the number based on detected lines
             ImageAnalysis.__log.debug("v_left: " + str(len(nonredundant_v_left)) + " | v_right: " + str(
                 len(nonredundant_v_right)) + " | i: " + str(len(nonintersected_i)))
 
-            FPS.start()
+            #FPS.start()
             if len(nonredundant_v_left) > 0:
                 img_gray_mark = ImageAnalysis.__printlines(img_gray_mark, nonredundant_v_left, "V-LEFT")
                 v_left_found = True
@@ -289,11 +291,10 @@ class ImageAnalysis(object):
             if i_count > 0:
                 img_gray_mark = ImageAnalysis.__printlines(img_gray_mark, nonintersected_i, "I")
 
-            FPS.stop()
-            ImageAnalysis.__log.info("processing time printlines: " + str(FPS.elapsedtime_ms()) + " ms")
+            # FPS.stop()
+            #ImageAnalysis.__log.info("processing time printlines: " + str(FPS.elapsedtime_ms()) + " ms")
 
             number = ImageAnalysis._enumerate_number_withlines(v_left_found, v_right_found, i_count)
-
         else:
             ImageAnalysis.__log.warning("no lines detected on image")
         ImageAnalysis.__log.debug("--")
@@ -305,7 +306,7 @@ class ImageAnalysis(object):
         """
         Determines the number of an image with roman letter on it (only I, II, III, IV, V)
         :param roi: cropped image with only the letters on it
-        :return: detected number  as integer, zero if not able to enumerate
+        :return: detected number  as integer, zero if not able to enumerate 
         """
         number = 0
         img_bw = ImageConverter.convert2blackwhite(roi)
@@ -377,6 +378,23 @@ class ImageAnalysis(object):
         ImageAnalysis.__log.debug("--")
 
         return number
+
+    @staticmethod
+    def __anglewithtwopoints(top, bottom):
+        # Compute x/y distance
+        (dx, dy) = (bottom[0] - top[0], bottom[1] - top[1])
+        try:
+            # Compute the angle
+            angle = math.atan(float(dx) / float(dy))
+        except ZeroDivisionError:
+            angle = 0.0
+        # The angle is in radians (-pi/2 to +pi/2).  If you want degrees, you need the following line
+        angle *= 180 / math.pi
+        # Now you have an angle from -90 to +90.  But if the player is below the turret,
+        # you want to flip it
+        if dy < 0:
+            angle += 180
+        return angle
 
     @staticmethod
     def _enumerate_number_withlines(v_left, v_right, i):
