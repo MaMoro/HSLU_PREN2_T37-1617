@@ -45,6 +45,14 @@ class LEDStripHandler:
         LEDStripHandler.__log.info("LEDs for number " + str(number) + " turned on!")
 
     @staticmethod
+    def turn_off_all_letter_LEDS():
+        GPIO.output(11, GPIO.LOW)
+        GPIO.output(12, GPIO.LOW)
+        GPIO.output(13, GPIO.LOW)
+        GPIO.output(15, GPIO.LOW)
+        GPIO.output(16, GPIO.LOW)
+
+    @staticmethod
     def start_powerled():
         if not LEDStripHandler.__gpio_init:
             LEDStripHandler.__setupGPIOPins()
