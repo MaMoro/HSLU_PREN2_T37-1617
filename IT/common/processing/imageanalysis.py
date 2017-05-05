@@ -35,6 +35,7 @@ class ImageAnalysis(object):
     letter_tolerance_i_gap = cfg.get_letter_tolerance_i_gap()
     letter_tolerance_v_gap = cfg.get_letter_tolerance_v_gap()
     min_maskarea_size = cfg.get_maskletter_min_maskarea_size()
+    angle_tolerance_redblocks = 15
 
     @staticmethod
     def reorder_edgepoints_clockwise(pts):
@@ -103,7 +104,7 @@ class ImageAnalysis(object):
                 pt_bottom = tuple(np.int0(box[3]))  # bottom right position
                 right_line_angle = ImageAnalysis.__anglewithtwopoints(pt_top, pt_bottom)
                 ImageAnalysis.__log.debug("Winkel right: " + str(right_line_angle))
-                if not (math.fabs(right_line_angle - left_line_angle) < 10):
+                if not (math.fabs(right_line_angle - left_line_angle) < ImageAnalysis.angle_tolerance_redblocks):
                     break
 
             # only allow rectangles with minimal area size
@@ -164,7 +165,7 @@ class ImageAnalysis(object):
                 pt_bottom = tuple(np.int0(box[3]))  # bottom right position
                 right_line_angle = ImageAnalysis.__anglewithtwopoints(pt_top, pt_bottom)
                 ImageAnalysis.__log.debug("Winkel right: " + str(right_line_angle))
-                if not (math.fabs(right_line_angle - left_line_angle) < 10):
+                if not (math.fabs(right_line_angle - left_line_angle) < ImageAnalysis.angle_tolerance_redblocks):
                     break
 
             # only allow rectangles with minimal area size
