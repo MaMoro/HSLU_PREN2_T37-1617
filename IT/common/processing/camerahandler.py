@@ -46,6 +46,8 @@ class CameraHandler(object):
             self.camera.resolution = (cfg.get_camera_width(), cfg.get_camera_height())
             self.camera.framerate = cfg.get_camera_framerate()
             self.camera.iso = cfg.get_camera_iso()
+            self.camera.vflip = True
+            self.camera.hflip = True
             self.__log.debug("Initialize AWB, calculating...")
             time.sleep(2)
             # if cfg.get_camera_awb() == 'fixed':
