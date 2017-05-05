@@ -356,7 +356,8 @@ class CommunicationValues:
                     self.op_parcstate = value
                 elif operation == "errstate":
                     self.op_errstate = value
-                    self.__log.error("got error from FRDM: " + value)
+                    if value != '0':
+                        self.__log.error("got error from FRDM: " + value)
                 else:
                     self.__log.warning("got unknown operation: " + str(operation) + " with val: " + str(value))
 
