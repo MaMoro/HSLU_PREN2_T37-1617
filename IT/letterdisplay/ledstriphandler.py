@@ -56,9 +56,9 @@ class LEDStripHandler:
     def start_powerled():
         if not LEDStripHandler.__gpio_init:
             LEDStripHandler.__setupGPIOPins()
-        # GPIO.output(LEDStripHandler.__powerledpin, GPIO.HIGH)
-        LEDStripHandler.__powerledpwm = GPIO.PWM(LEDStripHandler.__powerledpin, 100)
-        LEDStripHandler.__powerledpwm.start(5)  # only x% power
+        GPIO.output(LEDStripHandler.__powerledpin, GPIO.HIGH)
+        #LEDStripHandler.__powerledpwm = GPIO.PWM(LEDStripHandler.__powerledpin, 200)
+        #LEDStripHandler.__powerledpwm.start(80)  # only x% power
         time.sleep(0.1)
         LEDStripHandler.__log.info("PowerLED turned on!")
 
@@ -66,8 +66,8 @@ class LEDStripHandler:
     def stop_powerled():
         if not LEDStripHandler.__gpio_init:
             LEDStripHandler.__setupGPIOPins()
-        # GPIO.output(LEDStripHandler.__powerledpin, GPIO.LOW)
-        LEDStripHandler.__powerledpwm.stop()
+        GPIO.output(LEDStripHandler.__powerledpin, GPIO.LOW)
+        #LEDStripHandler.__powerledpwm.stop()
         time.sleep(0.1)
         LEDStripHandler.__log.info("PowerLED turned off!")
 
