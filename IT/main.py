@@ -44,12 +44,6 @@ class RunPiHandler(object):
         self.runparcours()
 
     def runparcours(self):
-        # self.__log.info("Starting webserver...")
-        # Init Webserver
-        # subprocess.Popen([sys.executable, '/home/pi/Desktop/PREN/webserver/app.py'], env=os.environ.copy())
-        # time.sleep(15)
-        #self.__log.info("Startup webserver finished!")
-
         # Wait for parcour setting (left/right)
         self.__log.info("Await course selection...")
         while self.currentcourse == 0:
@@ -59,25 +53,24 @@ class RunPiHandler(object):
 
         # Init communication between raspi and freedom
         self.__log.info("Setup serial communication with FreedomBoard...")
-        self.serialcomm = CommunicationValues().start()
+        self.serialcomm = CommunicationValues()
         self.serialcomm.send_hello()
         hellostate = self.serialcomm.get_hello_blocking()  # await hello response or timeout...
         if hellostate == '1':
-            self.serialcomm.send_course(self.currentcourse)
             self.__log.info("serial communication established!")
+            self.serialcomm.send_course(self.currentcourse)
         else:
             self.__log.error("not able to setup communication with Freedom-Board!!")
 
         # Init camera
         self.__log.info("Starting CameraHandling and start Trafficlight detection...")
-        CameraHandler().start()
+        CameraHandler()
 
         # Traffic Light Detection
         t = TrafficLightDetectionPi()
-        #while t.getstatus() == "red":
-        #    time.sleep(0.3)
+        while t.getstatus() == "red":
+            time.sleep(0.3)
         self.__log.info("Green signal detected...")
-        time.sleep(5)
 
         # Init PowerLED
         self.__log.info("Recalibrate camera before starting")
@@ -87,9 +80,9 @@ class RunPiHandler(object):
         self.__log.info("Let's go!")
 
         # Letter Detection
+        LetterDetectionHandler()
         self.serialcomm.send_start()
         self.__log.info("Run, chügeliwägeli, run!")
-        LetterDetectionHandler().start()
 
         # Stop PowerLED
         LEDStripHandler.stop_powerled()
