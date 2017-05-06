@@ -62,12 +62,12 @@ class TrafficLightDetectionPi(object):
             tld = TrafficLightDetection()
             self.frame = tld.detect_trafficlight(img)
             self.updatestatus(tld.get_color_state())
-            cv2.imshow("trafficlight", self.frame)
+            """cv2.imshow("trafficlight", self.frame)
 
             key = cv2.waitKey(1) & 0xFF
             if key == ord("q"):
                 self.__log.info("Finished capturing")
-                break
+                break"""
 
     def stop(self):
         self.stopped = True
