@@ -27,7 +27,7 @@ __lock = threading.Lock()
 # load ini file
 def __loadconfig():
     config = configparser.ConfigParser()
-    __lock.aquire()
+    __lock.acquire()
     try:
         config.read(__inipath)
     finally:
@@ -49,7 +49,7 @@ def get_proj_rootdir():
 def __persistchanges(section, item, val):
     config = __loadconfig()
     config.set(section, item, val)
-    __lock.aquire()
+    __lock.acquire()
     try:
         with open(__inipath, "w") as configfile:
             config.write(configfile)
@@ -220,6 +220,10 @@ def get_maskletter_red_low_full():
     return __loadconfig().get('mask_letter', 'red_low_full')
 def get_maskletter_red_low_full_splited():
     return np.array([int(c) for c in get_maskletter_red_low_full().split(',')])
+def get_maskletter_red_high_full():
+    return __loadconfig().get('mask_letter', 'red_high_full')
+def get_maskletter_red_high_full_splited():
+    return np.array([int(c) for c in get_maskletter_red_high_full().split(',')])
 def get_maskletter_min_maskarea_size():
     return __loadconfig().getint('mask_letter', 'min_maskarea_size')
 
