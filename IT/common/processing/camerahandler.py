@@ -35,7 +35,6 @@ class CameraHandler(object):
             self.stopped = True
             self.brightness = 50
             self.awb = 'fixed'
-
             self.__initpicamera()
 
         def __initpicamera(self):
@@ -49,7 +48,7 @@ class CameraHandler(object):
             self.camera.vflip = True
             self.camera.hflip = True
             self.__log.debug("Initialize AWB, calculating...")
-            time.sleep(2)
+            time.sleep(1)
             # if cfg.get_camera_awb() == 'fixed':
             if self.awb == 'fixed':
                 self.camera.shutter_speed = self.camera.exposure_speed
@@ -111,7 +110,7 @@ class CameraHandler(object):
                 t.daemon = True
                 self.stopped = False
                 t.start()
-                time.sleep(2)
+                time.sleep(0.5)
             return self
 
         def update(self):
@@ -131,7 +130,7 @@ class CameraHandler(object):
         def read(self):
             if self.stopped:
                 self.calibratePiCamera()
-                time.sleep(2)
+                time.sleep(1)
             return self.frame  # return the frame most recently read
 
         def stop(self):
