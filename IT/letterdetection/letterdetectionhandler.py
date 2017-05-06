@@ -48,13 +48,13 @@ class LetterDetectionHandler(object):
         def start(self):
             # start the thread to read frames from the video stream
             if self.stopped:
-                # t = Thread(target=self.processing, args=())
+                t = Thread(target=self.processing, args=())
                 #t = Thread(target=self.rundetection, args=())
-                t = Thread(target=self.processing_prod, args=())
+                #t = Thread(target=self.processing_prod, args=())
                 t.daemon = True
                 self.stopped = False
                 t.start()
-                time.sleep(2)
+                time.sleep(5)
             return self
 
         def stop(self):
@@ -109,7 +109,9 @@ class LetterDetectionHandler(object):
                 time.sleep(0.5)
             self.__log.info("Image-Processing-Units created, ready to process...")
             imgcount = 0
+            LEDStripHandler.start_powerled()
             pistream = CameraHandler()
+
             self.__log.info("Ready! Start capturing")
 
             while True:
@@ -126,7 +128,7 @@ class LetterDetectionHandler(object):
                     processingqueue.join()  # waiting for alle processes to be terminated
                     break
 
-                cv2.imshow("mask", redmask)
+                #cv2.imshow("mask", redmask)
                 cv2.imshow("imagemarked", imgmarked)
 
                 key = cv2.waitKey(1) & 0xFF
@@ -144,6 +146,7 @@ class LetterDetectionHandler(object):
             numbertodisplay = ImageAnalysis.most_voted_number(allnumbers)
             LEDStripHandler.display_letter_on_LEDs(numbertodisplay)
             time.sleep(5)
+            LEDStripHandler.stop_powerled()
             LEDStripHandler.turn_off_all_letter_LEDS()
             # CommunicationValues().send_letter(numbertodisplay)
 
@@ -156,7 +159,7 @@ class LetterDetectionHandler(object):
             processingunits = [ImageProcessing(processingqueue, resultqueue) for i in range(num_units)]
             for w in processingunits:
                 w.start()
-                time.sleep(0.2)
+                time.sleep(0.1)
             self.__log.info("Image-Processing-Units created, ready to process...")
             pistream = CameraHandler()
             self.__log.info("Ready! Start capturing")
@@ -203,5 +206,16 @@ class LetterDetectionHandler(object):
         return setattr(self.instance, name)
 
 if __name__ == '__main__':
+    serialcomm = CommunicationValues()
+    serialcomm.send_hello()
+    hellostate = serialcomm.get_hello_blocking()  # await hello response or timeout...
+    time.sleep(2)
+    serialcomm.send_course(1)
+
+    # Init camera
+    print("Starting CameraHandling and start Trafficlight detection...")
+
     LetterDetectionHandler()
+    time.sleep(5)
+    serialcomm.send_start()
     time.sleep(999)
