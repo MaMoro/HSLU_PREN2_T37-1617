@@ -48,7 +48,7 @@ class CameraHandler(object):
             self.camera.vflip = True
             self.camera.hflip = True
             self.__log.debug("Initialize AWB, calculating...")
-            time.sleep(1)
+            time.sleep(0.5)
             # if cfg.get_camera_awb() == 'fixed':
             if self.awb == 'fixed':
                 self.camera.shutter_speed = self.camera.exposure_speed
