@@ -12,11 +12,8 @@
 # OPENCV_VERSION  : 3.1.0
 # ================================================================================
 
-#Import all needed classes
+# Import all needed classes
 import logging
-import os
-import subprocess
-import sys
 import time
 import common.config.confighandler as cfg
 
@@ -30,14 +27,15 @@ from letterdetection.letterdetectionhandler import LetterDetectionHandler
 
 class RunPiHandler(object):
     def __init__(self):
-        print("**************************************************")
-        print("* Autonomes Geländefahrzeug: PREN Team 37, 2017  *")
-        print("**************************************************")
-
         # Load configuration / config handler
         fileConfig(cfg.get_logging_config_fullpath())
         self.__log = logging.getLogger()
         self.__log.setLevel(cfg.get_settings_loglevel())
+        self.__log.info(" ")
+        self.__log.info("**************************************************")
+        self.__log.info("* Autonomes Geländefahrzeug: PREN Team 37, 2017  *")
+        self.__log.info("**************************************************")
+        self.__log.info(" ")
         self.__log.info("Pi ready! :)")
         self.serialcomm = None
         self.currentcourse = 0
@@ -87,9 +85,10 @@ class RunPiHandler(object):
         # Stop PowerLED
         LEDStripHandler.stop_powerled()
 
-        print("**************************************************")
-        print("*                Jobs done on RPi                *")
-        print("**************************************************")
+        self.__log.info(" ")
+        self.__log.info("**************************************************")
+        self.__log.info("*                Jobs done on RPi                *")
+        self.__log.info("**************************************************")
 
 if __name__ == '__main__':
     RunPiHandler()
