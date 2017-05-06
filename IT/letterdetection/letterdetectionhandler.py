@@ -48,9 +48,9 @@ class LetterDetectionHandler(object):
         def start(self):
             # start the thread to read frames from the video stream
             if self.stopped:
-                t = Thread(target=self.processing, args=())
+                #t = Thread(target=self.processing, args=())
                 #t = Thread(target=self.rundetection, args=())
-                #t = Thread(target=self.processing_prod, args=())
+                t = Thread(target=self.processing_prod, args=())
                 t.daemon = True
                 self.stopped = False
                 t.start()
@@ -106,7 +106,6 @@ class LetterDetectionHandler(object):
             processingunits = [ImageProcessing(processingqueue, resultqueue) for i in range(num_units)]
             for w in processingunits:
                 w.start()
-                time.sleep(0.5)
             self.__log.info("Image-Processing-Units created, ready to process...")
             imgcount = 0
             LEDStripHandler.start_powerled()
@@ -159,7 +158,6 @@ class LetterDetectionHandler(object):
             processingunits = [ImageProcessing(processingqueue, resultqueue) for i in range(num_units)]
             for w in processingunits:
                 w.start()
-                time.sleep(0.1)
             self.__log.info("Image-Processing-Units created, ready to process...")
             pistream = CameraHandler()
             self.__log.info("Ready! Start capturing")
@@ -206,7 +204,7 @@ class LetterDetectionHandler(object):
         return setattr(self.instance, name)
 
 if __name__ == '__main__':
-    serialcomm = CommunicationValues()
+    """serialcomm = CommunicationValues()
     serialcomm.send_hello()
     hellostate = serialcomm.get_hello_blocking()  # await hello response or timeout...
     time.sleep(2)
@@ -214,8 +212,8 @@ if __name__ == '__main__':
 
     # Init camera
     print("Starting CameraHandling and start Trafficlight detection...")
-
+"""
     LetterDetectionHandler()
-    time.sleep(5)
-    serialcomm.send_start()
+    """time.sleep(5)
+    serialcomm.send_start()"""
     time.sleep(999)
