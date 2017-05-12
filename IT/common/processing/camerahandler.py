@@ -33,8 +33,6 @@ class CameraHandler(object):
             self.stream = None
             self.frame = None
             self.stopped = True
-            self.brightness = 50
-            self.awb = 'fixed'
             self.__initpicamera()
 
         def __initpicamera(self):
@@ -49,16 +47,11 @@ class CameraHandler(object):
             self.camera.hflip = True
             self.__log.debug("Initialize AWB, calculating...")
             time.sleep(0.5)
-            # if cfg.get_camera_awb() == 'fixed':
-            if self.awb == 'fixed':
-                self.camera.shutter_speed = self.camera.exposure_speed
-                self.camera.exposure_mode = 'off'
-                gain = self.camera.awb_gains
-                self.camera.awb_mode = 'off'
-                self.camera.awb_gains = gain
-            else:
-                self.camera.brightness = 25
-                self.camera.awb_mode = 'sunlight'
+            self.camera.shutter_speed = self.camera.exposure_speed
+            self.camera.exposure_mode = 'off'
+            gain = self.camera.awb_gains
+            self.camera.awb_mode = 'off'
+            self.camera.awb_gains = gain
             self.rawcapture = PiRGBArray(self.camera, size=self.camera.resolution)
             self.stream = self.camera.capture_continuous(self.rawcapture, format="bgr", use_video_port=True)
             time.sleep(0.1)
@@ -76,18 +69,6 @@ class CameraHandler(object):
             except:
                 pass
 
-        def calibratePiCamera4Letter(self):
-            try:
-                self.__log.info("Recalibrate PiCamera setting")
-                self.stop()
-                time.sleep(1)
-                self.awb = "fixed"
-                self.camera = PiCamera()
-                self.__initpicamera()
-                self.start()
-            except:
-                pass
-
         def get_pi_camerainstance(self):
             while self.stopped:
                 time.sleep(1)
@@ -97,11 +78,6 @@ class CameraHandler(object):
             while self.stopped:
                 time.sleep(1)
             return self.rawcapture
-
-        def setbrightness(self, value):
-            if 0 < value < 100:
-                self.brightness = value
-                self.camera.brightness = self.brightness
 
         def start(self):
             # start the thread to read frames from the video stream

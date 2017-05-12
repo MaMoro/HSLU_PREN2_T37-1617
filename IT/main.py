@@ -73,7 +73,7 @@ class RunPiHandler(object):
         # Init PowerLED
         self.__log.info("Recalibrate camera before starting")
         LEDStripHandler.start_powerled()
-        CameraHandler().calibratePiCamera4Letter()
+        CameraHandler().calibratePiCamera()
         self.__log.info("Recalibration done.")
         self.__log.info("Let's go!")
 
