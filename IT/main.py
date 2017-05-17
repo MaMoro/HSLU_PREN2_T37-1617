@@ -54,7 +54,8 @@ class RunPiHandler(object):
         self.serialcomm = CommunicationValues()
         self.serialcomm.send_hello()
         hellostate = self.serialcomm.get_hello_blocking()  # await hello response or timeout...
-        if hellostate == '1':
+        self.__log.info(str(hellostate))
+        if hellostate == '1' or hellostate == 1:
             self.__log.info("serial communication established!")
             self.serialcomm.send_course(self.currentcourse)
         else:
@@ -62,13 +63,14 @@ class RunPiHandler(object):
 
         # Init camera
         self.__log.info("Starting CameraHandling and start Trafficlight detection...")
-        CameraHandler()
+        #CameraHandler()
 
         # Traffic Light Detection
         t = TrafficLightDetectionPi()
         while t.getstatus() == "red":
             time.sleep(0.3)
         self.__log.info("Green signal detected...")
+        t.stop()
 
         # Init PowerLED
         self.__log.info("Recalibrate camera before starting")

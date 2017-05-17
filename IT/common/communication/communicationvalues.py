@@ -151,6 +151,7 @@ class CommunicationValues:
 
         def send_start(self):
             self.__serialcomm.send("start", 1)
+            self.__log.info("gugs")
             startcounter = 0
             while self.op_start is None:
                 if startcounter < self.retrycounter:
@@ -320,7 +321,7 @@ class CommunicationValues:
         def __handleoperations(self):
             while True:
                 operation, value = self.__serialcomm.receive()
-                # self.__log.info("got op:" + str(operation) + " val: " + str(value))
+                self.__log.info("got op:" + str(operation) + " val: " + str(value))
                 if operation == "hello":
                     if value == '1':
                         self.op_hello = 1
@@ -359,7 +360,7 @@ class CommunicationValues:
                     if value != '0':
                         self.__log.error("got error from FRDM: " + value)
                 else:
-                    self.__log.warning("got unknown operation: " + str(operation) + " with val: " + str(value))
+                    self.__log.debug("got unknown operation: " + str(operation) + " with val: " + str(value))
 
         def __start(self):
             self.__serialcomm = SerialCommunicationHandler().start()

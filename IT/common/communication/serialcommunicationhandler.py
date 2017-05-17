@@ -50,7 +50,7 @@ class SerialCommunicationHandler(object):
                     while not self.data_send.empty():
                         currentqueueitem = self.data_send.get()
                         self.serialcom.write(currentqueueitem.encode('utf-8'))
-                        self.__log.debug("value sent: " + str(currentqueueitem))
+                        self.__log.info("value sent: " + str(currentqueueitem))
                 else:
                     self.__reconnectcommunication()
             except serial.SerialException as e:

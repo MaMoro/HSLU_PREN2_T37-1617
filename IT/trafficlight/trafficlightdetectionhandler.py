@@ -68,7 +68,7 @@ class TrafficLightDetection(object):
     def detect_trafficlight(self, frame):
         self.frame = frame
         self.image_original = frame.copy()
-        self.crop_image()
+        #self.crop_image()
         self.get_brightest_redpixel()
         self.get_brightest_greenpixel()
         self.detect_brighter_color()
