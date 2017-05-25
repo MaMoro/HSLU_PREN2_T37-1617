@@ -11,5 +11,4 @@
 # opencv_version  :3.1.0
 # =======================================================================
 
-sleep 3  # wait 5s to let RPi finish the start up procedure
 /home/pi/.virtualenvs/cv/bin/python3 /home/pi/Desktop/PREN/main.py &
