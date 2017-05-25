@@ -92,6 +92,15 @@ class ImageAnalysis(object):
             box = cv2.boxPoints(rect)  # represent area as points
             box = np.int0(np.around(box))  # round values and normalize array
 
+            # check aspect ratio
+            vert_line_length = cv2.norm(np.int0(box[0]) - np.int0(box[3]))
+            hori_line_length = cv2.norm(np.int0(box[0]) - np.int0(box[1]))
+            try:
+                if not(5 < (np.int0(vert_line_length) / np.int0(hori_line_length)) < 14):
+                    break
+            except ZeroDivisionError:
+                break
+
             box = ImageAnalysis.reorder_edgepoints_clockwise(box)
             if not left_mask_area_processed:
                 pt_top = tuple(np.int0(box[1]))  # top right position
@@ -155,6 +164,14 @@ class ImageAnalysis(object):
             cv2.drawContours(img, [box], 0, (0, 255, 255), 1)
 
             box = ImageAnalysis.reorder_edgepoints_clockwise(box)
+            vert_line_length = cv2.norm(np.int0(box[0]) - np.int0(box[3]))
+            hori_line_length = cv2.norm(np.int0(box[0]) - np.int0(box[1]))
+            try:
+                if not(5 < (vert_line_length / hori_line_length) < 14):
+                    break
+            except ZeroDivisionError:
+                break
+
             if not left_mask_area_processed:
                 pt_top = tuple(np.int0(box[1]))  # top right position
                 pt_bottom = tuple(np.int0(box[2]))  # bottom right position
@@ -162,7 +179,7 @@ class ImageAnalysis(object):
                 ImageAnalysis.__log.debug("Winkel left: " + str(left_line_angle))
             else:
                 pt_top = tuple(np.int0(box[0]))  # top left position
-                pt_bottom = tuple(np.int0(box[3]))  # bottom right position
+                pt_bottom = tuple(np.int0(box[3]))  # bottom left position
                 right_line_angle = ImageAnalysis.__anglewithtwopoints(pt_top, pt_bottom)
                 ImageAnalysis.__log.debug("Winkel right: " + str(right_line_angle))
                 if not (math.fabs(right_line_angle - left_line_angle) < ImageAnalysis.angle_tolerance_redblocks):
