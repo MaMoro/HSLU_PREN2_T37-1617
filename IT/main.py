@@ -37,6 +37,7 @@ class RunPiHandler(object):
         self.__log.info("**************************************************")
         self.__log.info(" ")
         self.__log.info("Pi ready! :)")
+        LEDStripHandler.display_letter_on_LEDs(1)
         self.serialcomm = None
         self.currentcourse = 2
         self.runparcours()
@@ -48,6 +49,7 @@ class RunPiHandler(object):
             self.currentcourse = cfg.get_settings_course()
             time.sleep(0.5)
         self.__log.info("Course selected!")
+        LEDStripHandler.display_letter_on_LEDs(2)
 
         # Init communication between raspi and freedom
         self.__log.info("Setup serial communication with FreedomBoard...")
@@ -56,6 +58,7 @@ class RunPiHandler(object):
         hellostate = self.serialcomm.get_hello_blocking()  # await hello response or timeout...
         if hellostate == '1' or hellostate == 1:
             self.__log.info("serial communication established!")
+            LEDStripHandler.display_letter_on_LEDs(3)
             self.serialcomm.send_course(self.currentcourse)
         else:
             self.__log.error("not able to setup communication with Freedom-Board!!")
@@ -63,13 +66,14 @@ class RunPiHandler(object):
         coursestate = self.serialcomm.get_course_blocking()  # await course response or timeout...
         if coursestate == '1' or coursestate == 1:
             self.__log.info("course acknowledged!")
+            LEDStripHandler.display_letter_on_LEDs(4)
         else:
             self.__log.error("course not acknowledged :(")
 
         # Init camera
         self.__log.info("Starting CameraHandling and start Trafficlight detection...")
         #CameraHandler()
-        LEDStripHandler.display_letter_on_LEDs(1)
+        LEDStripHandler.display_letter_on_LEDs(5)
         time.sleep(1)
         LEDStripHandler.turn_off_all_letter_LEDS()
 
