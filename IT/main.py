@@ -38,13 +38,13 @@ class RunPiHandler(object):
         self.__log.info(" ")
         self.__log.info("Pi ready! :)")
         self.serialcomm = None
-        self.currentcourse = 0
+        self.currentcourse = 2
         self.runparcours()
 
     def runparcours(self):
         # Wait for parcour setting (left/right)
         self.__log.info("Await course selection...")
-        while self.currentcourse == 0:
+        while self.currentcourse == 2:
             self.currentcourse = cfg.get_settings_course()
             time.sleep(0.5)
         self.__log.info("Course selected!")
@@ -54,16 +54,24 @@ class RunPiHandler(object):
         self.serialcomm = CommunicationValues()
         self.serialcomm.send_hello()
         hellostate = self.serialcomm.get_hello_blocking()  # await hello response or timeout...
-        self.__log.info(str(hellostate))
         if hellostate == '1' or hellostate == 1:
             self.__log.info("serial communication established!")
             self.serialcomm.send_course(self.currentcourse)
         else:
             self.__log.error("not able to setup communication with Freedom-Board!!")
 
+        coursestate = self.serialcomm.get_course_blocking()  # await course response or timeout...
+        if coursestate == '1' or coursestate == 1:
+            self.__log.info("course acknowledged!")
+        else:
+            self.__log.error("course not acknowledged :(")
+
         # Init camera
         self.__log.info("Starting CameraHandling and start Trafficlight detection...")
         #CameraHandler()
+        LEDStripHandler.display_letter_on_LEDs(1)
+        time.sleep(1)
+        LEDStripHandler.turn_off_all_letter_LEDS()
 
         # Traffic Light Detection
         t = TrafficLightDetectionPi()
@@ -80,9 +88,12 @@ class RunPiHandler(object):
         self.__log.info("Let's go!")
 
         # Letter Detection
-        LetterDetectionHandler()
+        ldh = LetterDetectionHandler()
         self.serialcomm.send_start()
         self.__log.info("Run, chügeliwägeli, run!")
+        numbertodisplay = ldh.start()
+        LEDStripHandler.display_letter_on_LEDs(numbertodisplay)
+        self.serialcomm.send_letter(numbertodisplay)
 
         # Stop PowerLED
         LEDStripHandler.stop_powerled()

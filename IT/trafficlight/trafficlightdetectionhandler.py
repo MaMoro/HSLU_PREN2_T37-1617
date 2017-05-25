@@ -54,6 +54,7 @@ class TrafficLightDetection(object):
         self.image_original = 0
         self.green_image_bgr = 0
         self.red_image_bgr = 0
+        self.red_image_gray = 0
         self.maxLoc = 0
         self.green_color = 0
         self.red_color = 0
@@ -68,12 +69,13 @@ class TrafficLightDetection(object):
     def detect_trafficlight(self, frame):
         self.frame = frame
         self.image_original = frame.copy()
-        #self.crop_image()
+        self.crop_image()
         self.get_brightest_redpixel()
         self.get_brightest_greenpixel()
         self.detect_brighter_color()
 
         return self.frame
+        #return self.frame, self.red_image_gray
 
     # Crop the image
     def crop_image(self):
@@ -101,22 +103,23 @@ class TrafficLightDetection(object):
         red_image_output = ImageConverter.mask_color_red_fullhsv_traffic(red_image)
         self.red_image_bgr = ImageConverter.converthsvfull2bgr(red_image_output)
 
+
         # --- Count the red pixels ---
-        red_image_gray = ImageConverter.convertbgr2gray(red_image_output)
-        self.redpixel_count = cv2.countNonZero(red_image_gray)
+        self.red_image_gray = ImageConverter.convertbgr2gray(red_image_output)
+        self.redpixel_count = cv2.countNonZero(self.red_image_gray)
 
         # Check if any red pixels are left after apply red color mask
         if self.redpixel_count > 0:
             # --- Find brightest spot ---
             # perform a naive attempt to find the (x, y) coordinates of the area of the image with the largest intensity value
-            (minVal, maxVal, minLoc, self.maxLoc) = cv2.minMaxLoc(red_image_gray)  # get position of pixel with max grey value
-            self.red_color = np.uint8([[red_image_gray[self.maxLoc[1], self.maxLoc[0]]]])  # get value of brightest gray pixel
+            (minVal, maxVal, minLoc, self.maxLoc) = cv2.minMaxLoc(self.red_image_gray)  # get position of pixel with max grey value
+            self.red_color = np.uint8([[self.red_image_gray[self.maxLoc[1], self.maxLoc[0]]]])  # get value of brightest gray pixel
 
             # Draw a circle around the detected red pixel
-            """if redfound and redpixelx != 0 and redpixely != 0:  # if first red pixel is found, draw on cropped image
+            if redfound and redpixelx != 0 and redpixely != 0:  # if first red pixel is found, draw on cropped image
                 cv2.circle(self.frame, self.maxLoc, 5, (0, 0, 255), 2)
             else:
-                cv2.circle(self.image_original, self.maxLoc, 5, (0, 0, 255), 2)  # draw on original image"""
+                cv2.circle(self.image_original, self.maxLoc, 5, (0, 0, 255), 2)  # draw on original image
 
         else:  # if no red pixels are left after apply red color mask, set value to 0
             self.red_color = 0
@@ -142,10 +145,10 @@ class TrafficLightDetection(object):
             self.green_color = np.uint8([[green_image_gray[self.maxLoc[1], self.maxLoc[0]]]])  # get value of brightest gray pixel
 
             # Draw a circle around the detected green pixel
-            """if redfound and redpixelx != 0 and redpixely != 0:  # if first red pixel is found, draw on cropped image
+            if redfound and redpixelx != 0 and redpixely != 0:  # if first red pixel is found, draw on cropped image
                 cv2.circle(self.frame, self.maxLoc, 5, (0, 255, 0), 2)
             else:
-                cv2.circle(self.image_original, self.maxLoc, 5, (0, 255, 0), 2)  # draw on original image"""
+                cv2.circle(self.image_original, self.maxLoc, 5, (0, 255, 0), 2)  # draw on original image
 
         else:  # if no green pixels are left after apply green color mask, set value to 0
             self.green_color = 0

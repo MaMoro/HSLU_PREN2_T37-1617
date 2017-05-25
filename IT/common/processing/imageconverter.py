@@ -147,8 +147,8 @@ class ImageConverter(object):
         """
         img_hsv = ImageConverter.convertbgr2hsvfull(img)  # convert image to HSV
 
-        mask = cv2.inRange(img_hsv, ImageConverter.lower_red_full_traffic,
-                           ImageConverter.upper_red_full_traffic)  # create overlay mask for all none matching bits to zero (black)
+        #mask = cv2.inRange(img_hsv, np.array(cfg.get_masktrafficlight_red_low_full_splited()), np.array(cfg.get_masktrafficlight_red_high_full_splited()))  # create overlay mask for all none matching bits to zero (black)
+        mask = cv2.inRange(img_hsv, ImageConverter.lower_red_full_traffic, ImageConverter.upper_red_full_traffic)  # create overlay mask for all none matching bits to zero (black)
         output_img = cv2.bitwise_and(img, img, mask=mask)  # apply mask on image
 
         return output_img

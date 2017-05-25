@@ -38,12 +38,16 @@ class LetterDetectionHandler(object):
             self.__log = logging.getLogger()
             self.__log.setLevel(cfg.get_settings_loglevel())
             self.__log.info("Letterdetection started")
-            self.FPS = FPSHelper()
+            #self.FPS = FPSHelper()
             self.frame = None
             self.stopped = True
+            self.numbertodisplay = 0
+            self.processingqueue = 0
+            self.resultqueue = 0
+            self.num_processing_units = 4
             self.font = cfg.get_opencv_font()
             self.min_amount_processed_letters = cfg.get_letter_min_amount_processed_letters()
-            self.start()
+            self.initqueues()
 
         def start(self):
             # start the thread to read frames from the video stream
@@ -54,15 +58,25 @@ class LetterDetectionHandler(object):
                 t.daemon = True
                 self.stopped = False
                 t.start()
-                time.sleep(5)
-            return self
+                t.join()
+            return self.numbertodisplay
+
+        def starttest(self):
+            # start the thread to read frames from the video stream
+            if self.stopped:
+                t = Thread(target=self.rundetection, args=())
+                t.daemon = True
+                self.stopped = False
+                t.start()
+                t.join()
+            return self.numbertodisplay
 
         def stop(self):
             self.stopped = True  # indicate that the thread should be stopped
 
         def rundetection(self):
             self.__log.info("Start capturing")
-            pistream = CameraHandler().start()
+            pistream = CameraHandler()
 
             while True:
                 self.frame = pistream.read()
@@ -151,14 +165,6 @@ class LetterDetectionHandler(object):
 
         def processing_prod(self):
             imgcount = 0
-            num_units = 4
-            self.__log.info("Start processing, create Image-Processing-Units..")
-            processingqueue = multiprocessing.JoinableQueue()
-            resultqueue = multiprocessing.Queue()
-            processingunits = [ImageProcessing(processingqueue, resultqueue) for i in range(num_units)]
-            for w in processingunits:
-                w.start()
-            self.__log.info("Image-Processing-Units created, ready to process...")
             pistream = CameraHandler()
             self.__log.info("Ready! Start capturing")
 
@@ -167,25 +173,31 @@ class LetterDetectionHandler(object):
                 redmask = ImageConverter.mask_color_red_fullhsv(self.frame)
                 edges = ImageAnalysis.get_ordered_corners(redmask)
                 if edges != 0:
-                    processingqueue.put(ImageNumber(self.frame, edges))
+                    self.processingqueue.put(ImageNumber(self.frame, edges))
                     imgcount += 1
                 elif imgcount > self.min_amount_processed_letters:
                     # if more than specified images processed and no more edges found it's assumed that the number on the wall has passed
-                    for i in range(num_units):
-                        processingqueue.put(None)  # enforce ImageProcessing instances to terminate
-                    processingqueue.join()  # waiting for alle processes to be terminated
+                    for i in range(self.num_processing_units):
+                        self.processingqueue.put(None)  # enforce ImageProcessing instances to terminate
+                    self.processingqueue.join()  # waiting for alle processes to be terminated
                     break
 
             CameraHandler().stop()
-
             self.__log.info("Processed " + str(imgcount) + " images")
             allnumbers = []
 
-            while resultqueue.qsize() != 0:
-                allnumbers.append(resultqueue.get())
-            numbertodisplay = ImageAnalysis.most_voted_number(allnumbers)
-            LEDStripHandler.display_letter_on_LEDs(numbertodisplay)
-            CommunicationValues().send_letter(numbertodisplay)
+            while self.resultqueue.qsize() != 0:
+                allnumbers.append(self.resultqueue.get())
+            self.numbertodisplay = ImageAnalysis.most_voted_number(allnumbers)
+
+        def initqueues(self):
+            self.__log.info("Start processing, create Image-Processing-Units..")
+            self.processingqueue = multiprocessing.JoinableQueue()
+            self.resultqueue = multiprocessing.Queue()
+            processingunits = [ImageProcessing(self.processingqueue, self.resultqueue) for i in range(self.num_processing_units)]
+            for w in processingunits:
+                w.start()
+            self.__log.info("Image-Processing-Units created, ready to process...")
 
         def get_frame(self):
             return self.frame  # return the frame most recently read
@@ -212,8 +224,10 @@ if __name__ == '__main__':
 
     # Init camera
     print("Starting CameraHandling and start Trafficlight detection...")
-"""
     LetterDetectionHandler()
-    """time.sleep(5)
+    time.sleep(5)
     serialcomm.send_start()"""
-    time.sleep(999)
+    ldh = LetterDetectionHandler()
+    #numbertodisplay = ldh.start()
+    ldh.starttest()
+    print("snömmerli esch: " + str(numbertodisplay))

@@ -50,7 +50,7 @@ class SerialCommunicationHandler(object):
                     while not self.data_send.empty():
                         currentqueueitem = self.data_send.get()
                         self.serialcom.write(currentqueueitem.encode('utf-8'))
-                        self.__log.info("value sent: " + str(currentqueueitem))
+                        self.__log.info("value sent: " + str(currentqueueitem.strip('\n')))
                 else:
                     self.__reconnectcommunication()
             except serial.SerialException as e:
@@ -100,7 +100,7 @@ class SerialCommunicationHandler(object):
                 opval = opval.decode()
                 return operation.rstrip(), opval.rstrip()
             except:
-                self.__log.error("org: " + str(inputvalue))
+                self.__log.debug("org: " + str(inputvalue))
                 return "ERROR", "ERROR"
 
         def __decodestring(self, operation, opval):

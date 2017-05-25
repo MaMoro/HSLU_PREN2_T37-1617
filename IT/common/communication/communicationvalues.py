@@ -72,6 +72,17 @@ class CommunicationValues:
                     break
             return self.op_hello
 
+        def get_course_blocking(self):
+            coursecounter = 0
+            while self.op_course is None:
+                if coursecounter < self.retrycounter:
+                    time.sleep(self.timeout)
+                    coursecounter += 1
+                else:
+                    self.__log.error("timeout hello blocking...")
+                    break
+            return self.op_course
+
         def get_hello(self):
             return self.op_hello
 
@@ -151,7 +162,6 @@ class CommunicationValues:
 
         def send_start(self):
             self.__serialcomm.send("start", 1)
-            self.__log.info("gugs")
             startcounter = 0
             while self.op_start is None:
                 if startcounter < self.retrycounter:
