@@ -95,10 +95,10 @@ class LetterDetectionHandler(object):
                     # self.FPS.stop()
                     #self.__log.info("FPS: " + str(self.FPS.fps()) + " | ms: " + str(self.FPS.elapsedtime_ms()))
                     cv2.imshow("Transformed", correctedimg)
-                    #cv2.imshow("Cropped", cropped)
+                    cv2.imshow("Cropped", cropped)
 
                     cv2.imshow("Video", imgmarked)
-                    #cv2.imshow("redmask", redmask)
+                    cv2.imshow("redmask", redmask)
                 else:
                     #self.FPS.stop()
                     # self.__log.info("FPS: " + str(self.FPS.fps()) + " | ms: " + str(self.FPS.elapsedtime_ms()))
@@ -228,6 +228,6 @@ if __name__ == '__main__':
     time.sleep(5)
     serialcomm.send_start()"""
     ldh = LetterDetectionHandler()
-    #numbertodisplay = ldh.start()
     ldh.starttest()
-    print("snömmerli esch: " + str(numbertodisplay))
+    #numbertodisplay = ldh.start()
+    #print("snömmerli esch: " + str(numbertodisplay))
