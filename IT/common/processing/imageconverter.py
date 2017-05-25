@@ -236,6 +236,7 @@ class ImageConverter(object):
             dim = (50, int(img_cropped.shape[0] * r))
             img_cropped = cv2.resize(img_cropped, dim, interpolation=cv2.INTER_AREA)
         return img_cropped
+        #return img_bw_unbordered
 
     @staticmethod
     def thinningblackwhiteimage(image):
