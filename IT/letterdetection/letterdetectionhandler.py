@@ -89,16 +89,15 @@ class LetterDetectionHandler(object):
                     try:
                         numberimg = ImageAnalysis.get_roman_letter_drawed(cropped)
                         cv2.imshow("Letter", numberimg)
+                        # self.FPS.stop()
+                        #self.__log.info("FPS: " + str(self.FPS.fps()) + " | ms: " + str(self.FPS.elapsedtime_ms()))
+                        cv2.imshow("Transformed", correctedimg)
+                        cv2.imshow("Cropped", cropped)
+
+                        cv2.imshow("Video", imgmarked)
+                        cv2.imshow("redmask", redmask)
                     except:
                         self.__log.error("hmmmm....")
-
-                    # self.FPS.stop()
-                    #self.__log.info("FPS: " + str(self.FPS.fps()) + " | ms: " + str(self.FPS.elapsedtime_ms()))
-                    cv2.imshow("Transformed", correctedimg)
-                    cv2.imshow("Cropped", cropped)
-
-                    cv2.imshow("Video", imgmarked)
-                    cv2.imshow("redmask", redmask)
                 else:
                     #self.FPS.stop()
                     # self.__log.info("FPS: " + str(self.FPS.fps()) + " | ms: " + str(self.FPS.elapsedtime_ms()))
