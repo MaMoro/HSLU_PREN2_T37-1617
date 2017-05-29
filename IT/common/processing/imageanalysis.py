@@ -21,7 +21,6 @@ import numpy as np
 
 from logging.config import fileConfig
 from collections import Counter
-from common.logging.fpshelper import FPSHelper
 from common.processing.imageconverter import ImageConverter
 
 
@@ -93,6 +92,7 @@ class ImageAnalysis(object):
             box = np.int0(np.around(box))  # round values and normalize array
 
             # check aspect ratio
+            box = ImageAnalysis.reorder_edgepoints_clockwise(box)
             vert_line_length = cv2.norm(np.int0(box[0]) - np.int0(box[3]))
             hori_line_length = cv2.norm(np.int0(box[0]) - np.int0(box[1]))
             try:
@@ -101,18 +101,15 @@ class ImageAnalysis(object):
             except ZeroDivisionError:
                 break
 
-            box = ImageAnalysis.reorder_edgepoints_clockwise(box)
             if not left_mask_area_processed:
                 pt_top = tuple(np.int0(box[1]))  # top right position
                 pt_bottom = tuple(np.int0(box[2]))  # bottom right position
                 left_line_angle = ImageAnalysis.__anglewithtwopoints(pt_top, pt_bottom)
-                ImageAnalysis.__log.debug("Winkel left: " + str(left_line_angle))
 
             else:
                 pt_top = tuple(np.int0(box[0]))  # top left position
                 pt_bottom = tuple(np.int0(box[3]))  # bottom right position
                 right_line_angle = ImageAnalysis.__anglewithtwopoints(pt_top, pt_bottom)
-                ImageAnalysis.__log.debug("Winkel right: " + str(right_line_angle))
                 if not (math.fabs(right_line_angle - left_line_angle) < ImageAnalysis.angle_tolerance_redblocks):
                     break
 
@@ -126,7 +123,6 @@ class ImageAnalysis(object):
         if len(edges) == 4:
             # reorder edges to (top left, top right, bottom right, bottom left)
             edges = [edges[i] for i in [0, 2, 3, 1]]
-            ImageAnalysis.__log.debug("edges: " + str(edges))
             return edges
         else:
             return 0
@@ -406,10 +402,8 @@ class ImageAnalysis(object):
             angle = math.atan(float(dx) / float(dy))
         except ZeroDivisionError:
             angle = 0.0
-        # The angle is in radians (-pi/2 to +pi/2).  If you want degrees, you need the following line
         angle *= 180 / math.pi
-        # Now you have an angle from -90 to +90.  But if the player is below the turret,
-        # you want to flip it
+        # Now you have an angle from -90 to +90.
         if dy < 0:
             angle += 180
         return angle
@@ -523,7 +517,6 @@ class ImageAnalysis(object):
         :param line2: second line (note: list e.g. (22.3, (x1,y1), (x2,y2))
         :return: x,y position of intersection or if no intersection => False
         """
-        # TODO: Exception handling if params not provided correctly
 
         xdiff = (line1[1][0] - line1[2][0], line2[1][0] - line2[2][0])
         ydiff = (line1[1][1] - line1[2][1], line2[1][1] - line2[2][1])
