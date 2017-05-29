@@ -54,7 +54,7 @@ class CameraHandler(object):
             self.camera.awb_gains = gain
             self.rawcapture = PiRGBArray(self.camera, size=self.camera.resolution)
             self.stream = self.camera.capture_continuous(self.rawcapture, format="bgr", use_video_port=True)
-            time.sleep(0.1)
+            #time.sleep(0.1)
             self.__log.info("PiCamera initialization finished")
             self.start()
 
@@ -62,7 +62,6 @@ class CameraHandler(object):
             try:
                 self.__log.info("Recalibrate PiCamera setting")
                 self.stop()
-                time.sleep(1)
                 self.camera = PiCamera()
                 self.__initpicamera()
                 self.start()
@@ -86,7 +85,7 @@ class CameraHandler(object):
                 t.daemon = True
                 self.stopped = False
                 t.start()
-                time.sleep(0.5)
+                time.sleep(0.2)
             return self
 
         def update(self):
