@@ -62,6 +62,7 @@ class RunPiHandler(object):
             self.serialcomm.send_course(self.currentcourse)
         else:
             self.__log.error("not able to setup communication with Freedom-Board!!")
+            LEDStripHandler.blinkled(3)
 
         coursestate = self.serialcomm.get_course_blocking()  # await course response or timeout...
         if coursestate == '1' or coursestate == 1:
@@ -69,33 +70,33 @@ class RunPiHandler(object):
             LEDStripHandler.display_letter_on_LEDs(4)
         else:
             self.__log.error("course not acknowledged :(")
+            LEDStripHandler.blinkled(4)
 
         # Init camera
         self.__log.info("Starting CameraHandling and start Trafficlight detection...")
-        #CameraHandler()
         LEDStripHandler.display_letter_on_LEDs(5)
-        time.sleep(1)
-        LEDStripHandler.turn_off_all_letter_LEDS()
 
         # Traffic Light Detection
         t = TrafficLightDetectionPi()
+        LEDStripHandler.turn_off_all_letter_LEDS()
         while t.getstatus() == "red":
             time.sleep(0.3)
         self.__log.info("Green signal detected...")
         t.stop()
 
         # Init PowerLED
-        self.__log.info("Recalibrate camera before starting")
+        #self.__log.info("Recalibrate camera before starting")
         LEDStripHandler.start_powerled()
-        CameraHandler().calibratePiCamera()
-        self.__log.info("Recalibration done.")
+        #CameraHandler().calibratePiCamera()
+        #self.__log.info("Recalibration done.")
         self.__log.info("Let's go!")
 
         # Letter Detection
         ldh = LetterDetectionHandler()
-        self.serialcomm.send_start()
         self.__log.info("Run, chügeliwägeli, run!")
+        self.serialcomm.send_start()
         numbertodisplay = ldh.start()
+        #numbertodisplay = ldh.starttest()
         LEDStripHandler.display_letter_on_LEDs(numbertodisplay)
         self.serialcomm.send_letter(numbertodisplay)
 
