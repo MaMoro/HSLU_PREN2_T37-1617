@@ -33,16 +33,31 @@ class LEDStripHandler:
         if not LEDStripHandler.__gpio_init:
             LEDStripHandler.__setupGPIOPins()
         if number == 1:
-            GPIO.output(12, GPIO.HIGH)  # LED 1 einschalten
+            GPIO.output(16, GPIO.HIGH)  # LED 1 einschalten
         elif number == 2:
-            GPIO.output(11, GPIO.HIGH)  # LED 2 einschalten
+            GPIO.output(15, GPIO.HIGH)  # LED 2 einschalten
         elif number == 3:
             GPIO.output(13, GPIO.HIGH)  # LED 3 einschalten
         elif number == 4:
-            GPIO.output(15, GPIO.HIGH)  # LED 4 einschalten
+            GPIO.output(11, GPIO.HIGH)  # LED 4 einschalten
         elif number == 5:
-            GPIO.output(16, GPIO.HIGH)  # LED 5 einschalten
-        LEDStripHandler.__log.info("LEDs for number " + str(number) + " turned on!")
+            GPIO.output(12, GPIO.HIGH)  # LED 5 einschalten
+        #LEDStripHandler.__log.info("LEDs for number " + str(number) + " turned on!")
+
+    @staticmethod
+    def turnoff_letter_on_LEDs(number):
+        if not LEDStripHandler.__gpio_init:
+            LEDStripHandler.__setupGPIOPins()
+        if number == 1:
+            GPIO.output(16, GPIO.LOW)  # LED 1 einschalten
+        elif number == 2:
+            GPIO.output(15, GPIO.LOW)  # LED 2 einschalten
+        elif number == 3:
+            GPIO.output(13, GPIO.LOW)  # LED 3 einschalten
+        elif number == 4:
+            GPIO.output(11, GPIO.LOW)  # LED 4 einschalten
+        elif number == 5:
+            GPIO.output(12, GPIO.LOW)  # LED 5 einschalten
 
     @staticmethod
     def turn_off_all_letter_LEDS():
@@ -53,13 +68,21 @@ class LEDStripHandler:
         GPIO.output(16, GPIO.LOW)
 
     @staticmethod
+    def blinkled(number):
+        i = 0
+        while i < 4:
+            LEDStripHandler.display_letter_on_LEDs(number)
+            time.sleep(0.5)
+            LEDStripHandler.turnoff_letter_on_LEDs(number)
+            i += 1
+
+    @staticmethod
     def start_powerled():
         if not LEDStripHandler.__gpio_init:
             LEDStripHandler.__setupGPIOPins()
         GPIO.output(LEDStripHandler.__powerledpin, GPIO.HIGH)
         #LEDStripHandler.__powerledpwm = GPIO.PWM(LEDStripHandler.__powerledpin, 200)
         #LEDStripHandler.__powerledpwm.start(80)  # only x% power
-        time.sleep(0.1)
         LEDStripHandler.__log.info("PowerLED turned on!")
 
     @staticmethod
@@ -68,7 +91,6 @@ class LEDStripHandler:
             LEDStripHandler.__setupGPIOPins()
         GPIO.output(LEDStripHandler.__powerledpin, GPIO.LOW)
         #LEDStripHandler.__powerledpwm.stop()
-        time.sleep(0.1)
         LEDStripHandler.__log.info("PowerLED turned off!")
 
     @staticmethod
@@ -78,6 +100,5 @@ class LEDStripHandler:
         GPIO.setmode(GPIO.BOARD)    #GPIO Layout (Pin-Nummer verwenden)
         GPIO.setup(LEDStripHandler.__letterledpins, GPIO.OUT, initial=GPIO.LOW) #declare all LED Pins as output and turn LEDs off
         GPIO.setup(LEDStripHandler.__powerledpin, GPIO.OUT, initial=GPIO.LOW)   #declare PowerLED Pin as output and turn LED off
-        time.sleep(0.1)             #Pins "setzen lassen"
         LEDStripHandler.__gpio_init = True
         LEDStripHandler.__log.info("Initialize GPIO Pins done!")
