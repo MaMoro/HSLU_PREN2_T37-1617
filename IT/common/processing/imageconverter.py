@@ -219,24 +219,25 @@ class ImageConverter(object):
         :param roi: original image to crop
         :return: cropped original image
         """
+        # remove border erosion
+        img_height, img_width, _ = roi.shape
+        border_y = int(img_height*0.1)
+        border_x = int(img_width*0.05)
+        roi = roi[border_y:img_height - border_y, border_x:img_width - border_x]
+
         img_bw = ImageConverter.convert2blackwhite(roi)
         img_bw[img_bw > 0] = 255
 
-        # remove border erosion
-        img_height, img_width = img_bw.shape
-        img_bw_unbordered = img_bw[15:img_height - 15, 4:img_width - 4]
-
         # get rectangle around letter and crop original image
-        pos_x, pos_y, width, height = cv2.boundingRect(img_bw_unbordered)
+        pos_x, pos_y, width, height = cv2.boundingRect(img_bw)
         img_cropped = roi[pos_y:pos_y + height, pos_x:pos_x + width]
 
         # resize to original size
-        if 0 < img_cropped.shape[1] < 50:
-            r = 50 / img_cropped.shape[1]
-            dim = (50, int(img_cropped.shape[0] * r))
+        if 0 < img_cropped.shape[0] < 60:
+            r = 60 / img_cropped.shape[0]
+            dim = (int(img_cropped.shape[1] * r), 60)
             img_cropped = cv2.resize(img_cropped, dim, interpolation=cv2.INTER_AREA)
         return img_cropped
-        #return img_bw_unbordered
 
     @staticmethod
     def thinningblackwhiteimage(image):
