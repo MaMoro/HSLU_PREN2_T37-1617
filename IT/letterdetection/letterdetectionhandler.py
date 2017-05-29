@@ -38,7 +38,6 @@ class LetterDetectionHandler(object):
             self.__log = logging.getLogger()
             self.__log.setLevel(cfg.get_settings_loglevel())
             self.__log.info("Letterdetection started")
-            #self.FPS = FPSHelper()
             self.frame = None
             self.stopped = True
             self.numbertodisplay = 0
@@ -52,8 +51,6 @@ class LetterDetectionHandler(object):
         def start(self):
             # start the thread to read frames from the video stream
             if self.stopped:
-                #t = Thread(target=self.processing, args=())
-                #t = Thread(target=self.rundetection, args=())
                 t = Thread(target=self.processing_prod, args=())
                 t.daemon = True
                 self.stopped = False
@@ -80,7 +77,6 @@ class LetterDetectionHandler(object):
 
             while True:
                 self.frame = pistream.read()
-                #self.FPS.start()
                 redmask = ImageConverter.mask_color_red_fullhsv(self.frame)
                 imgmarked, edges = ImageAnalysis.get_ordered_corners_drawed(redmask, self.frame)
                 if edges != 0:
@@ -88,9 +84,11 @@ class LetterDetectionHandler(object):
                     cropped = ImageConverter.minimize_roi_lettercontour(correctedimg)
                     try:
                         numberimg = ImageAnalysis.get_roman_letter_drawed(cropped)
+                        number = ImageAnalysis.get_roman_letter(cropped)
+                        LEDStripHandler.display_letter_on_LEDs(number)
+                        CommunicationValues().send_letter(number)
+
                         cv2.imshow("Letter", numberimg)
-                        # self.FPS.stop()
-                        #self.__log.info("FPS: " + str(self.FPS.fps()) + " | ms: " + str(self.FPS.elapsedtime_ms()))
                         cv2.imshow("Transformed", correctedimg)
                         cv2.imshow("Cropped", cropped)
 
@@ -99,8 +97,6 @@ class LetterDetectionHandler(object):
                     except:
                         self.__log.error("hmmmm....")
                 else:
-                    #self.FPS.stop()
-                    # self.__log.info("FPS: " + str(self.FPS.fps()) + " | ms: " + str(self.FPS.elapsedtime_ms()))
                     cv2.imshow("Video", self.frame)
 
                 key = cv2.waitKey(1) & 0xFF
