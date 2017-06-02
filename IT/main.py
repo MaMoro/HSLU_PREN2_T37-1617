@@ -28,6 +28,7 @@ from letterdetection.letterdetectionhandler import LetterDetectionHandler
 class RunPiHandler(object):
     def __init__(self):
         # Load configuration / config handler
+        LEDStripHandler.blinkled(1)
         fileConfig(cfg.get_logging_config_fullpath())
         self.__log = logging.getLogger()
         self.__log.setLevel(cfg.get_settings_loglevel())
@@ -48,6 +49,7 @@ class RunPiHandler(object):
         while self.currentcourse == 2:
             self.currentcourse = cfg.get_settings_course()
             time.sleep(0.5)
+            LEDStripHandler.singleblinkled(2)
         self.__log.info("Course selected!")
         LEDStripHandler.display_letter_on_LEDs(2)
 
@@ -66,7 +68,10 @@ class RunPiHandler(object):
 
         coursestate = self.serialcomm.get_course_blocking()  # await course response or timeout...
         if coursestate == '1' or coursestate == 1:
-            self.__log.info("course acknowledged!")
+            self.__log.info("course left turn!")
+            LEDStripHandler.display_letter_on_LEDs(4)
+        elif coursestate == '0' or coursestate == 0:
+            self.__log.info("course right turn!")
             LEDStripHandler.display_letter_on_LEDs(4)
         else:
             self.__log.error("course not acknowledged :(")
