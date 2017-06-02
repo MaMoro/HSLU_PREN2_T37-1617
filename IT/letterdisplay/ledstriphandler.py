@@ -69,12 +69,62 @@ class LEDStripHandler:
 
     @staticmethod
     def blinkled(number):
+        if not LEDStripHandler.__gpio_init:
+            LEDStripHandler.__setupGPIOPins()
         i = 0
-        while i < 4:
-            LEDStripHandler.display_letter_on_LEDs(number)
-            time.sleep(0.5)
-            LEDStripHandler.turnoff_letter_on_LEDs(number)
-            i += 1
+        while i < 6:
+            if number == 1:
+                GPIO.output(16, GPIO.HIGH)  # LED 1 einschalten
+            elif number == 2:
+                GPIO.output(15, GPIO.HIGH)  # LED 2 einschalten
+            elif number == 3:
+                GPIO.output(13, GPIO.HIGH)  # LED 3 einschalten
+            elif number == 4:
+                GPIO.output(11, GPIO.HIGH)  # LED 4 einschalten
+            elif number == 5:
+                GPIO.output(12, GPIO.HIGH)  # LED 5 einschalten
+            time.sleep(0.25)
+            if number == 1:
+                GPIO.output(16, GPIO.LOW)  # LED 1 einschalten
+            elif number == 2:
+                GPIO.output(15, GPIO.LOW)  # LED 2 einschalten
+            elif number == 3:
+                GPIO.output(13, GPIO.LOW)  # LED 3 einschalten
+            elif number == 4:
+                GPIO.output(11, GPIO.LOW)  # LED 4 einschalten
+            elif number == 5:
+                GPIO.output(12, GPIO.LOW)  # LED 5 einschalten
+            time.sleep(0.25)
+            i = i + 1
+        return True
+
+    @staticmethod
+    def singleblinkled(number):
+        if not LEDStripHandler.__gpio_init:
+            LEDStripHandler.__setupGPIOPins()
+        if number == 1:
+            GPIO.output(16, GPIO.HIGH)  # LED 1 einschalten
+        elif number == 2:
+            GPIO.output(15, GPIO.HIGH)  # LED 2 einschalten
+        elif number == 3:
+            GPIO.output(13, GPIO.HIGH)  # LED 3 einschalten
+        elif number == 4:
+            GPIO.output(11, GPIO.HIGH)  # LED 4 einschalten
+        elif number == 5:
+            GPIO.output(12, GPIO.HIGH)  # LED 5 einschalten
+        time.sleep(0.25)
+        if number == 1:
+            GPIO.output(16, GPIO.LOW)  # LED 1 einschalten
+        elif number == 2:
+            GPIO.output(15, GPIO.LOW)  # LED 2 einschalten
+        elif number == 3:
+            GPIO.output(13, GPIO.LOW)  # LED 3 einschalten
+        elif number == 4:
+            GPIO.output(11, GPIO.LOW)  # LED 4 einschalten
+        elif number == 5:
+            GPIO.output(12, GPIO.LOW)  # LED 5 einschalten
+        time.sleep(0.25)
+        return True
 
     @staticmethod
     def start_powerled():
