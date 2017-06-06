@@ -19,7 +19,6 @@ import common.config.confighandler as cfg
 
 from logging.config import fileConfig
 from common.communication.communicationvalues import CommunicationValues
-from common.processing.camerahandler import CameraHandler
 from letterdisplay.ledstriphandler import LEDStripHandler
 from trafficlight.trafficlightdetection_pi import TrafficLightDetectionPi
 from letterdetection.letterdetectionhandler import LetterDetectionHandler
@@ -77,11 +76,15 @@ class RunPiHandler(object):
             self.__log.error("course not acknowledged :(")
             LEDStripHandler.blinkled(4)
 
-        # Init camera
-        self.__log.info("Starting CameraHandling and start Trafficlight detection...")
         LEDStripHandler.display_letter_on_LEDs(5)
 
+        # Start letterdetection to init queues
+        self.__log.info("Init Letter Queues")
+        ldh = LetterDetectionHandler()
+        ldh.initqueues()
+
         # Traffic Light Detection
+        self.__log.info("Detecting trafficlight change to green...")
         t = TrafficLightDetectionPi()
         LEDStripHandler.turn_off_all_letter_LEDS()
         while t.getstatus() == "red":
@@ -89,24 +92,29 @@ class RunPiHandler(object):
         self.__log.info("Green signal detected...")
         t.stop()
 
-        # Init PowerLED
-        #self.__log.info("Recalibrate camera before starting")
+        # Init Camera & PowerLED
         LEDStripHandler.start_powerled()
-        #CameraHandler().calibratePiCamera()
-        #self.__log.info("Recalibration done.")
+        ldh.initcamera()
         self.__log.info("Let's go!")
 
         # Letter Detection
-        ldh = LetterDetectionHandler()
         self.__log.info("Run, chügeliwägeli, run!")
         self.serialcomm.send_start()
+
         numbertodisplay = ldh.start()
-        #numbertodisplay = ldh.starttest()
-        LEDStripHandler.display_letter_on_LEDs(numbertodisplay)
+        LEDStripHandler.stop_powerled()
+        self.__log.info("Letter found: " + str(numbertodisplay))
+
         self.serialcomm.send_letter(numbertodisplay)
 
-        # Stop PowerLED
-        LEDStripHandler.stop_powerled()
+        # blink detected letter till number acknowledged
+        sendednumber = self.serialcomm.get_letter()
+        while int(sendednumber) != numbertodisplay:
+            sendednumber = self.serialcomm.get_letter()
+            time.sleep(0.2)
+            LEDStripHandler.singleblinkled(numbertodisplay)
+        self.__log.info("Letter acknowledged")
+        LEDStripHandler.display_letter_on_LEDs(numbertodisplay)
 
         self.__log.info(" ")
         self.__log.info("**************************************************")
