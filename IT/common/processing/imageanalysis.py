@@ -244,7 +244,7 @@ class ImageAnalysis(object):
                     "-----\nlinept1: " + str(line_pt1) + "\nlinept2: " + str(line_pt2) + "\ndeg:" + str(deg))
 
                 # detect an I
-                if (0.0 < deg < 1.0) or (178.0 < deg < 180.0):
+                if (0.0 <= deg < 2.0) or (178.0 < deg <= 180.0):
                     ImageAnalysis.__log.debug("I - line found with deg: " + str(deg))
 
                     # get median x-value of both points
@@ -271,6 +271,7 @@ class ImageAnalysis(object):
                     continue
                 else:
                     ImageAnalysis.__log.debug("line with deg: " + str(deg) + "out of allowed range")
+            # ImageAnalysis.__log.info("size of I: " + str(len(all_i)))
             # FPS.stop()
             #ImageAnalysis.__log.info("processing time evaluate all lines: " + str(FPS.elapsedtime_ms()) + " ms")
 
@@ -350,7 +351,7 @@ class ImageAnalysis(object):
                 line_pt2 = (int(x0 - 1000 * (-b)), int(y0 - 1000 * a))
 
                 # detect an I
-                if (0.0 < deg < 1.0) or (178.0 < deg < 180.0):
+                if (0.0 <= deg < 2.0) or (178.0 < deg <= 180.0):
                     # get median x-value of both points
                     x = (int(x0 + 1000 * (-b)) + int(x0 - 1000 * (-b))) / 2
                     all_i.append([x, line_pt1, line_pt2])
@@ -367,8 +368,6 @@ class ImageAnalysis(object):
                     x = (int(x0 + 1000 * (-b)) + int(x0 - 1000 * (-b))) / 2
                     all_v_left.append([x, line_pt1, line_pt2])
                     continue
-                else:
-                    ImageAnalysis.__log.debug("line with deg: " + str(deg) + "out of allowed range")
 
             # eliminate redundant detected I
             nonredundant_i = ImageAnalysis.__eliminate_redundant_i(all_i)
@@ -389,8 +388,6 @@ class ImageAnalysis(object):
 
         else:
             ImageAnalysis.__log.warning("no lines detected on image")
-        ImageAnalysis.__log.debug("--")
-
         return number
 
     @staticmethod
