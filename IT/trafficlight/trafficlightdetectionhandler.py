@@ -179,7 +179,7 @@ class TrafficLightDetection(object):
                 redfound = True
                 redpixelx = self.maxLoc[0]
                 redpixely = self.maxLoc[1]
-            self.__log.info('Red detected!')
+            self.__log.debug('Red detected!')
 
             """cv2.putText(self.image_original, '{:%H:%M:%S.%f} - Red detected!'.format(datetime.datetime.now()), (self.textspace, self.textspace), font, 0.7, self.color_green, 1, cv2.LINE_AA)
             cv2.putText(self.frame, '{:%H:%M:%S.%f} - Red detected!'.format(datetime.datetime.now()),
@@ -190,7 +190,7 @@ class TrafficLightDetection(object):
                 cv2.imwrite("red.png", self.red_image_bgr)"""
         # Green detected
         elif self.red_color < self.green_color:
-            self.__log.info('Green detected!')
+            self.__log.debug('Green detected!')
             self.green_hit = True
 
             """cv2.putText(self.image_original, '{:%H:%M:%S.%f} - Green detected!'.format(datetime.datetime.now()), (self.textspace, self.textspace), font, 0.7, self.color_green, 1, cv2.LINE_AA)
@@ -202,7 +202,7 @@ class TrafficLightDetection(object):
                 cv2.imwrite("green.png", self.green_image_bgr)"""
         # Default: Red detected
         else:
-            self.__log.info('Red detected (nothing)!')
+            self.__log.debug('Red detected (nothing)!')
 
             """cv2.putText(self.image_original, '{:%H:%M:%S.%f} - Red detected (nothing)!'.format(datetime.datetime.now()), (self.textspace, self.textspace), font, 0.7, self.color_green, 1, cv2.LINE_AA)
             cv2.putText(self.frame, '{:%H:%M:%S.%f} - Red detected (nothing)!'.format(datetime.datetime.now()),
