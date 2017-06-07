@@ -34,7 +34,7 @@ class ImageAnalysis(object):
     letter_tolerance_i_gap = cfg.get_letter_tolerance_i_gap()
     letter_tolerance_v_gap = cfg.get_letter_tolerance_v_gap()
     min_maskarea_size = cfg.get_maskletter_min_maskarea_size()
-    angle_tolerance_redblocks = 15
+    angle_tolerance_redblocks = 25
 
     @staticmethod
     def reorder_edgepoints_clockwise(pts):
@@ -84,31 +84,32 @@ class ImageAnalysis(object):
         left_mask_area_processed = False
         left_line_angle = None
         for c in cnts:
-            # TODO: risk of cut red line, need to guarantee that both red blocks are fully visible
-            # e.g. ignore red color on image boarder
-
             rect = cv2.minAreaRect(c)  # get minimal area rectangle
             box = cv2.boxPoints(rect)  # represent area as points
             box = np.int0(np.around(box))  # round values and normalize array
 
             # check aspect ratio
             box = ImageAnalysis.reorder_edgepoints_clockwise(box)
-            vert_line_length = cv2.norm(np.int0(box[0]) - np.int0(box[3]))
-            hori_line_length = cv2.norm(np.int0(box[0]) - np.int0(box[1]))
+            pt_top_left = np.int0(box[0])
+            pt_top_right = np.int0(box[1])
+            pt_bottom_left = np.int0(box[3])
+            pt_bottom_right = np.int0(box[2])
+            vert_line_length = np.int0(cv2.norm(pt_top_left - pt_bottom_left))
+            hori_line_length = np.int0(cv2.norm(pt_top_left - pt_top_right))
             try:
-                if not(5 < (np.int0(vert_line_length) / np.int0(hori_line_length)) < 14):
+                if not (5 < vert_line_length / hori_line_length < 14):
                     break
             except ZeroDivisionError:
                 break
 
             if not left_mask_area_processed:
-                pt_top = tuple(np.int0(box[1]))  # top right position
-                pt_bottom = tuple(np.int0(box[2]))  # bottom right position
+                pt_top = tuple(pt_top_right)  # top right position
+                pt_bottom = tuple(pt_bottom_right)  # bottom right position
                 left_line_angle = ImageAnalysis.__anglewithtwopoints(pt_top, pt_bottom)
 
             else:
-                pt_top = tuple(np.int0(box[0]))  # top left position
-                pt_bottom = tuple(np.int0(box[3]))  # bottom right position
+                pt_top = tuple(pt_top_left)  # top left position
+                pt_bottom = tuple(pt_bottom_left)  # bottom left position
                 right_line_angle = ImageAnalysis.__anglewithtwopoints(pt_top, pt_bottom)
                 if not (math.fabs(right_line_angle - left_line_angle) < ImageAnalysis.angle_tolerance_redblocks):
                     break
@@ -151,9 +152,6 @@ class ImageAnalysis(object):
         left_mask_area_processed = False
         left_line_angle = None
         for c in cnts:
-            # TODO: risk of cut red line, need to guarantee that both red blocks are fully visible
-            # e.g. ignore red color on image boarder
-
             rect = cv2.minAreaRect(c)  # get minimal area rectangle
             box = cv2.boxPoints(rect)  # represent area as points
             box = np.int0(np.around(box))  # round values and normalize array
@@ -208,7 +206,7 @@ class ImageAnalysis(object):
         """
         # FPS = FPSHelper()
         number = 0
-        img_bw = ImageConverter.convert2blackwhite(roi)
+        img_bw = ImageConverter.convert2blackwhite_adaptive(roi)
 
         # edge detection
         #FPS.start()
@@ -324,7 +322,7 @@ class ImageAnalysis(object):
         :return: detected number  as integer, zero if not able to enumerate 
         """
         number = 0
-        img_bw = ImageConverter.convert2blackwhite(roi)
+        img_bw = ImageConverter.convert2blackwhite_adaptive(roi)
 
         # edge detection
         edges = ImageConverter.thinningblackwhiteimage(img_bw)
