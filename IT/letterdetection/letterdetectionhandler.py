@@ -93,11 +93,10 @@ class LetterDetectionHandler(object):
                         cv2.imshow("Cropped", cropped)
 
                         cv2.imshow("Video", imgmarked)
-                        cv2.imshow("redmask", redmask)
-                    except:
-                        self.__log.error("hmmmm....")
-                else:
-                    cv2.imshow("Video", self.frame)
+                        # cv2.imshow("redmask", redmask)
+                    except Exception as e:
+                        self.__log.error("hmmmm...." + str(e))
+                cv2.imshow("Video", self.frame)
 
                 key = cv2.waitKey(1) & 0xFF
                 if key == ord("q"):
@@ -172,7 +171,7 @@ if __name__ == '__main__':
     time.sleep(5)
     serialcomm.send_start()"""
     ldh = LetterDetectionHandler()
-    # ldh.starttest()
+    #ldh.starttest()
     ldh.initqueues()
     ldh.initcamera()
     numbertodisplay = ldh.start()
