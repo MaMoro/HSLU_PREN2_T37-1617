@@ -112,7 +112,7 @@ class ImageConverter(object):
         """
         Converts any image to black&white
         :param image: image to be converted to black&white
-        :return: black&white image (pixelvalues: 0 = black, 1 = white)
+        :return: black&white image (pixelvalues: 0 = black, 255 = white)
         """
         mask = cv2.inRange(image, ImageConverter.color_black_low,
                            ImageConverter.color_black_high)  # create overlay mask for all none matching bits to zero
@@ -123,6 +123,17 @@ class ImageConverter(object):
         return img_gray
 
     @staticmethod
+    def convert2blackwhite_adaptive(image):
+        """
+        Converts any image to black&white adaptive
+        :param image: image to be converted to black&white
+        :return: black&white image (pixelvalues: 0 = black, 255 = white)
+        """
+        img_gray = ImageConverter.convertbgr2gray(image)  # convert image to grayscale
+        img_bw = cv2.adaptiveThreshold(img_gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY_INV, 301, 20)
+        return img_bw
+
+    @staticmethod
     def mask_color_red_fullhsv(img):
         """
         This function extracts only red color parts of the provided image with Full-HSV color space
@@ -130,12 +141,10 @@ class ImageConverter(object):
         :return: image (mask) with only red color parts, all other pixels are black (zero)
         """
         img_hsv = ImageConverter.convertbgr2hsvfull(img)  # convert image to HSV
-
         mask = cv2.inRange(img_hsv, ImageConverter.lower_red_full,
                            ImageConverter.upper_red_full)  # create overlay mask for all none matching bits to zero (black)
         #mask = cv2.inRange(img_hsv, np.array(cfg.get_maskletter_red_low_full_splited()), np.array(cfg.get_maskletter_red_high_full_splited()))
         output_img = cv2.bitwise_and(img, img, mask=mask)  # apply mask on image
-
         return output_img
 
     @staticmethod
@@ -225,11 +234,12 @@ class ImageConverter(object):
         border_x = int(img_width*0.05)
         roi = roi[border_y:img_height - border_y, border_x:img_width - border_x]
 
-        img_bw = ImageConverter.convert2blackwhite(roi)
-        img_bw[img_bw > 0] = 255
+        # img_bw = ImageConverter.convert2blackwhite(roi)
+        # img_bw[img_bw > 0] = 255
 
+        img_bw = ImageConverter.convert2blackwhite_adaptive(roi)
         # get rectangle around letter and crop original image
-        pos_x, pos_y, width, height = cv2.boundingRect(img_bw)
+        pos_x, pos_y, width, height = cv2.boundingRect(img_bw.copy())
         img_cropped = roi[pos_y:pos_y + height, pos_x:pos_x + width]
 
         # resize to original size
@@ -243,9 +253,10 @@ class ImageConverter(object):
     def thinningblackwhiteimage(image):
         """
         Applies thinning algorithm to an black&white image
-        :param image: black&white image
+        :param image: black&white image with 0=black and 1=white
         :return:
         """
+        image[image == 255] = 1
         edges = skeletonize(image)
         edges = edges * 1  # convert float values to integer (do not optimize!)
         edges[edges == 1] = 255  # change white value from 1 to 255
