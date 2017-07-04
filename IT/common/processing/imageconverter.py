@@ -144,7 +144,9 @@ class ImageConverter(object):
         mask = cv2.inRange(img_hsv, ImageConverter.lower_red_full,
                            ImageConverter.upper_red_full)  # create overlay mask for all none matching bits to zero (black)
         #mask = cv2.inRange(img_hsv, np.array(cfg.get_maskletter_red_low_full_splited()), np.array(cfg.get_maskletter_red_high_full_splited()))
-        output_img = cv2.bitwise_and(img, img, mask=mask)  # apply mask on image
+        img_gray = ImageConverter.convertbgr2gray(img)
+        output_img = cv2.bitwise_and(img_gray, img_gray, mask=mask)  # apply mask on image
+        output_img[output_img > 0] = 255
         return output_img
 
     @staticmethod
@@ -233,10 +235,6 @@ class ImageConverter(object):
         border_y = int(img_height*0.1)
         border_x = int(img_width*0.05)
         roi = roi[border_y:img_height - border_y, border_x:img_width - border_x]
-
-        # img_bw = ImageConverter.convert2blackwhite(roi)
-        # img_bw[img_bw > 0] = 255
-
         img_bw = ImageConverter.convert2blackwhite_adaptive(roi)
         # get rectangle around letter and crop original image
         pos_x, pos_y, width, height = cv2.boundingRect(img_bw.copy())

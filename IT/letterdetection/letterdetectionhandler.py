@@ -61,7 +61,6 @@ class LetterDetectionHandler(object):
         def starttest(self):
             # start the thread to read frames from the video stream
             if self.stopped:
-                self.initcamera()
                 t = Thread(target=self.processing_test, args=())
                 t.daemon = True
                 self.stopped = False
@@ -78,7 +77,9 @@ class LetterDetectionHandler(object):
             while True:
                 self.frame = self.pistream.read()
                 redmask = ImageConverter.mask_color_red_fullhsv(self.frame)
+                cv2.imshow("redmask", redmask)
                 imgmarked, edges = ImageAnalysis.get_ordered_corners_drawed(redmask, self.frame)
+                cv2.imshow("Video", imgmarked)
                 if edges != 0:
                     correctedimg = ImageConverter.transform_perspectiveview2topdownview(self.frame, edges)
                     cropped = ImageConverter.minimize_roi_lettercontour(correctedimg)
@@ -89,11 +90,8 @@ class LetterDetectionHandler(object):
                         # CommunicationValues().send_letter(number)
 
                         cv2.imshow("Letter", numberimg)
-                        cv2.imshow("Transformed", correctedimg)
+                        # cv2.imshow("Transformed", correctedimg)
                         cv2.imshow("Cropped", cropped)
-
-                        cv2.imshow("Video", imgmarked)
-                        # cv2.imshow("redmask", redmask)
                     except Exception as e:
                         self.__log.error("hmmmm...." + str(e))
                 cv2.imshow("Video", self.frame)
@@ -175,4 +173,3 @@ if __name__ == '__main__':
     ldh.initqueues()
     ldh.initcamera()
     numbertodisplay = ldh.start()
-    print("snömmerli esch: " + str(numbertodisplay))

@@ -69,9 +69,9 @@ class ImageAnalysis(object):
         :return: reordered edges/corners (top left, top right, bottom right, bottom left)
         """
 
-        img_gray = ImageConverter.convertbgr2gray(mask)  # set image to grayscale
-        img_gray[img_gray > 0] = 255  # set all non black pixels to white for BW-image
-        img_dilated = ImageConverter.remove_erosions(img_gray)  # dilated image for remove of small erosions
+        # img_gray = ImageConverter.convertbgr2gray(mask)  # set image to grayscale
+        # img_gray[img_gray > 0] = 255  # set all non black pixels to white for BW-image
+        img_dilated = ImageConverter.remove_erosions(mask)  # dilated image for remove of small erosions
 
         # find all contours
         (_, cnts, _) = cv2.findContours(img_dilated, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -132,14 +132,11 @@ class ImageAnalysis(object):
     def get_ordered_corners_drawed(mask, img):
         """
         This function detects edges of the two biggest areas on a provided image (mask)
-        :param mask: image / mask wo apply edge detection (e.g. only red colored parts)
+        :param mask: image / mask wo apply edge detection (e.g. only red colored parts) as b&w image
         :param img: original image which will be used for drawing lines on it
         :return: reordered edges/corners (top left, top right, bottom right, bottom left)
         """
-
-        img_gray = ImageConverter.convertbgr2gray(mask)  # set image to grayscale
-        img_gray[img_gray > 0] = 255  # set all non black pixels to white for BW-image
-        img_dilated = ImageConverter.remove_erosions(img_gray)  # dilated image for remove of small erosions
+        img_dilated = ImageConverter.remove_erosions(mask)  # dilated image for remove of small erosions
 
         # find all contours
         (_, cnts, _) = cv2.findContours(img_dilated, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -158,8 +155,12 @@ class ImageAnalysis(object):
             cv2.drawContours(img, [box], 0, (0, 255, 255), 1)
 
             box = ImageAnalysis.reorder_edgepoints_clockwise(box)
-            vert_line_length = cv2.norm(np.int0(box[0]) - np.int0(box[3]))
-            hori_line_length = cv2.norm(np.int0(box[0]) - np.int0(box[1]))
+            pt_top_left = np.int0(box[0])
+            pt_top_right = np.int0(box[1])
+            pt_bottom_left = np.int0(box[3])
+            pt_bottom_right = np.int0(box[2])
+            vert_line_length = np.int0(cv2.norm(pt_top_left - pt_bottom_left))
+            hori_line_length = np.int0(cv2.norm(pt_top_left - pt_top_right))
             try:
                 if not(5 < (vert_line_length / hori_line_length) < 14):
                     break
@@ -167,13 +168,13 @@ class ImageAnalysis(object):
                 break
 
             if not left_mask_area_processed:
-                pt_top = tuple(np.int0(box[1]))  # top right position
-                pt_bottom = tuple(np.int0(box[2]))  # bottom right position
+                pt_top = tuple(pt_top_right)  # top right position
+                pt_bottom = tuple(pt_bottom_right)  # bottom right position
                 left_line_angle = ImageAnalysis.__anglewithtwopoints(pt_top, pt_bottom)
                 ImageAnalysis.__log.debug("Winkel left: " + str(left_line_angle))
             else:
-                pt_top = tuple(np.int0(box[0]))  # top left position
-                pt_bottom = tuple(np.int0(box[3]))  # bottom left position
+                pt_top = tuple(pt_top_left)  # top left position
+                pt_bottom = tuple(pt_bottom_left)  # bottom left position
                 right_line_angle = ImageAnalysis.__anglewithtwopoints(pt_top, pt_bottom)
                 ImageAnalysis.__log.debug("Winkel right: " + str(right_line_angle))
                 if not (math.fabs(right_line_angle - left_line_angle) < ImageAnalysis.angle_tolerance_redblocks):
@@ -192,7 +193,6 @@ class ImageAnalysis(object):
         if len(edges) == 4:
             # reorder edges to (top left, top right, bottom right, bottom left)
             edges = [edges[i] for i in [0, 2, 3, 1]]
-            ImageAnalysis.__log.debug("edges: " + str(edges))
             return img, edges
         else:
             return img, 0

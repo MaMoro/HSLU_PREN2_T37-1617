@@ -107,7 +107,7 @@ class RunPiHandler(object):
 
         self.serialcomm.send_letter(numbertodisplay)
 
-        # blink detected letter till number acknowledged
+        # blink detected letter till number  acknowledged
         sendednumber = self.serialcomm.get_letter()
         while int(sendednumber) != numbertodisplay:
             sendednumber = self.serialcomm.get_letter()
